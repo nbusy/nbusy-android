@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">NBusy</string>
+    <string name="app_name">nbusy-android</string>
     <string name="title_message_detail">Message Detail</string>
 
 </resources>
