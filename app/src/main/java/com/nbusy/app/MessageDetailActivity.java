@@ -1,10 +1,12 @@
 package com.nbusy.app;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 
 
 /**
@@ -12,7 +14,7 @@ import android.view.MenuItem;
  * activity is only used on handset devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
  * in a {@link MessageListActivity}.
- * <p>
+ * <p/>
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link MessageDetailFragment}.
  */
@@ -64,5 +66,12 @@ public class MessageDetailActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void verifyEmail(View view) {
+        EditText emailEditText = (EditText) findViewById(R.id.email_address);
+        String email = emailEditText.getText().toString();
+
+        // TODO, create the task to call the REST API
     }
 }
