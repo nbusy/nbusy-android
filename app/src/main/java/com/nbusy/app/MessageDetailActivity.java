@@ -111,9 +111,4 @@ public class MessageDetailActivity extends Activity {
         protected void onPostExecute(String result) {
         }
     }
-
-    private class emailVerificationResult {
-        public String statusNbr;
-        public String hygieneResult;
-    }
 }
