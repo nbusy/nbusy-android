@@ -1,12 +1,11 @@
 package com.nbusy.app;
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.app.ListFragment;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 
 import com.nbusy.app.dummy.DummyContent;
 
@@ -15,7 +14,7 @@ import com.nbusy.app.dummy.DummyContent;
  * also supports tablet devices by allowing list items to be given an
  * 'activated' state upon selection. This helps indicate which item is
  * currently being viewed in a {@link MessageDetailFragment}.
- * <p>
+ * <p/>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
@@ -26,30 +25,6 @@ public class MessageListFragment extends ListFragment {
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
-
-    /**
-     * The fragment's current callback object, which is notified of list item
-     * clicks.
-     */
-    private Callbacks mCallbacks = sDummyCallbacks;
-
-    /**
-     * The current activated item position. Only used on tablets.
-     */
-    private int mActivatedPosition = ListView.INVALID_POSITION;
-
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface Callbacks {
-        /**
-         * Callback for when an item has been selected.
-         */
-        public void onItemSelected(String id);
-    }
-
     /**
      * A dummy implementation of the {@link Callbacks} interface that does
      * nothing. Used only when this fragment is not attached to an activity.
@@ -59,6 +34,15 @@ public class MessageListFragment extends ListFragment {
         public void onItemSelected(String id) {
         }
     };
+    /**
+     * The fragment's current callback object, which is notified of list item
+     * clicks.
+     */
+    private Callbacks mCallbacks = sDummyCallbacks;
+    /**
+     * The current activated item position. Only used on tablets.
+     */
+    private int mActivatedPosition = ListView.INVALID_POSITION;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -148,5 +132,17 @@ public class MessageListFragment extends ListFragment {
         }
 
         mActivatedPosition = position;
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callbacks {
+        /**
+         * Callback for when an item has been selected.
+         */
+        public void onItemSelected(String id);
     }
 }

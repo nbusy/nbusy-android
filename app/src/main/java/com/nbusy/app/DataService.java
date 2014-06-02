@@ -9,6 +9,8 @@ import android.util.LruCache;
 public class DataService extends Service {
     private LruCache<String, Bitmap> profilesMemoryCache;
 
+    private ApiClient apiClient;
+
     public DataService() {
     }
 
