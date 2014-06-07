@@ -1,4 +1,4 @@
-package com.nbusy.app;
+package com.nbusy.app.data;
 
 import android.app.Service;
 import android.content.Intent;

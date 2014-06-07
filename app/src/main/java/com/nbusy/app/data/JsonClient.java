@@ -1,4 +1,4 @@
-package com.nbusy.app.dummy;
+package com.nbusy.app.data;
 
 import com.google.gson.Gson;
 

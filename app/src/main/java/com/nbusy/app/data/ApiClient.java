@@ -1,4 +1,4 @@
-package com.nbusy.app;
+package com.nbusy.app.data;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
