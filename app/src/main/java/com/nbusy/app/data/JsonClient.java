@@ -14,32 +14,26 @@ import java.util.logging.Logger;
  * HTTP client with JSON content type by default.
  */
 public class JsonClient {
-    public <T> T getJSON(String url, int timeout, java.lang.Class<T> classOfT) {
+    public <T> T getJSON(String uri, java.lang.Class<T> classOfT) {
         try {
-            URL u = new URL(url);
-            HttpURLConnection c = (HttpURLConnection) u.openConnection();
-            c.setRequestMethod("GET");
-            c.setRequestProperty("Content-length", "0");
-            c.setUseCaches(false);
-            c.setAllowUserInteraction(false);
-            c.setConnectTimeout(timeout);
-            c.setReadTimeout(timeout);
-            c.connect();
-            int status = c.getResponseCode();
+            URL url = new URL(uri);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            int status = connection.getResponseCode();
 
             switch (status) {
                 case 200:
                 case 201:
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(c.getInputStream()));
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     StringBuilder response = new StringBuilder();
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        response.append(line+"\n");
+                        response.append(line).append("\n");
                     }
                     reader.close();
                     Gson gson = new Gson();
-                    T data = gson.fromJson(response.toString(), classOfT);
-                    return data;
+                    return gson.fromJson(response.toString(), classOfT);
             }
 
         } catch (MalformedURLException ex) {

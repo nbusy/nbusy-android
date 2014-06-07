@@ -7,7 +7,7 @@ import android.os.IBinder;
 import android.util.LruCache;
 
 public class DataService extends Service {
-    private LruCache<String, Bitmap> profilesMemoryCache;
+    private LruCache<String, Bitmap> imageCache;
 
     private ApiClient apiClient;
 
