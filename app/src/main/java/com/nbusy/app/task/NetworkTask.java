@@ -1,7 +1,10 @@
 package com.nbusy.app.task;
 
+import com.nbusy.app.task.enums.TaskType;
+
 /**
- * A task that requires network connectivity.
+ * A task that requires network connectivity. If there is no network connectivity, this job will be
+ * saved to disk and will be run as soon as network connection is established.
  */
 public class NetworkTask extends Task {
     /*public void CheckNetwork(Context context) {
@@ -13,8 +16,15 @@ public class NetworkTask extends Task {
             // display error
         }
     }*/
+    public NetworkTask(TaskType type) {
+        super(type);
+    }
 
     @Override
     public void onQueued() {
+    }
+
+    @Override
+    public void onRunning() {
     }
 }
