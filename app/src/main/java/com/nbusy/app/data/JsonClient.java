@@ -29,6 +29,9 @@ public class JsonClient {
             switch (status) {
                 case 200:
                 case 201:
+                    /*Bitmap bitmap = BitmapFactory.decodeStream(connection.getInputStream());
+                    ImageView imageView = (ImageView) findViewById(R.id.image_view);
+                    imageView.setImageBitmap(bitmap);*/
                     BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     StringBuilder response = new StringBuilder();
                     String line;
