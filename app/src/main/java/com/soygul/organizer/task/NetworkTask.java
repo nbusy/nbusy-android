@@ -1,6 +1,6 @@
-package com.nbusy.app.task;
+package com.soygul.organizer.task;
 
-import com.nbusy.app.task.enums.TaskType;
+import com.soygul.organizer.enums.TaskType;
 
 /**
  * A task that requires network connectivity. If there is no network connectivity, this job will be

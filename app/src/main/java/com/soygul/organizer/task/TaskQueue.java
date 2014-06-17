@@ -1,4 +1,4 @@
-package com.nbusy.app.task;
+package com.soygul.organizer.task;
 
 /**
  * Possible foundation for atq lib (Android task queue)

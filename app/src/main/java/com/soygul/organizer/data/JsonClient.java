@@ -1,4 +1,4 @@
-package com.nbusy.app.data;
+package com.soygul.organizer.data;
 
 import com.google.gson.Gson;
 

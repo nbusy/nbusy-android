@@ -1,4 +1,4 @@
-package com.nbusy.app.event;
+package com.soygul.organizer.event;
 
 import java.util.*;
 

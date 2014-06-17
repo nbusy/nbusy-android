@@ -1,4 +1,4 @@
-package com.nbusy.app.dummy;
+package com.soygul.organizer.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;

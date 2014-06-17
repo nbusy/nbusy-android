@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
-import com.nbusy.app.dummy.DummyContent;
+import com.soygul.organizer.dummy.DummyContent;
 
 /**
  * A fragment representing a single Message detail screen.

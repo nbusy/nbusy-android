@@ -1,4 +1,4 @@
-package com.nbusy.app.task.enums;
+package com.soygul.organizer.enums;
 
 public enum TaskState {
     /**

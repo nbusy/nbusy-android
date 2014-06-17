@@ -1,4 +1,4 @@
-package com.nbusy.app.data;
+package com.soygul.organizer.data;
 
 /**
  * NBusy Web API client.

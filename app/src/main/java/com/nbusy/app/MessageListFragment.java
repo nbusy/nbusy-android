@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.nbusy.app.dummy.DummyContent;
+import com.soygul.organizer.dummy.DummyContent;
 
 /**
  * A list fragment representing a list of Messages. This fragment

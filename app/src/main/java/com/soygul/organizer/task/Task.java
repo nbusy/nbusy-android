@@ -1,7 +1,7 @@
-package com.nbusy.app.task;
+package com.soygul.organizer.task;
 
-import com.nbusy.app.task.enums.TaskState;
-import com.nbusy.app.task.enums.TaskType;
+import com.soygul.organizer.enums.TaskState;
+import com.soygul.organizer.enums.TaskType;
 
 public abstract class Task {
     private String groupId;

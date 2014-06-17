@@ -26,7 +26,7 @@
         </activity>
 
         <service
-            android:name=".data.DataService"
+            android:name="com.soygul.organizer.data.DataService"
             android:enabled="true"
             android:exported="false" >
         </service>
