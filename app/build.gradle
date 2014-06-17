@@ -28,4 +28,5 @@ dependencies {
     compile 'com.android.support:support-v4:19.+'
     compile 'com.google.code.gson:gson:2.+'
     compile 'com.google.guava:guava:17.+'
+    compile 'de.greenrobot:eventbus:2.+'
 }
