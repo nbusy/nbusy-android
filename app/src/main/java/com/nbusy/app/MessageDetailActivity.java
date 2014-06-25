@@ -78,16 +78,6 @@ public class MessageDetailActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void verifyEmail(View view) {
-        EditText emailEditText = (EditText) findViewById(R.id.email_address);
-        String email = emailEditText.getText().toString();
-
-        if (email != null && !email.isEmpty()) {
-            String urlString = apiURL + "LicenseInfo.RegisteredUser.UserID=" + strikeIronUserName + "&LicenseInfo.RegisteredUser.Password=" + strikeIronPassword + "&VerifyEmail.Email=" + email + "&VerifyEmail.Timeout=30";
-            new CallAPI().execute(urlString);
-        }
-    }
-
     private class CallAPI extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
