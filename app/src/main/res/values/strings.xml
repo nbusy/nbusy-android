@@ -3,5 +3,6 @@
 
     <string name="app_name">NBusy</string>
     <string name="title_message_detail">Message Detail</string>
+    <string name="loading">Loading..</string>
 
 </resources>
