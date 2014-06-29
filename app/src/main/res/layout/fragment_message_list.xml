@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout android:id="@+id/progressContainer"
+    <LinearLayout android:id="@+id/progress_container"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,7 +23,7 @@
 
     </LinearLayout>
 
-    <FrameLayout android:id="@+id/listContainer"
+    <FrameLayout android:id="@+id/list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

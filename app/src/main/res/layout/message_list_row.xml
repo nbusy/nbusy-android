@@ -8,7 +8,7 @@
 
     <!--  contact image -->
     <LinearLayout
-        android:id="@+id/thumbnail"
+        android:id="@+id/contact_image_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -16,7 +16,7 @@
         android:padding="3dp">
 
         <ImageView
-            android:id="@+id/list_image"
+            android:id="@+id/contact_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:contentDescription="Contact Image"
@@ -25,11 +25,11 @@
 
     <!-- contact name-->
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/contact_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/thumbnail"
-        android:layout_toRightOf="@+id/thumbnail"
+        android:layout_alignTop="@+id/contact_image_wrapper"
+        android:layout_toRightOf="@+id/contact_image_wrapper"
         android:text="Contact Name"
         android:textColor="#040404"
         android:textSize="15sp"
@@ -38,12 +38,12 @@
 
     <!-- last message -->
     <TextView
-        android:id="@+id/artist"
+        android:id="@+id/last_message"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"
+        android:layout_below="@id/contact_name"
         android:layout_marginTop="1dp"
-        android:layout_toRightOf="@+id/thumbnail"
+        android:layout_toRightOf="@+id/contact_image_wrapper"
         android:text="Last message"
         android:textColor="#343434"
         android:textSize="12sp" />
@@ -54,7 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@id/title"
+        android:layout_alignTop="@id/contact_name"
         android:layout_marginRight="5dp"
         android:gravity="right"
         android:text="Sent date"
