@@ -58,7 +58,7 @@
         android:layout_marginRight="5dp"
         android:gravity="right"
         android:text="Sent date"
-        android:textColor="#10bcc9"
+        android:textColor="#a3a3a3"
         android:textSize="12sp"
         android:textStyle="bold" />
 </RelativeLayout>
