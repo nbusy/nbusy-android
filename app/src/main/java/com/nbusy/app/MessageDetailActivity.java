@@ -25,11 +25,6 @@ import java.net.URL;
  * more than a {@link MessageDetailFragment}.
  */
 public class MessageDetailActivity extends Activity {
-
-    public final static String strikeIronUserName = "stikeironusername@yourdomain.com";
-    public final static String strikeIronPassword = "strikeironpassword";
-    public final static String apiURL = "http://ws.strikeiron.com/StrikeIron/EMV6Hygiene/VerifyEmail?";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,8 +46,7 @@ public class MessageDetailActivity extends Activity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(MessageDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(MessageDetailFragment.ARG_ITEM_ID));
+            arguments.putString(MessageDetailFragment.ARG_ITEM_ID, getIntent().getStringExtra(MessageDetailFragment.ARG_ITEM_ID));
             MessageDetailFragment fragment = new MessageDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
