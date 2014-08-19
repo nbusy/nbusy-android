@@ -58,13 +58,20 @@ public class MessageListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         // TODO: replace with a real list adapter.
+        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
+                getActivity(),
+                android.R.layout.simple_list_item_activated_1,
+                android.R.id.text1,
+                DummyContent.ITEMS));
+
+        /*
         ArrayAdapter<DummyContent.DummyItem> adapter = new ArrayAdapter<DummyContent.DummyItem>(
                 getActivity(),
-                R.layout.message_list_row,
+                R.layout.message_list_row, // we need proper data with 3 fields here in place of dummycontent
                 android.R.id.text1,
                 DummyContent.ITEMS);
         setListAdapter(adapter);
-        adapter.add(new DummyContent.DummyItem("5", "Yeah"));
+        adapter.add(new DummyContent.DummyItem("5", "Yeah"));*/
     }
 
     @Override
