@@ -16,6 +16,8 @@
 #   public *;
 #}
 
+
+# BEGIN: com.google.android.gms:play-services
 -keep class * extends java.util.ListResourceBundle {
     protected Object[][] getContents();
 }
@@ -32,3 +34,4 @@
 -keepnames class * implements android.os.Parcelable {
     public static final ** CREATOR;
 }
+# END: com.google.android.gms:play-services
