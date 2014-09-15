@@ -38,7 +38,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class DemoActivity extends Activity {
 
-    public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -209,7 +208,7 @@ public class DemoActivity extends Activity {
                     try {
                         Bundle data = new Bundle();
                         data.putString("my_message", "Hello World");
-                        data.putString("my_action", "com.google.android.gcm.demo.app.ECHO_NOW");
+                        data.putString("my_action", "com.nbusy.app.ECHO_NOW");
                         String id = Integer.toString(msgId.incrementAndGet());
                         gcm.send(SENDER_ID + "@gcm.googleapis.com", id, data);
                         msg = "Sent message";
