@@ -51,10 +51,10 @@ public class MessageListActivity extends Activity implements MessageListFragment
             arguments.putString(MessageDetailFragment.ARG_ITEM_ID, id);
             MessageDetailFragment fragment = new MessageDetailFragment();
             fragment.setArguments(arguments);
-            getFragmentManager().beginTransaction()
+            getFragmentManager()
+                    .beginTransaction()
                     .replace(R.id.message_detail_container, fragment)
                     .commit();
-
         } else {
             // In single-pane mode, simply start the detail activity for the selected item ID.
             Intent detailIntent = new Intent(this, MessageDetailActivity.class);

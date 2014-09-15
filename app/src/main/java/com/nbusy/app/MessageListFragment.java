@@ -12,24 +12,20 @@ import android.widget.ListView;
 import com.soygul.organizer.dummy.DummyContent;
 
 /**
- * A list fragment representing a list of Messages. This fragment
- * also supports tablet devices by allowing list items to be given an
- * 'activated' state upon selection. This helps indicate which item is
- * currently being viewed in a {@link MessageDetailFragment}.
+ * A list fragment representing a list of Messages. This fragment also supports tablet devices by allowing list items to be given an
+ * 'activated' state upon selection. This helps indicate which item is currently being viewed in a {@link MessageDetailFragment}.
  * <p/>
- * Activities containing this fragment MUST implement the {@link Callbacks}
- * interface.
+ * Activities containing this fragment MUST implement the {@link Callbacks} interface.
  */
 public class MessageListFragment extends ListFragment {
 
     /**
-     * The serialization (saved instance state) Bundle key representing the
-     * activated item position. Only used on tablets.
+     * The serialization (saved instance state) Bundle key representing the activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
+
     /**
-     * A dummy implementation of the {@link Callbacks} interface that does
-     * nothing. Used only when this fragment is not attached to an activity.
+     * A dummy implementation of the {@link Callbacks} interface that does nothing. Used only when this fragment is not attached to an activity.
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
@@ -37,18 +33,17 @@ public class MessageListFragment extends ListFragment {
         }
     };
     /**
-     * The fragment's current callback object, which is notified of list item
-     * clicks.
+     * The fragment's current callback object, which is notified of list item clicks.
      */
     private Callbacks mCallbacks = sDummyCallbacks;
+
     /**
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
     /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
+     * Mandatory empty constructor for the fragment manager to instantiate the fragment (e.g. upon screen orientation changes).
      */
     public MessageListFragment() {
     }
