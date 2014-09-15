@@ -50,7 +50,7 @@
 
     <!-- last message sent date -->
     <TextView
-        android:id="@+id/duration"
+        android:id="@+id/sent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"

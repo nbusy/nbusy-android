@@ -24,32 +24,32 @@ public class DummyContent {
     public static Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
 
     static {
-        // Add 3 sample items.
-        addItem(new DummyItem("1", "Item 1"));
-        addItem(new DummyItem("2", "Item 2"));
-        addItem(new DummyItem("3", "Item 3"));
+        // Add sample items.
+        addItem(new DummyItem("Teoman", "My last message", "123456"));
     }
 
     private static void addItem(DummyItem item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+        ITEM_MAP.put(item.name, item);
     }
 
     /**
      * A dummy item representing a piece of content.
      */
     public static class DummyItem {
-        public String id;
-        public String content;
+        public String name;
+        public String message;
+        public String sent;
 
-        public DummyItem(String id, String content) {
-            this.id = id;
-            this.content = content;
+        public DummyItem(String name, String message, String sent) {
+            this.name = name;
+            this.message = message;
+            this.sent = sent;
         }
 
         @Override
         public String toString() {
-            return content;
+            return name + " " + sent;
         }
     }
 }
