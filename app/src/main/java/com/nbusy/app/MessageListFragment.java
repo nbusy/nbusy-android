@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 import com.soygul.organizer.dummy.DummyContent;
 
 /**
@@ -32,6 +31,7 @@ public class MessageListFragment extends ListFragment {
         public void onItemSelected(String id) {
         }
     };
+
     /**
      * The fragment's current callback object, which is notified of list item clicks.
      */
@@ -109,8 +109,7 @@ public class MessageListFragment extends ListFragment {
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
 
-        // Notify the active callbacks interface (the activity, if the
-        // fragment is attached to one) that an item has been selected.
+        // Notify the active callbacks interface (the activity, if the fragment is attached to one) that an item has been selected.
         mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
     }
 
@@ -124,12 +123,10 @@ public class MessageListFragment extends ListFragment {
     }
 
     /**
-     * Turns on activate-on-click mode. When this mode is on, list items will be
-     * given the 'activated' state when touched.
+     * Turns on activate-on-click mode. When this mode is on, list items will be given the 'activated' state when touched.
      */
     public void setActivateOnItemClick(boolean activateOnItemClick) {
-        // When setting CHOICE_MODE_SINGLE, ListView will automatically
-        // give items the 'activated' state when touched.
+        // When setting CHOICE_MODE_SINGLE, ListView will automatically give items the 'activated' state when touched.
         getListView().setChoiceMode(activateOnItemClick
                 ? ListView.CHOICE_MODE_SINGLE
                 : ListView.CHOICE_MODE_NONE);
@@ -139,16 +136,15 @@ public class MessageListFragment extends ListFragment {
         if (position == ListView.INVALID_POSITION) {
             getListView().setItemChecked(mActivatedPosition, false);
         } else {
-            getListView().setItemChecked(position, true);
+            getListView().setItemChemore cked(position, true);
         }
 
         mActivatedPosition = position;
     }
 
     /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
+     * A callback interface that all activities containing this fragment must implement. This mechanism allows activities to be
+     * notified of item selections.
      */
     public interface Callbacks {
         /**
