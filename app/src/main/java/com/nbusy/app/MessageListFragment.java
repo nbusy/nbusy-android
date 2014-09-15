@@ -136,7 +136,7 @@ public class MessageListFragment extends ListFragment {
         if (position == ListView.INVALID_POSITION) {
             getListView().setItemChecked(mActivatedPosition, false);
         } else {
-            getListView().setItemChemore cked(position, true);
+            getListView().setItemChecked(position, true);
         }
 
         mActivatedPosition = position;
