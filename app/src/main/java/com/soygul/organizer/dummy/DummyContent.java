@@ -26,6 +26,7 @@ public class DummyContent {
     static {
         // Add sample items.
         addItem(new DummyItem("Teoman", "My last message", "123456"));
+        addItem(new DummyItem("Chuck", "This is my last-first message!", "9876543"));
     }
 
     private static void addItem(DummyItem item) {

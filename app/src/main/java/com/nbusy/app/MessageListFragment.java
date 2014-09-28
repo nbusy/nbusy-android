@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.soygul.organizer.dummy.DummyContent;
 
@@ -51,12 +50,7 @@ public class MessageListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        ArrayAdapter<DummyContent.DummyItem> adapter = new ArrayAdapter<DummyContent.DummyItem>(
-                getActivity(),
-                R.layout.message_list_row,
-                R.id.contact_name,
-                DummyContent.ITEMS);
+        MessageListArrayAdapter adapter = new MessageListArrayAdapter(getActivity(), DummyContent.ITEMS);
         setListAdapter(adapter);
     }
 
