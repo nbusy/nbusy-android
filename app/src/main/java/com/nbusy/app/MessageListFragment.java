@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import com.soygul.organizer.dummy.DummyContent;
 
 /**
  * A list fragment representing a list of Messages. This fragment also supports tablet devices by allowing list items to be given an
@@ -50,7 +49,7 @@ public class MessageListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MessageListArrayAdapter adapter = new MessageListArrayAdapter(getActivity(), DummyContent.ITEMS);
+        MessageListArrayAdapter adapter = new MessageListArrayAdapter(getActivity(), Messages.ITEMS);
         setListAdapter(adapter);
     }
 
@@ -95,7 +94,7 @@ public class MessageListFragment extends ListFragment {
         super.onListItemClick(listView, view, position, id);
 
         // Notify the active callbacks interface (the activity, if the fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).name);
+        mCallbacks.onItemSelected(Messages.ITEMS.get(position).name);
     }
 
     @Override
