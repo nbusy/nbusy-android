@@ -10,30 +10,32 @@ import android.widget.TextView;
 import java.util.List;
 
 public class MessageListArrayAdapter extends ArrayAdapter<Messages.Message> {
-    private final Context context;
-    private final List<Messages.Message> values;
 
     public MessageListArrayAdapter(Context context, List<Messages.Message> values) {
         super(context, R.layout.message_list_row, values);
-        this.context = context;
-        this.values = values;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.message_list_row, parent, false);
-        getItem(position);
-        Messages.Message contact = values.get(position);
+        Messages.Message message = getItem(position);
 
-        TextView contactName = (TextView) rowView.findViewById(R.id.contact_name);
-        contactName.setText(contact.name);
+        // check if an existing view is being reused, otherwise inflate the view
+        ViewHolder viewHolder; // view lookup cache stored in tag
+        if (convertView == null) {
+            viewHolder = new ViewHolder();
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            convertView = inflater.inflate(R.layout.message_list_row, parent, false);
+            viewHolder.contactName = (TextView) convertView.findViewById(R.id.contact_name);
+            viewHolder.lastMessage = (TextView) convertView.findViewById(R.id.last_message);
+            viewHolder.sent = (TextView) convertView.findViewById(R.id.sent);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
 
-        TextView lastMessage = (TextView) rowView.findViewById(R.id.last_message);
-        lastMessage.setText(contact.message);
-
-        TextView sent = (TextView) rowView.findViewById(R.id.sent);
-        sent.setText(contact.sent);
+        viewHolder.contactName.setText(message.name);
+        viewHolder.lastMessage.setText(message.message);
+        viewHolder.sent.setText(message.sent);
 
         // change the icon for Windows and iPhone
 //        ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
@@ -44,7 +46,7 @@ public class MessageListArrayAdapter extends ArrayAdapter<Messages.Message> {
 //            imageView.setImageResource(R.drawable.ok);
 //        }
 
-        return rowView;
+        return convertView;
     }
 
     // view holder pattern template
