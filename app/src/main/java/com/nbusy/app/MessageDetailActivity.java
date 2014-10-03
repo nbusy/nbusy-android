@@ -18,7 +18,7 @@ public class MessageDetailActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_detail);
 
-        // Show the Up button in the action bar.
+        // show the 'Up' button in the action bar
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
         // savedInstanceState is non-null when there is fragment state saved from previous configurations of this activity

@@ -26,7 +26,7 @@ public class MessageListActivity extends Activity implements MessageListFragment
     protected void onCreate(Bundle savedInstanceState) {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                    .detectAll()   // or .detectAll() for all detectable problems
+                    .detectAll()
                     .penaltyLog()
                     .build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
