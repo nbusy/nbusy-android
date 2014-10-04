@@ -71,7 +71,7 @@ public class MessageListActivity extends Activity implements MessageListFragment
       // the detail container view will be present only in the large-screen layouts (res/values-large and
       // res/values-sw600dp). If this view is present, then the activity should be in two-pane mode
       mTwoPane = true;
-
+sendse
       // in two-pane mode, list items should be given the 'activated' state when touched
       ((MessageListFragment) getFragmentManager()
           .findFragmentById(R.id.message_list))
@@ -202,6 +202,28 @@ public class MessageListActivity extends Activity implements MessageListFragment
    * address in the message.
    */
   private void sendRegistrationIdToBackend() {
+    new AsyncTask<Void, Void, String>() {
+      @Override
+      protected String doInBackground(Void... params) {
+        String msg = "";
+        try {
+          Bundle data = new Bundle();
+          data.putString("my_message", regId);
+          data.putString("my_action", "com.nbusy.app.ECHO_NOW");
+          String id = Integer.toString(msgId.incrementAndGet());
+          gcm.send(SENDER_ID + "@gcm.googleapis.com", id, data);
+          msg = "Sent GCM registration ID to the backend.";
+        } catch (IOException ex) {
+          msg = "Error while sending GCM registration ID to the backend :" + ex.getMessage();
+        }
+        return msg;
+      }
+
+      @Override
+      protected void onPostExecute(String msg) {
+        Log.i(TAG, msg);
+      }
+    }.execute(null, null, null);
   }
 
 // Send an upstream message.
