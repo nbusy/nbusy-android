@@ -71,7 +71,7 @@ public class MessageListActivity extends Activity implements MessageListFragment
       // the detail container view will be present only in the large-screen layouts (res/values-large and
       // res/values-sw600dp). If this view is present, then the activity should be in two-pane mode
       mTwoPane = true;
-sendse
+
       // in two-pane mode, list items should be given the 'activated' state when touched
       ((MessageListFragment) getFragmentManager()
           .findFragmentById(R.id.message_list))
@@ -196,11 +196,6 @@ sendse
     return getSharedPreferences(MessageListActivity.class.getSimpleName(), Context.MODE_PRIVATE);
   }
 
-  /**
-   * Sends the registration ID to your server over HTTP, so it can use GCM/HTTP or CCS to send messages to your app.
-   * Not needed for this demo since the device sends upstream messages to a server that echoes back the message using the 'from'
-   * address in the message.
-   */
   private void sendRegistrationIdToBackend() {
     new AsyncTask<Void, Void, String>() {
       @Override
@@ -208,7 +203,7 @@ sendse
         String msg = "";
         try {
           Bundle data = new Bundle();
-          data.putString("my_message", regId);
+          data.putString("my_message", regId); // send access token here as regId is 'from' field in <message>
           data.putString("my_action", "com.nbusy.app.ECHO_NOW");
           String id = Integer.toString(msgId.incrementAndGet());
           gcm.send(SENDER_ID + "@gcm.googleapis.com", id, data);
@@ -225,34 +220,4 @@ sendse
       }
     }.execute(null, null, null);
   }
-
-// Send an upstream message.
-//    public void onClick(final View view) {
-//        if (view == findViewById(R.id.send)) {
-//            new AsyncTask<Void, Void, String>() {
-//                @Override
-//                protected String doInBackground(Void... params) {
-//                    String msg = "";
-//                    try {
-//                        Bundle data = new Bundle();
-//                        data.putString("my_message", "Hello World");
-//                        data.putString("my_action", "com.nbusy.app.ECHO_NOW");
-//                        String id = Integer.toString(msgId.incrementAndGet());
-//                        gcm.send(SENDER_ID + "@gcm.googleapis.com", id, data);
-//                        msg = "Sent message";
-//                    } catch (IOException ex) {
-//                        msg = "Error :" + ex.getMessage();
-//                    }
-//                    return msg;
-//                }
-//
-//                @Override
-//                protected void onPostExecute(String msg) {
-//                    mMessageDisplay.append(msg + "\n");
-//                }
-//            }.execute(null, null, null);
-//        } else if (view == findViewById(R.id.clear)) {
-//            mMessageDisplay.setText("");
-//        }
-//    }
 }
