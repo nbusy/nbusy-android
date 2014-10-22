@@ -204,7 +204,7 @@ public class MessageListActivity extends Activity implements MessageListFragment
         try {
           Bundle data = new Bundle();
           data.putString("my_message", regId); // send access token here as regId is 'from' field in <message>
-          data.putString("my_action", "com.nbusy.app.ECHO_NOW");
+          data.putString("my_action", "com.nbusy.app.MessageListActivity");
           String id = Integer.toString(msgId.incrementAndGet());
           gcm.send(SENDER_ID + "@gcm.googleapis.com", id, data);
           msg = "Sent GCM registration ID to the backend.";
