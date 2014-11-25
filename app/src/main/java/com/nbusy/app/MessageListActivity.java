@@ -118,7 +118,7 @@ public class MessageListActivity extends Activity implements MessageListFragment
     final SharedPreferences prefs = getGcmPreferences(context);
     String registrationId = prefs.getString(PROPERTY_REG_ID, "");
     if (registrationId.isEmpty()) {
-      Log.i(TAG, "Registration not found.");
+      Log.i(TAG, "GCM registration not found.");
       return "";
     }
 
@@ -127,9 +127,11 @@ public class MessageListActivity extends Activity implements MessageListFragment
     int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
     int currentVersion = getAppVersion(context);
     if (registeredVersion != currentVersion) {
-      Log.i(TAG, "App version changed.");
+      Log.i(TAG, "App version changed. GCM registration will be refreshed.");
       return "";
     }
+
+    Log.i(TAG, "GCM registration id found: " + registrationId);
     return registrationId;
   }
 
@@ -162,6 +164,8 @@ public class MessageListActivity extends Activity implements MessageListFragment
           // if there is an error, don't just keep trying to register
           // require the user to click a button again, or perform exponential back-off
         }
+
+        Log.i(TAG, msg);
         return msg;
       }
 
