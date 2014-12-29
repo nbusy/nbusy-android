@@ -84,6 +84,8 @@ public class MessageListActivity extends Activity implements MessageListFragment
     if (regId.isEmpty()) {
       registerInBackground();
     }
+
+    sendRegistrationIdToBackend(); // todo: remove this!
   }
 
   /**
