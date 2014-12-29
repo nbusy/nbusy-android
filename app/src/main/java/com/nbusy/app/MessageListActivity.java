@@ -85,7 +85,7 @@ public class MessageListActivity extends Activity implements MessageListFragment
       registerInBackground();
     }
 
-    sendRegistrationIdToBackend(); // todo: remove this!
+    sendGcmMessage("just testing from Android simulator");
   }
 
   /**
@@ -203,19 +203,22 @@ public class MessageListActivity extends Activity implements MessageListFragment
   }
 
   private void sendRegistrationIdToBackend() {
+    sendGcmMessage(regId);
+  }
+
+  private void sendGcmMessage(final String message) {
     new AsyncTask<Void, Void, String>() {
       @Override
       protected String doInBackground(Void... params) {
         String msg = "";
         try {
           Bundle data = new Bundle();
-          data.putString("my_message", regId); // send access token here as regId is 'from' field in <message>
-          data.putString("my_action", "com.nbusy.app.MessageListActivity");
+          data.putString("test_message_from_device", message);
           String id = Integer.toString(msgId.incrementAndGet());
           gcm.send(SENDER_ID + "@gcm.googleapis.com", id, data);
-          msg = "Sent GCM registration ID to the backend.";
+          msg = "Sent upstream GCM message to the backend: " + message;
         } catch (IOException ex) {
-          msg = "Error while sending GCM registration ID to the backend :" + ex.getMessage();
+          msg = "Error while sending upstream GCM message to the backend:" + ex.getMessage();
         }
         return msg;
       }
