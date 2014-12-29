@@ -86,6 +86,8 @@ public class MessageListActivity extends Activity implements MessageListFragment
     }
 
     sendGcmMessage("just testing from Android simulator");
+    sendGcmMessage("test 2");
+    sendGcmMessage("test 3");
   }
 
   /**
