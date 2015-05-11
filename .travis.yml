@@ -1,4 +1,2 @@
 language: android
-
-jdk:
- - oraclejdk8
+jdk: oraclejdk8
