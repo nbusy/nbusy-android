@@ -1,11 +1,10 @@
 package com.nbusy.app;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
 
 import android.view.MenuItem;
-
 
 /**
  * An activity representing a single Chat detail screen. This
