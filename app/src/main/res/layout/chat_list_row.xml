@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dp">
+
+    <!--  contact image -->
+    <LinearLayout
+        android:id="@+id/contact_image_wrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dp"
+        android:padding="3dp">
+
+        <ImageView
+            android:id="@+id/contact_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:contentDescription="Contact Image"
+            android:src="@mipmap/ic_launcher" />
+    </LinearLayout>
+
+    <!-- contact name-->
+    <TextView
+        android:id="@+id/contact_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/contact_image_wrapper"
+        android:layout_toRightOf="@+id/contact_image_wrapper"
+        android:text="Contact Name"
+        android:textColor="#040404"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+    <!-- last message -->
+    <TextView
+        android:id="@+id/last_message"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/contact_name"
+        android:layout_marginTop="1dp"
+        android:layout_toRightOf="@+id/contact_image_wrapper"
+        android:text="Last message"
+        android:textColor="#343434"
+        android:textSize="12sp" />
+
+    <!-- last message sent date -->
+    <TextView
+        android:id="@+id/sent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/contact_name"
+        android:layout_marginRight="5dp"
+        android:gravity="right"
+        android:text="Sent date"
+        android:textColor="#a3a3a3"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+</RelativeLayout>
