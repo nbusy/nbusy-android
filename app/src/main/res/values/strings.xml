@@ -1,8 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">NBusy</string>
-    <string name="title_message_detail">Message Detail</string>
-    <string name="loading">Loading..</string>
-
+    <string name="title_chat_detail">Chat Detail</string>
 </resources>

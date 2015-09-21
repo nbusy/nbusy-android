@@ -64,10 +64,10 @@ public class GcmIntentService extends IntentService {
     // put the message into a notification and post it
     private void sendNotification(String msg) {
         NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MessageListActivity.class), 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, ChatListActivity.class), 0);
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_launcher)
+                        .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle("GCM Notification")
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
                         .setContentText(msg);

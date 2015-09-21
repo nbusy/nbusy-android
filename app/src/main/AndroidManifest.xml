@@ -8,22 +8,16 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <permission android:name="com.nbusy.app.permission.C2D_MESSAGE"
-                android:protectionLevel="signature" />
+        android:protectionLevel="signature" />
     <uses-permission android:name="com.nbusy.app.permission.C2D_MESSAGE" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <meta-data android:name="com.google.android.gms.version"
-                   android:value="@integer/google_play_services_version" />
-
         <activity
-            android:name=".MessageListActivity"
+            android:name=".ChatListActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,25 +25,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".MessageDetailActivity"
-            android:label="@string/title_message_detail"
-            android:parentActivityName=".MessageListActivity" >
+            android:name=".ChatDetailActivity"
+            android:label="@string/title_chat_detail"
+            android:parentActivityName=".ChatListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MessageListActivity" />
+                android:value=".ChatListActivity" />
         </activity>
 
         <service
-            android:name="com.soygul.organizer.data.DataService"
+            android:name="com.nbusy.organizer.data.DataService"
             android:enabled="true"
             android:exported="false" >
         </service>
 
         <receiver
-                android:name=".GcmBroadcastReceiver"
-                android:permission="com.google.android.c2dm.permission.SEND" >
+            android:name=".GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <category android:name="com.nbusy.app" />
@@ -57,4 +50,5 @@
         </receiver>
         <service android:name=".GcmIntentService" />
     </application>
+
 </manifest>
