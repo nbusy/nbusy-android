@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import android.view.MenuItem;
+import android.view.View;
 
 /**
  * An activity representing a single Chat detail screen. This
@@ -62,5 +63,9 @@ public class ChatDetailActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void sendMessage(View view) {
+
     }
 }
