@@ -10,17 +10,17 @@ import android.widget.TextView;
 import java.util.List;
 
 /**
- * Adapter for listing all chats (peer conversations) within a single list view.
+ * Adapter for listing messages in a chat using a single list view.
  */
-public class ChatListArrayAdapter extends ArrayAdapter<Chats.Chat> {
+public class MessageListArrayAdapter extends ArrayAdapter<Message> {
 
-    public ChatListArrayAdapter(Context context, List<Chats.Chat> values) {
-        super(context, R.layout.chat_list_row, values);
+    public MessageListArrayAdapter(Context context, List<Message> objects) {
+        super(context, R.layout.chat_list_row, objects);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Chats.Chat chat = getItem(position);
+        Message message = getItem(position);
 
         // check if an existing view is being reused, otherwise inflate the view
         ViewHolder viewHolder; // view lookup cache stored in tag
@@ -28,17 +28,15 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chats.Chat> {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.chat_list_row, parent, false);
-            viewHolder.contactName = (TextView) convertView.findViewById(R.id.contact_name);
-            viewHolder.lastMessage = (TextView) convertView.findViewById(R.id.last_message);
+            viewHolder.message = (TextView) convertView.findViewById(R.id.last_message);
             viewHolder.sent = (TextView) convertView.findViewById(R.id.sent);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.contactName.setText(chat.name);
-        viewHolder.lastMessage.setText(chat.message);
-        viewHolder.sent.setText(chat.sent);
+        viewHolder.message.setText(message.message);
+        viewHolder.sent.setText(message.sent);
 
         // change the icon for Windows and iPhone
 //        ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
@@ -54,8 +52,7 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chats.Chat> {
 
     // view holder pattern template
     static class ViewHolder {
-        TextView contactName;
-        TextView lastMessage;
+        TextView message;
         TextView sent;
     }
 }

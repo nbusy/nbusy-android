@@ -22,9 +22,9 @@ public class Chats {
     }
 
     public static class Chat {
-        public String name;
-        public String message;
-        public String sent;
+        public String name; // peer name
+        public String message; // last message in conversation
+        public String sent; // last message sent date/time
 
         public Chat(String name, String message, String sent) {
             this.name = name;
