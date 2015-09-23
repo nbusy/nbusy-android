@@ -12,8 +12,8 @@ public class Chats {
 
     static {
         // Add sample items.
-        addItem(new Chat("Teoman", "My last message", "123456"));
-        addItem(new Chat("Chuck", "This is my last-first message!", "9876543"));
+        addItem(new Chat("Teoman Soygul", "My last message", "123456"));
+        addItem(new Chat("Chuck Norris", "This is my last-first message!", "9876543"));
     }
 
     private static void addItem(Chat item) {
