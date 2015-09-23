@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 
 /**
  * An activity representing a single Chat detail screen. This
@@ -66,6 +67,7 @@ public class ChatDetailActivity extends Activity {
     }
 
     public void sendMessage(View view) {
-
+        EditText editText = (EditText) findViewById(R.id.edit_message);
+        String message = editText.getText().toString();
     }
 }
