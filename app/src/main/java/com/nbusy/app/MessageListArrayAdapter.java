@@ -28,8 +28,9 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.chat_list_row, parent, false);
-            viewHolder.message = (TextView) convertView.findViewById(R.id.last_message);
+            viewHolder.message = (TextView) convertView.findViewById(R.id.message);
             viewHolder.sent = (TextView) convertView.findViewById(R.id.sent);
+            viewHolder.from = (TextView) convertView.findViewById(R.id.from);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -54,5 +55,6 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
     static class ViewHolder {
         TextView message;
         TextView sent;
+        TextView from;
     }
 }

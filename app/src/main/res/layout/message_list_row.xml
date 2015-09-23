@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dp">
+
+    <!-- from name -->
+    <TextView
+        android:id="@+id/from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/contact_image_wrapper"
+        android:layout_toRightOf="@+id/contact_image_wrapper"
+        android:text="Contact Name"
+        android:textColor="#040404"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+    <!-- last message -->
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/from"
+        android:layout_marginTop="1dp"
+        android:text="Lorem ip sum dolor sit amet."
+        android:textColor="#343434"
+        android:textSize="12sp" />
+
+    <!-- last message sent date -->
+    <TextView
+        android:id="@+id/sent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/from"
+        android:layout_marginRight="5dp"
+        android:gravity="right"
+        android:text="Sent date"
+        android:textColor="#a3a3a3"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+</RelativeLayout>

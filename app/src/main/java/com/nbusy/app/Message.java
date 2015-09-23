@@ -6,4 +6,5 @@ package com.nbusy.app;
 public class Message {
     public String message; // message text
     public String sent; // message sent date/time
+    public String from; // sender of this message
 }
