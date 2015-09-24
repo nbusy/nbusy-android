@@ -1,42 +1,4 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:ignore="MergeRootFrame" >
-
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/chat_detail_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:context=".ChatDetailActivity" >
-    </FrameLayout>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="left|bottom" >
-
-        <EditText
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:ems="10"
-            android:id="@+id/edit_message"
-            android:hint="Write your message"
-            android:layout_gravity="left|bottom" />
-
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="➤"
-            android:id="@+id/button"
-            android:layout_gravity="right|bottom"
-            android:onClick="sendMessage" />
-    </LinearLayout>
-
-</FrameLayout>
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/chat_detail_container"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    tools:context=".ChatDetailActivity" tools:ignore="MergeRootFrame" />
