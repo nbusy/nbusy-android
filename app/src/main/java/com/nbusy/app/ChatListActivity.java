@@ -15,7 +15,6 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 /**
  * An activity representing a list of Chats. This activity
  * has different presentations for handset and tablet-size devices. On
@@ -32,20 +31,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  * {@link ChatListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class ChatListActivity extends Activity
-        implements ChatListFragment.Callbacks {
+public class ChatListActivity extends Activity implements ChatListFragment.Callbacks {
 
     private static final String TAG = "MessageListActivity";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private static final String PROPERTY_REG_ID = "registration_id";
-    GoogleCloudMessaging gcm;
-    String SENDER_ID = "218602439235";
-    String regId;
+    private final String SENDER_ID = "218602439235";
+    private GoogleCloudMessaging gcm;
+    private String regId;
     AtomicInteger msgId = new AtomicInteger();
 
     /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
+     * Whether or not the activity is in two-pane mode, i.e. running on a tablet device.
      */
     private boolean mTwoPane;
 
