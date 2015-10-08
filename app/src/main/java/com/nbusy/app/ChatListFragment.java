@@ -1,10 +1,10 @@
 package com.nbusy.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.app.ListFragment;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 /**
@@ -44,7 +44,7 @@ public class ChatListFragment extends ListFragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onItemSelected(String id);
+        void onItemSelected(String id);
     }
 
     /**
@@ -85,12 +85,18 @@ public class ChatListFragment extends ListFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (!(context instanceof Activity)){
+            throw new IllegalStateException("ChatListFragment should be attached to an Activity.");
+        }
+
+        Activity activity = (Activity) context;
 
         // Activities containing this fragment must implement its callbacks.
         if (!(activity instanceof Callbacks)) {
-            throw new IllegalStateException("Activity must implement fragment's callbacks.");
+            throw new IllegalStateException("Host Activity must implement ChatListFragment's callbacks.");
         }
 
         mCallbacks = (Callbacks) activity;
