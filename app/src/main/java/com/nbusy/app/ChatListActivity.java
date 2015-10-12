@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ChatListActivity extends Activity implements ChatListFragment.Callbacks {
 
-    private static final String TAG = "MessageListActivity";
+    private static final String TAG = "ChatListActivity";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private static final String PROPERTY_REG_ID = "registration_id";
     private final String SENDER_ID = "218602439235";
@@ -125,7 +125,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
      * @return registration ID, or empty string if there is no existing registration ID.
      */
     private String getRegistrationId(Context context) {
-        final SharedPreferences prefs = getGcmPreferences(context);
+        final SharedPreferences prefs = getGcmPreferences();
         String registrationId = prefs.getString(PROPERTY_REG_ID, "");
         if (registrationId.isEmpty()) {
             Log.i(TAG, "GCM registration not found.");
@@ -153,7 +153,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
-                String msg = "";
+                String msg;
                 try {
                     if (gcm == null) {
                         gcm = GoogleCloudMessaging.getInstance(getApplicationContext());
@@ -193,7 +193,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
      * @param regId   registration ID
      */
     private void storeRegistrationId(Context context, String regId) {
-        final SharedPreferences prefs = getGcmPreferences(context);
+        final SharedPreferences prefs = getGcmPreferences();
         int appVersion = getAppVersion(context);
         Log.i(TAG, "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
@@ -205,7 +205,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     /**
      * @return Application's {@code SharedPreferences}.
      */
-    private SharedPreferences getGcmPreferences(Context context) {
+    private SharedPreferences getGcmPreferences() {
         // this sample app persists the registration ID in shared preferences, but how you store the regID in your app is up to you
         return getSharedPreferences(ChatListActivity.class.getSimpleName(), Context.MODE_PRIVATE);
     }
@@ -218,7 +218,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
-                String msg = "";
+                String msg;
                 try {
                     Bundle data = new Bundle();
                     data.putString("test_message_from_device", message);

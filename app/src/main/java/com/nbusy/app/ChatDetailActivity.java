@@ -1,5 +1,6 @@
 package com.nbusy.app;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +26,10 @@ public class ChatDetailActivity extends Activity {
         setContentView(R.layout.activity_chat_detail);
 
         // Show the Up button in the action bar.
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -68,6 +72,11 @@ public class ChatDetailActivity extends Activity {
 
     public void sendMessage(View view) {
         EditText editText = (EditText) findViewById(R.id.edit_message);
-        String message = editText.getText().toString();
+        String message = editText.getText().toString().trim();
+        if (message.isEmpty()) {
+            return;
+        }
+
+        // todo: send message to backend
     }
 }
