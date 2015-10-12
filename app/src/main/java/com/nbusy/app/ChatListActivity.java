@@ -34,9 +34,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ChatListActivity extends Activity implements ChatListFragment.Callbacks {
 
     private static final String TAG = "ChatListActivity";
-    private static final String PROPERTY_APP_VERSION = "appVersion";
-    private static final String PROPERTY_REG_ID = "registration_id";
-    private final String SENDER_ID = "218602439235";
+    private static final String PROPERTY_APP_VERSION = "appVer";
+    private static final String PROPERTY_REG_ID = "regId";
+    private static final String SENDER_ID = "218602439235";
     private GoogleCloudMessaging gcm;
     private String regId;
     AtomicInteger msgId = new AtomicInteger();
