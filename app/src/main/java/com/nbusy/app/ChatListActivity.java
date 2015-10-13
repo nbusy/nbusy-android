@@ -52,14 +52,11 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         setContentView(R.layout.activity_chat_list);
 
         if (findViewById(R.id.chat_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-large and
-            // res/values-sw600dp). If this view is present, then the
-            // activity should be in two-pane mode.
+            // the detail container view will be present only in the large-screen layouts (res/values-large and res/values-sw600dp)
+            // if this view is present, then the activity should be in two-pane mode
             mTwoPane = true;
 
-            // In two-pane mode, list items should be given the
-            // 'activated' state when touched.
+            // in two-pane mode, list items should be given the 'activated' state when touched.
             ((ChatListFragment) getFragmentManager()
                     .findFragmentById(R.id.chat_list))
                     .setActivateOnItemClick(true);
@@ -69,7 +66,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
 
         // GCM registration
         gcm = GoogleCloudMessaging.getInstance(this);
-        regId = getRegistrationId(getApplicationContext());
+        regId = getRegistrationId(this);
         if (regId.isEmpty()) {
             registerInBackground();
         }
