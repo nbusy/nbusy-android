@@ -39,16 +39,24 @@ public class ChatDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
+        Bundle arguments = getArguments();
+        if (arguments.containsKey(ARG_ITEM_ID)) {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             messages = new ArrayList<>();
-            Message m = new Message();
-            m.from = "Teoman Soygul";
-            m.message = "Lorem ip sum my message...";
-            m.sent = "8:50";
-            messages.add(m);
+
+            Message m1 = new Message();
+            m1.from = "Teoman Soygul";
+            m1.message = "Lorem ip sum my message...";
+            m1.sent = "8:50";
+            messages.add(m1);
+
+            Message m2 = new Message();
+            m2.from = "User ID: " + arguments.get(ARG_ITEM_ID);
+            m2.message = "Test test.";
+            m2.sent = "Just now";
+            messages.add(m2);
         }
     }
 
