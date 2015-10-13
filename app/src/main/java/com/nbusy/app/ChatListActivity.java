@@ -22,11 +22,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * lead to a {@link ChatDetailActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
- * <p/>
+ * <p>
  * The activity makes heavy use of fragments. The list of items is a
  * {@link ChatListFragment} and the item details
  * (if present) is a {@link ChatDetailFragment}.
- * <p/>
+ * <p>
  * This activity also implements the required
  * {@link ChatListFragment.Callbacks} interface
  * to listen for item selections.
@@ -86,20 +86,18 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     @Override
     public void onItemSelected(String id) {
         if (mTwoPane) {
-            // In two-pane mode, show the detail view in this activity by
-            // adding or replacing the detail fragment using a
-            // fragment transaction.
+            // in two-pane mode, show the detail view in this activity by adding
+            // or replacing the detail fragment using a fragment transaction
             Bundle arguments = new Bundle();
             arguments.putString(ChatDetailFragment.ARG_ITEM_ID, id);
             ChatDetailFragment fragment = new ChatDetailFragment();
             fragment.setArguments(arguments);
-            getFragmentManager().beginTransaction()
+            getFragmentManager()
+                    .beginTransaction()
                     .replace(R.id.chat_detail_container, fragment)
                     .commit();
-
         } else {
-            // In single-pane mode, simply start the detail activity
-            // for the selected item ID.
+            // in single-pane mode, simply start the detail activity for the selected item ID
             Intent detailIntent = new Intent(this, ChatDetailActivity.class);
             detailIntent.putExtra(ChatDetailFragment.ARG_ITEM_ID, id);
             startActivity(detailIntent);
@@ -132,8 +130,8 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
             return "";
         }
 
-        // check if app was updated; if so, it must clear the registration ID since the existing regID is not guaranteed to work with
-        // the new app version
+        // check if app was updated; if so, it must clear the registration ID since the existing
+        // regID is not guaranteed to work with the new app version
         int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
         int currentVersion = getAppVersion(context);
         if (registeredVersion != currentVersion) {
