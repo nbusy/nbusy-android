@@ -14,8 +14,11 @@ import java.util.List;
  */
 public class ChatListArrayAdapter extends ArrayAdapter<Chats.Chat> {
 
+    private final LayoutInflater inflater;
+
     public ChatListArrayAdapter(Context context, List<Chats.Chat> values) {
         super(context, R.layout.chat_list_row, values);
+        inflater = LayoutInflater.from(context);
     }
 
     @Override
@@ -26,7 +29,6 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chats.Chat> {
         ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.chat_list_row, parent, false);
             viewHolder.contactName = (TextView) convertView.findViewById(R.id.contact_name);
             viewHolder.lastMessage = (TextView) convertView.findViewById(R.id.last_message);
