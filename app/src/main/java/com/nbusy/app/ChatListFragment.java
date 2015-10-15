@@ -25,8 +25,7 @@ public class ChatListFragment extends ListFragment {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     /**
-     * The fragment's current callback object, which is notified of list item
-     * clicks.
+     * The fragment's current callback object, which is notified of list item clicks.
      */
     private Callbacks mCallbacks = sDummyCallbacks;
 

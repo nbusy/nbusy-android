@@ -62,8 +62,6 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
                     .setActivateOnItemClick(true);
         }
 
-        // TODO: If exposing deep links into your app, handle intents here.
-
         // GCM registration
         gcm = GoogleCloudMessaging.getInstance(this);
         regId = getRegistrationId(this);

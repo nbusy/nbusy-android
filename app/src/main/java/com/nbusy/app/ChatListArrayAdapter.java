@@ -23,7 +23,7 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chats.Chat> {
         Chats.Chat chat = getItem(position);
 
         // check if an existing view is being reused, otherwise inflate the view
-        ViewHolder viewHolder; // view lookup cache stored in tag
+        ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -31,6 +31,8 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chats.Chat> {
             viewHolder.contactName = (TextView) convertView.findViewById(R.id.contact_name);
             viewHolder.lastMessage = (TextView) convertView.findViewById(R.id.last_message);
             viewHolder.sent = (TextView) convertView.findViewById(R.id.sent);
+
+            // view lookup cache stored in tag
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -39,15 +41,6 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chats.Chat> {
         viewHolder.contactName.setText(chat.name);
         viewHolder.lastMessage.setText(chat.message);
         viewHolder.sent.setText(chat.sent);
-
-        // change the icon for Windows and iPhone
-//        ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-//        String s = objects[position];
-//        if (s.startsWith("iPhone")) {
-//            imageView.setImageResource(R.drawable.no);
-//        } else {
-//            imageView.setImageResource(R.drawable.ok);
-//        }
 
         return convertView;
     }
