@@ -22,7 +22,7 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chats.Chat> {
     public View getView(int position, View convertView, ViewGroup parent) {
         Chats.Chat chat = getItem(position);
 
-        // check if an existing view is being reused, otherwise inflate the view
+        // check if an existing view is being reused, otherwise inflate a new view
         ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
@@ -45,7 +45,7 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chats.Chat> {
         return convertView;
     }
 
-    // view holder pattern template
+    // view holder pattern template (just like page objects in selenium, minus the auto inflation)
     static class ViewHolder {
         TextView contactName;
         TextView lastMessage;
