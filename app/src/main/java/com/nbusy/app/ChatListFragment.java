@@ -1,6 +1,5 @@
 package com.nbusy.app;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.ListFragment;
@@ -72,14 +71,12 @@ public class ChatListFragment extends ListFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        Activity activity = context instanceof Activity ? (Activity) context : null;
-
         // activities containing this fragment must implement its callbacks
-        if (!(activity instanceof Callbacks)) {
+        if (!(context instanceof Callbacks)) {
             throw new IllegalStateException("Host Activity must implement ChatListFragment's callbacks.");
         }
 
-        callbacks = (Callbacks) activity;
+        callbacks = (Callbacks) context;
     }
 
     @Override
