@@ -22,11 +22,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * lead to a {@link ChatDetailActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
- * <p>
+ * <p/>
  * The activity makes heavy use of fragments. The list of items is a
  * {@link ChatListFragment} and the item details
  * (if present) is a {@link ChatDetailFragment}.
- * <p>
+ * <p/>
  * This activity also implements the required
  * {@link ChatListFragment.Callbacks} interface
  * to listen for item selections.
@@ -104,16 +104,15 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
      */
     private static int getAppVersion(Context context) {
         try {
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            return packageInfo.versionCode;
+            return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
         } catch (PackageManager.NameNotFoundException e) {
-            // should never happen
-            throw new RuntimeException("Could not get package name: " + e);
+            throw new RuntimeException("Could not get package name: " + e); // should never happen
         }
     }
 
     /**
-     * Gets the current registration ID for application on GCM service, if there is one. If result is empty, the app needs to register.
+     * Gets the current registration ID for application on GCM service, if there is one.
+     * If result is empty, the app needs to register.
      *
      * @return registration ID, or empty string if there is no existing registration ID.
      */
