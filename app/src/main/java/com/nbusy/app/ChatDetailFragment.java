@@ -24,7 +24,7 @@ public class ChatDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
 
     /**
-     * The dummy content this fragment is presenting.
+     * The messages that this fragment is presenting.
      */
     private List<Message> messages;
 
