@@ -13,18 +13,16 @@ import java.util.List;
 /**
  * A fragment representing a single Chat detail screen.
  * This fragment is either contained in a {@link ChatListActivity}
- * in two-pane mode (on tablets) or a {@link ChatDetailActivity}
- * on handsets.
+ * in two-pane mode (on tablets) or a {@link ChatDetailActivity} on handsets.
  */
 public class ChatDetailFragment extends Fragment {
     /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
+     * The fragment argument representing the item ID that this fragment represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
 
     /**
-     * The messages that this fragment is presenting.
+     * The chat messages that this fragment is presenting.
      */
     private List<Message> messages;
 
@@ -41,8 +39,7 @@ public class ChatDetailFragment extends Fragment {
 
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
-            // load the dummy content specified by the fragment arguments
-            // in a real-world scenario, use a Loader to load content from a content provider
+            // load the content specified by the fragment arguments
             messages = new ArrayList<>();
 
             Message m1 = new Message();
