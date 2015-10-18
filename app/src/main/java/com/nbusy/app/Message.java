@@ -3,8 +3,14 @@ package com.nbusy.app;
 /**
  * A message within a chat.
  */
-public class Message {
-    public String message; // message text
-    public String sent; // message sent date/time
-    public String from; // sender of this message
+final class Message {
+    public final String from; // sender of this message
+    public final String body; // message text
+    public final String sent; // message sent date/time
+
+    Message(String from, String body, String sent) {
+        this.from = from;
+        this.body = body;
+        this.sent = sent;
+    }
 }

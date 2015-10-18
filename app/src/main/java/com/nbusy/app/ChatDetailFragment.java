@@ -42,13 +42,13 @@ public class ChatDetailFragment extends Fragment {
             // load the content specified by the fragment arguments
             messages = new ArrayList<>();
 
-            Message m1 = new Message();
+            Message m1 = new Message(message, sent, from);
             m1.from = "Teoman Soygul";
             m1.message = "Lorem ip sum my message...";
             m1.sent = "8:50";
             messages.add(m1);
 
-            Message m2 = new Message();
+            Message m2 = new Message(message, sent, from);
             m2.from = "User ID: " + arguments.get(ARG_ITEM_ID);
             m2.message = "Test test.";
             m2.sent = "Just now";
