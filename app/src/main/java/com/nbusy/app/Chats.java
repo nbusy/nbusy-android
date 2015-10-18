@@ -18,23 +18,6 @@ public class Chats {
 
     private static void addItem(Chat item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.name, item);
-    }
-
-    public static class Chat {
-        public String name; // peer name
-        public String message; // last message in conversation
-        public String sent; // last message sent date/time
-
-        public Chat(String name, String message, String sent) {
-            this.name = name;
-            this.message = message;
-            this.sent = sent;
-        }
-
-        @Override
-        public String toString() {
-            return name + " " + sent;
-        }
+        ITEM_MAP.put(item.peerName, item);
     }
 }

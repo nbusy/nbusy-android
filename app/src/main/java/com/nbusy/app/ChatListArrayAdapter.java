@@ -12,18 +12,18 @@ import java.util.List;
 /**
  * Adapter for listing all chats (peer conversations) within a single list view.
  */
-public class ChatListArrayAdapter extends ArrayAdapter<Chats.Chat> {
+public class ChatListArrayAdapter extends ArrayAdapter<Chat> {
 
     private final LayoutInflater inflater;
 
-    public ChatListArrayAdapter(Context context, List<Chats.Chat> values) {
+    public ChatListArrayAdapter(Context context, List<Chat> values) {
         super(context, R.layout.chat_list_row, values);
         inflater = LayoutInflater.from(context);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Chats.Chat chat = getItem(position);
+        Chat chat = getItem(position);
 
         // check if an existing view is being reused, otherwise inflate a new view
         ViewHolder viewHolder;
@@ -40,8 +40,8 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chats.Chat> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.contactName.setText(chat.name);
-        viewHolder.lastMessage.setText(chat.message);
+        viewHolder.contactName.setText(chat.peerName);
+        viewHolder.lastMessage.setText(chat.lastMessage);
         viewHolder.sent.setText(chat.sent);
 
         return convertView;
