@@ -1,0 +1,51 @@
+{
+  "project_info": {
+    "project_id": "nbusy-web",
+    "project_number": "218602439235",
+    "name": "NBusy"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218602439235:android:424666e2eb8c1f24",
+        "client_id": "android:com.nbusy.app",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.nbusy.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "218602439235-feaql1qdttn67m35lgi0870jdmd361hn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nbusy.app",
+            "certificate_hash": "6e12cfe1dedb8927f25b369067ab3b991953d8e5"
+          }
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 2,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}
