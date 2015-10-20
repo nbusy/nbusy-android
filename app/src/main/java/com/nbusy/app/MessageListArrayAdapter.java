@@ -10,20 +10,20 @@ import android.widget.TextView;
 import java.util.List;
 
 /**
- * Adapter for listing all chats (peer conversations) within a list view.
+ * Adapter for listing all messages of a chat, in a list view.
  */
-public class ChatListArrayAdapter extends ArrayAdapter<Chat> {
+public class MessageListArrayAdapter extends ArrayAdapter<Message> {
 
     private final LayoutInflater inflater;
 
-    public ChatListArrayAdapter(Context context, List<Chat> values) {
+    public MessageListArrayAdapter(Context context, List<Message> values) {
         super(context, R.layout.chat_list_row, values);
         inflater = LayoutInflater.from(context);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Chat chat = getItem(position);
+        Message chat = getItem(position);
 
         // check if an existing view is being reused, otherwise inflate a new view
         ViewHolder viewHolder;
