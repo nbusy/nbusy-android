@@ -19,9 +19,9 @@
         android:textStyle="bold"
         android:typeface="sans" />
 
-    <!-- last message -->
+    <!-- message body -->
     <TextView
-        android:id="@+id/message"
+        android:id="@+id/body"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/from"

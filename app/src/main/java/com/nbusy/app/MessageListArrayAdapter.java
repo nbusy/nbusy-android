@@ -17,21 +17,21 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
     private final LayoutInflater inflater;
 
     public MessageListArrayAdapter(Context context, List<Message> values) {
-        super(context, R.layout.chat_list_row, values);
+        super(context, R.layout.message_list_row, values);
         inflater = LayoutInflater.from(context);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Message chat = getItem(position);
+        Message message = getItem(position);
 
         // check if an existing view is being reused, otherwise inflate a new view
         ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            convertView = inflater.inflate(R.layout.chat_list_row, parent, false);
-            viewHolder.contactName = (TextView) convertView.findViewById(R.id.contact_name);
-            viewHolder.lastMessage = (TextView) convertView.findViewById(R.id.last_message);
+            convertView = inflater.inflate(R.layout.message_list_row, parent, false);
+            viewHolder.from = (TextView) convertView.findViewById(R.id.from);
+            viewHolder.body = (TextView) convertView.findViewById(R.id.body);
             viewHolder.sent = (TextView) convertView.findViewById(R.id.sent);
 
             // view lookup cache stored in tag
@@ -40,17 +40,17 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.contactName.setText(chat.peerName);
-        viewHolder.lastMessage.setText(chat.lastMessage);
-        viewHolder.sent.setText(chat.sent);
+        viewHolder.from.setText(message.from);
+        viewHolder.body.setText(message.body);
+        viewHolder.sent.setText(message.sent);
 
         return convertView;
     }
 
     // view holder pattern template (just like page objects in selenium, minus the auto inflation)
     static class ViewHolder {
-        TextView contactName;
-        TextView lastMessage;
+        TextView from;
+        TextView body;
         TextView sent;
     }
 }
