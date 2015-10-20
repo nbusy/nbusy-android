@@ -78,11 +78,11 @@ public class LoginActivity extends Activity implements
             } else {
                 // Could not resolve the connection result, show the user an
                 // error dialog.
-                showErrorDialog(connectionResult);
+//                showErrorDialog(connectionResult);
             }
         } else {
             // Show the signed-out UI
-            showSignedOutUI();
+//            showSignedOutUI();
         }
     }
 
@@ -92,9 +92,9 @@ public class LoginActivity extends Activity implements
             onSignInClicked();
         }
 
-        if (v.getId() == R.id.sign_out_button) {
-            onSignOutClicked();
-        }
+//        if (v.getId() == R.id.sign_out_button) {
+//            onSignOutClicked();
+//        }
     }
 
     private void onSignInClicked() {
@@ -104,7 +104,7 @@ public class LoginActivity extends Activity implements
         mGoogleApiClient.connect();
 
         // Show a message to the user that we are signing in.
-        mStatus.setText(R.string.signing_in);
+//        mStatus.setText(R.string.signing_in);
     }
 
     private void onSignOutClicked() {
@@ -115,7 +115,7 @@ public class LoginActivity extends Activity implements
             mGoogleApiClient.disconnect();
         }
 
-        showSignedOutUI();
+//        showSignedOutUI();
     }
 
     @Override
@@ -143,6 +143,14 @@ public class LoginActivity extends Activity implements
         mShouldResolve = false;
 
         // Show the signed-in UI
-        showSignedInUI();
+//        showSignedInUI();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        // The connection to Google Play services was lost. The GoogleApiClient will automatically
+        // attempt to re-connect. Any UI elements that depend on connection to Google APIs should
+        // be hidden or disabled until onConnected is called again.
+        Log.w(TAG, "onConnectionSuspended:" + i);
     }
 }
