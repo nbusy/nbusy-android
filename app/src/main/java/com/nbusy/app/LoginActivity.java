@@ -132,6 +132,7 @@ public class LoginActivity extends Activity implements
 //        showSignedInUI();
 
         // get online only token
+        // https://developers.google.com/android/guides/http-auth
         // https://developers.google.com/identity/protocols/CrossClientAuth
         // https://gist.github.com/ianbarber/9607551
         // https://developers.google.com/identity/sign-in/android/backend-auth
