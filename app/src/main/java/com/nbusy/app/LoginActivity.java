@@ -102,20 +102,6 @@ public class LoginActivity extends Activity implements
         // attempt to resolve any errors that occur.
         mShouldResolve = true;
         mGoogleApiClient.connect();
-
-        // Show a message to the user that we are signing in.
-//        mStatus.setText(R.string.signing_in);
-    }
-
-    private void onSignOutClicked() {
-        // Clear the default account so that GoogleApiClient will not automatically
-        // connect in the future.
-        if (mGoogleApiClient.isConnected()) {
-            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-            mGoogleApiClient.disconnect();
-        }
-
-//        showSignedOutUI();
     }
 
     @Override
