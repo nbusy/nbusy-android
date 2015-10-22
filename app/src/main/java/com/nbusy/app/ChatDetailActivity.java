@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 
 /**
  * An activity representing a single Chat detail screen. This
@@ -38,9 +36,13 @@ public class ChatDetailActivity extends Activity {
             return;
         }
 
+        // Set activity title
+        String chatId = getIntent().getStringExtra(ChatDetailFragment.ARG_ITEM_ID);
+        setTitle(chatId);
+
         // create the detail fragment and add it to the activity using a fragment transaction.
         Bundle arguments = new Bundle();
-        arguments.putString(ChatDetailFragment.ARG_ITEM_ID, getIntent().getStringExtra(ChatDetailFragment.ARG_ITEM_ID));
+        arguments.putString(ChatDetailFragment.ARG_ITEM_ID, chatId);
         ChatDetailFragment fragment = new ChatDetailFragment();
         fragment.setArguments(arguments);
         getFragmentManager().beginTransaction().add(R.id.chat_detail_container, fragment).commit();
