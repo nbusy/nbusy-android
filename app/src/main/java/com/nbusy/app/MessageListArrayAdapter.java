@@ -47,8 +47,11 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
         }
 
         viewHolder.body.setText(message.body);
-        viewHolder.body.setGravity(Gravity.END);
         viewHolder.sent.setText(message.sent);
+
+        if (message.owner) {
+            viewHolder.body.setGravity(Gravity.END);
+        }
 
         return convertView;
     }
