@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
  * This fragment is either contained in a {@link ChatListActivity}
  * in two-pane mode (on tablets) or a {@link ChatDetailActivity} on handsets.
  */
-public class ChatDetailFragment extends ListFragment {
+public class ChatDetailFragment extends ListFragment implements View.OnClickListener {
     /**
      * The fragment argument representing the item ID that this fragment represents.
      */
@@ -53,10 +54,31 @@ public class ChatDetailFragment extends ListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_chat_detail, container, false);
+        View view = inflater.inflate(R.layout.fragment_chat_detail, container, false);
 
-        // todo: set chat title etc. ((TextView) rootView.findViewById(R.id.chat_detail)).setText("wow");
+        EditText editText = (EditText) view.findViewById(R.id.edit_message);
+        editText.setOnClickListener(this);
 
-        return rootView;
+        return view;
+    }
+
+    public void sendMessage(View view) {
+        EditText editText = (EditText) view.findViewById(R.id.edit_message);
+        String message = editText.getText().toString().trim();
+        if (message.isEmpty()) {
+            return;
+        }
+
+        // todo: send message to backend and clear text if successful
+        editText.setText("");
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button:
+                sendMessage(v);
+                break;
+        }
     }
 }

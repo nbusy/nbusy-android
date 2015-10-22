@@ -33,8 +33,7 @@ tools:ignore="MergeRootFrame" >
             android:layout_height="wrap_content"
             android:text="➤"
             android:id="@+id/button"
-            android:layout_gravity="right|bottom"
-            android:onClick="sendMessage" />
+            android:layout_gravity="right|bottom" />
     </LinearLayout>
 
 </FrameLayout>

@@ -57,14 +57,4 @@ public class ChatDetailActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    public void sendMessage(View view) {
-        EditText editText = (EditText) findViewById(R.id.edit_message);
-        String message = editText.getText().toString().trim();
-        if (message.isEmpty()) {
-            return;
-        }
-
-        // todo: send message to backend
-    }
 }
