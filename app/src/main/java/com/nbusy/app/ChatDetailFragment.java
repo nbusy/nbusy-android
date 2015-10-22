@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import java.util.ArrayList;
@@ -54,16 +55,16 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chat_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_chat_detail, container, false);
 
-        EditText editText = (EditText) view.findViewById(R.id.edit_message);
-        editText.setOnClickListener(this);
+        Button sendButton = (Button) rootView.findViewById(R.id.send_button);
+        sendButton.setOnClickListener(this);
 
-        return view;
+        return rootView;
     }
 
-    public void sendMessage(View view) {
-        EditText editText = (EditText) view.findViewById(R.id.edit_message);
+    public void sendMessage() {
+        EditText editText = (EditText) getView().findViewById(R.id.edit_message);
         String message = editText.getText().toString().trim();
         if (message.isEmpty()) {
             return;
@@ -76,8 +77,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button:
-                sendMessage(v);
+            case R.id.send_button:
+                sendMessage();
                 break;
         }
     }
