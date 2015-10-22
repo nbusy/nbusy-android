@@ -6,6 +6,7 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
@@ -76,13 +77,12 @@ public class LoginActivity extends Activity implements
                     mGoogleApiClient.connect();
                 }
             } else {
-                // Could not resolve the connection result, show the user an
-                // error dialog.
-//                showErrorDialog(connectionResult);
+                // could not resolve the connection result, show the user an error dialog
+                Toast.makeText(getApplicationContext(), "Error: " + connectionResult, Toast.LENGTH_LONG).show();
             }
         } else {
             // Show the signed-out UI
-//            showSignedOutUI();
+            Toast.makeText(getApplicationContext(), "Signed out!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -91,10 +91,6 @@ public class LoginActivity extends Activity implements
         if (v.getId() == R.id.sign_in_button) {
             onSignInClicked();
         }
-
-//        if (v.getId() == R.id.sign_out_button) {
-//            onSignOutClicked();
-//        }
     }
 
     private void onSignInClicked() {
@@ -128,15 +124,15 @@ public class LoginActivity extends Activity implements
         Log.d(TAG, "onConnected:" + bundle);
         mShouldResolve = false;
 
-        // Show the signed-in UI
-//        showSignedInUI();
-
         // ToDo: get online only token
         // https://developers.google.com/android/guides/http-auth
         // https://developers.google.com/identity/protocols/CrossClientAuth
         // https://gist.github.com/ianbarber/9607551
         // https://developers.google.com/identity/sign-in/android/backend-auth
         // http://stackoverflow.com/questions/21389267/getting-google-one-time-authorization-code
+
+        // Show the signed-in UI
+        Toast.makeText(getApplicationContext(), "Signed in!", Toast.LENGTH_LONG).show();
     }
 
     @Override
