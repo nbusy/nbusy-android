@@ -1,21 +1,20 @@
 package com.nbusy.app;
 
+import android.app.ListFragment;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A fragment representing a single Chat detail screen.
+ * A fragment representing a single Chat detail screen, along with the messages in the chat.
  * This fragment is either contained in a {@link ChatListActivity}
  * in two-pane mode (on tablets) or a {@link ChatDetailActivity} on handsets.
  */
-public class ChatDetailFragment extends Fragment {
+public class ChatDetailFragment extends ListFragment {
     /**
      * The fragment argument representing the item ID that this fragment represents.
      */
@@ -47,6 +46,8 @@ public class ChatDetailFragment extends Fragment {
 
             Message m2 = new Message("User ID: " + arguments.get(ARG_ITEM_ID), "Test test.", "Just now");
             messages.add(m2);
+
+            setListAdapter(new MessageListArrayAdapter(getActivity(), messages));
         }
     }
 
@@ -54,10 +55,7 @@ public class ChatDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat_detail, container, false);
 
-        // show the dummy content as text in a TextView
-        if (messages != null) {
-            ((TextView) rootView.findViewById(R.id.chat_detail)).setText("wow");
-        }
+        // todo: set chat title etc. ((TextView) rootView.findViewById(R.id.chat_detail)).setText("wow");
 
         return rootView;
     }
