@@ -16,6 +16,13 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chat> {
 
     private final LayoutInflater inflater;
 
+    // view holder pattern template (just like page objects in selenium, minus the auto inflation)
+    static class ViewHolder {
+        TextView contactName;
+        TextView lastMessage;
+        TextView sent;
+    }
+
     public ChatListArrayAdapter(Context context, List<Chat> values) {
         super(context, R.layout.chat_list_row, values);
         inflater = LayoutInflater.from(context);
@@ -45,12 +52,5 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chat> {
         viewHolder.sent.setText(chat.sent);
 
         return convertView;
-    }
-
-    // view holder pattern template (just like page objects in selenium, minus the auto inflation)
-    static class ViewHolder {
-        TextView contactName;
-        TextView lastMessage;
-        TextView sent;
     }
 }

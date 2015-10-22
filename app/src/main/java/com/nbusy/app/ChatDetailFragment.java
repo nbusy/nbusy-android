@@ -43,10 +43,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             // load the content specified by the fragment arguments
             messages = new ArrayList<>();
 
-            Message m1 = new Message("Teoman Soygul", "Lorem ip sum my message...", "8:50");
+            Message m1 = new Message("Teoman Soygul", "Lorem ip sum my message...", "8:50", true);
             messages.add(m1);
 
-            Message m2 = new Message("User ID: " + arguments.get(ARG_ITEM_ID), "Test test.", "Just now");
+            Message m2 = new Message("User ID: " + arguments.get(ARG_ITEM_ID), "Test test.", "Just now", false);
             messages.add(m2);
 
             setListAdapter(new MessageListArrayAdapter(getActivity(), messages));

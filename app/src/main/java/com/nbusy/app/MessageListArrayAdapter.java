@@ -1,6 +1,7 @@
 package com.nbusy.app;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,12 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
 
     private final LayoutInflater inflater;
 
+    // view holder pattern template (just like page objects in selenium, minus the auto inflation)
+    static class ViewHolder {
+        TextView body;
+        TextView sent;
+    }
+
     public MessageListArrayAdapter(Context context, List<Message> values) {
         super(context, R.layout.message_list_row, values);
         inflater = LayoutInflater.from(context);
@@ -30,7 +37,6 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = inflater.inflate(R.layout.message_list_row, parent, false);
-            viewHolder.from = (TextView) convertView.findViewById(R.id.from);
             viewHolder.body = (TextView) convertView.findViewById(R.id.body);
             viewHolder.sent = (TextView) convertView.findViewById(R.id.sent);
 
@@ -40,17 +46,10 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.from.setText(message.from);
         viewHolder.body.setText(message.body);
+        viewHolder.body.setGravity(Gravity.END);
         viewHolder.sent.setText(message.sent);
 
         return convertView;
-    }
-
-    // view holder pattern template (just like page objects in selenium, minus the auto inflation)
-    static class ViewHolder {
-        TextView from;
-        TextView body;
-        TextView sent;
     }
 }
