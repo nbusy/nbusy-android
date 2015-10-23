@@ -34,7 +34,11 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      * fragment (e.g. upon screen orientation changes).
      */
     public ChatDetailFragment() {
+//        messageQueue = Queue.GetInstance...
     }
+
+//    public ChatDetailFragment(IMessageQueue) {
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
