@@ -27,6 +27,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      */
     private List<Message> messages;
 
+    private MessageListArrayAdapter messageAdapter;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -49,7 +51,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             Message m2 = new Message("User ID: " + arguments.get(ARG_ITEM_ID), "Test test.", "Just now", false);
             messages.add(m2);
 
-            setListAdapter(new MessageListArrayAdapter(getActivity(), messages));
+            messageAdapter = new MessageListArrayAdapter(getActivity(), messages);
+            setListAdapter(messageAdapter);
         }
     }
 
@@ -64,11 +67,16 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     }
 
     public void sendMessage() {
+        // do not submit blank lines
         EditText editText = (EditText) getView().findViewById(R.id.edit_message);
         String message = editText.getText().toString().trim();
         if (message.isEmpty()) {
             return;
         }
+
+        // add message to task list and the UI
+
+        messageAdapter.add(new Message("me", message, "now", true));
 
         // todo: send message to backend and clear text if successful
         editText.setText("");
