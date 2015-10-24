@@ -35,9 +35,8 @@
         android:id="@+id/check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/sent"
         android:layout_below="@id/body"
-        android:layout_marginRight="5dp"
-        android:text="✓"
-        android:visibility="gone"/>
+        android:layout_marginRight="3dp"
+        android:layout_toLeftOf="@id/sent"
+        android:text="✓" />
 </RelativeLayout>
