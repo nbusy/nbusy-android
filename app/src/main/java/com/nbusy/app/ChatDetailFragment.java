@@ -86,8 +86,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         editText.setText("");
     }
 
-    public void markMessageSent() {
-        // set checkmark view to a single checkmark character
+    public void onMessageSent() {
+        // set checkmark view to visible and text to a single checkmark character
     }
 
     @Override
