@@ -29,4 +29,15 @@
         android:textColor="#a3a3a3"
         android:textSize="12sp"
         android:textStyle="bold" />
+
+    <!-- message sent check mark -->
+    <TextView
+        android:id="@+id/check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/sent"
+        android:layout_below="@id/body"
+        android:layout_marginRight="5dp"
+        android:text="✓"
+        android:visibility="gone"/>
 </RelativeLayout>
