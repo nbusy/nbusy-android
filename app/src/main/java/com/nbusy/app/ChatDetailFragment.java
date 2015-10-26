@@ -40,6 +40,14 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 //    public ChatDetailFragment(IMessageQueue) {
 //    }
 
+//    @Override
+//    public void onPause(){
+//        super.onPause();
+//        if(isFinishing()){
+//            // store data
+//        }
+//    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
