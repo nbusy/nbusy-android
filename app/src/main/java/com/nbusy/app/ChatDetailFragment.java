@@ -53,7 +53,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         super.onCreate(savedInstanceState);
 
         // retain this fragment instance across configuration changes for AsyncTask to post back changes to the correct instance
-        setRetainInstance(true);
+//        setRetainInstance(true);
 
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
