@@ -7,6 +7,7 @@ import android.os.IBinder;
 public class WorkerService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
+        // don't allow direct binding to this service
         return null;
     }
 
