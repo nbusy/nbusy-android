@@ -8,9 +8,8 @@ import java.util.Objects;
 
 public class WorkerService extends Service {
 
-    private boolean running;
-
-    private boolean startedByBoot;
+    // whether to terminate after task queue is done or keep running
+    private boolean terminateAfterDone;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -27,20 +26,12 @@ public class WorkerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // we want this service to continue running until it is explicitly stopped, so return sticky
-        int startType = Service.START_STICKY;
-
-        if (running) {
-            return startType;
-        }
-
-        running = true;
-
+        // terminate the service after queued tasks are done if service was started
+        // by device boot event and application is not actively running
         String startedBy = intent.getStringExtra("StartedBy");
-        if (startedBy != null && Objects.equals(startedBy, "DeviceBootReceiver")) {
-            startedByBoot = true;
-        }
+        terminateAfterDone = (startedBy != null && Objects.equals(startedBy, "DeviceBootReceiver"));
 
-        return startType;
+        // we want this service to continue running until it is explicitly stopped, so return sticky
+        return Service.START_STICKY;
     }
 }
