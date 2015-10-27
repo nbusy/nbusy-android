@@ -39,10 +39,7 @@
                 android:value=".ChatListActivity" />
         </activity>
 
-        <service
-            android:name="com.nbusy.organizer.data.DataService"
-            android:enabled="true"
-            android:exported="false" />
+        <service android:name="com.nbusy.organizer.data.DataService" />
 
         <receiver
             android:name=".GcmBroadcastReceiver"
@@ -63,6 +60,8 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <service android:name=".WorkerService" />
     </application>
 
 </manifest>
