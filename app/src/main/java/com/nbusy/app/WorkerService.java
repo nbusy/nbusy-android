@@ -3,17 +3,20 @@ package com.nbusy.app;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.util.Objects;
 
 public class WorkerService extends Service {
+
+    private LocalBroadcastManager lbm; // send results back to caller from background threads..
 
     // whether to terminate after task queue is done or keep running
     private boolean terminateAfterDone;
 
     @Override
     public IBinder onBind(Intent intent) {
-        // don't allow direct binding to this service
+        // pass in the instance of this local service so binder can call methods directly on it
         return null;
     }
 
