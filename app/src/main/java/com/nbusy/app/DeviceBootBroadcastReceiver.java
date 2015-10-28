@@ -8,9 +8,9 @@ public class DeviceBootBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-            Intent i = new Intent(context, WorkerService.class);
-            i.putExtra(WorkerService.STARTED_BY, DeviceBootBroadcastReceiver.class.getSimpleName());
-            context.startService(i);
+            Intent serviceIntent = new Intent(context, WorkerService.class);
+            serviceIntent.putExtra(WorkerService.STARTED_BY, DeviceBootBroadcastReceiver.class.getSimpleName());
+            context.startService(serviceIntent);
         }
     }
 }

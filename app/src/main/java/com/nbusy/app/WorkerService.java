@@ -21,6 +21,7 @@ public class WorkerService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        // allow binding to this local service directly so anyone can call public functions on this service directly
         return binder;
     }
 
