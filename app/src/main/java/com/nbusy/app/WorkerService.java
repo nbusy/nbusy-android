@@ -43,6 +43,9 @@ public class WorkerService extends Service {
         return Service.START_STICKY;
     }
 
+    /**
+     * Returns an instance of this service so binding components can directly call public methods of this service.
+     */
     public class WorkerServiceBinder extends Binder {
         WorkerService getService() {
             return WorkerService.this;
@@ -52,4 +55,7 @@ public class WorkerService extends Service {
     public boolean getRunning() {
         return true;
     }
+
+    // todo: stopSelf() after all queue is done if terminateAfterDone is true
+    // todo: stopService() when all queue is done and application is terminated completely (not hidden activities but complete termination, or with a timeout after hidden activities)
 }

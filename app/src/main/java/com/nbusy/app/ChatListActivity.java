@@ -1,12 +1,12 @@
 package com.nbusy.app;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -71,6 +71,11 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("just testing from Android simulator");
         sendGcmMessage("test 2");
         sendGcmMessage("test 3");
+
+        // start the worker service
+        Intent serviceIntent = new Intent(this, WorkerService.class);
+        serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
+        this.startService(serviceIntent);
     }
 
     /**
