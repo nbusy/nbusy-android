@@ -2,9 +2,13 @@ package com.nbusy.app;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 
+import android.os.IBinder;
 import android.view.MenuItem;
 
 /**
@@ -17,6 +21,34 @@ import android.view.MenuItem;
  * more than a {@link ChatDetailFragment}.
  */
 public class ChatDetailActivity extends Activity {
+
+    /* get an instance of WorkerService */
+    private WorkerService workerService;
+
+    private ServiceConnection workerServiceConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder binder) {
+            WorkerService.WorkerServiceBinder workerServiceBinder = (WorkerService.WorkerServiceBinder) binder;
+            workerService = workerServiceBinder.getService();
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            workerService = null;
+        }
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Intent intent = new Intent(this, WorkerService.class);
+        bindService(intent, workerServiceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unbindService(workerServiceConnection);
+    }
+    /* get an instance of WorkerService */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
