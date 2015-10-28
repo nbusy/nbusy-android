@@ -10,6 +10,8 @@ import java.util.Objects;
 
 public class WorkerService extends Service {
 
+    public final static String STARTED_BY = "StartedBy";
+
     private final IBinder binder = new WorkerServiceBinder();
 
     private final LocalBroadcastManager lbm = null; // send results back to caller from background threads..
@@ -33,8 +35,8 @@ public class WorkerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // terminate the service after queued tasks are done if service was started
         // by device boot event and application is not actively running
-        String startedBy = intent.getStringExtra("StartedBy");
-        terminateAfterDone = (startedBy != null && Objects.equals(startedBy, "DeviceBootReceiver"));
+        String startedBy = intent.getStringExtra(STARTED_BY);
+        terminateAfterDone = (startedBy != null && Objects.equals(startedBy, DeviceBootBroadcastReceiver.class.getSimpleName()));
 
         // we want this service to continue running until it is explicitly stopped, so return sticky
         return Service.START_STICKY;

@@ -55,7 +55,7 @@
 
         <activity android:name=".LoginActivity" />
 
-        <receiver android:name=".DeviceBootReceiver">
+        <receiver android:name=".DeviceBootBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
