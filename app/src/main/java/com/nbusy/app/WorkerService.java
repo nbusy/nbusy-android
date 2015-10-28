@@ -2,6 +2,7 @@ package com.nbusy.app;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -9,15 +10,16 @@ import java.util.Objects;
 
 public class WorkerService extends Service {
 
-    private LocalBroadcastManager lbm; // send results back to caller from background threads..
+    private final IBinder binder = new WorkerServiceBinder();
+
+    private final LocalBroadcastManager lbm = null; // send results back to caller from background threads..
 
     // whether to terminate after task queue is done or keep running
     private boolean terminateAfterDone;
 
     @Override
     public IBinder onBind(Intent intent) {
-        // pass in the instance of this local service so binder can call methods directly on it
-        return null;
+        return binder;
     }
 
     @Override
@@ -36,5 +38,15 @@ public class WorkerService extends Service {
 
         // we want this service to continue running until it is explicitly stopped, so return sticky
         return Service.START_STICKY;
+    }
+
+    public class WorkerServiceBinder extends Binder {
+        WorkerService getService() {
+            return WorkerService.this;
+        }
+    }
+
+    public boolean getRunning() {
+        return true;
     }
 }
