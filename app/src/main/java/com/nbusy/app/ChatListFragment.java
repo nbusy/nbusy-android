@@ -17,11 +17,6 @@ import android.widget.ListView;
  */
 public class ChatListFragment extends ListFragment {
 
-    // todo: how to get the worker service here:
-    // 1) getActivity().bindService(Intent, ServiceConnection, int);
-    // 2) expose worker service as an interface from the host activity and access it directly via getActivity().workerService.doWork()
-    // 3) bind it to application context: http://stackoverflow.com/questions/15235773/bind-service-to-fragmentactivity-or-fragment
-
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.

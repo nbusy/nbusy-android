@@ -17,6 +17,13 @@ import java.util.List;
  * in two-pane mode (on tablets) or a {@link ChatDetailActivity} on handsets.
  */
 public class ChatDetailFragment extends ListFragment implements View.OnClickListener {
+
+    // todo: how to get the worker service here:
+    // 1) getActivity().bindService(Intent, ServiceConnection, int);
+    // 2) expose worker service as an interface from the host activity and access it directly via getActivity().workerService.doWork()
+    // 3) bind it to application context: http://stackoverflow.com/questions/15235773/bind-service-to-fragmentactivity-or-fragment
+
+
     /**
      * The fragment argument representing the item ID that this fragment represents.
      */
