@@ -11,7 +11,6 @@ import android.support.v4.content.WakefulBroadcastReceiver;
  * processing the GCM message to an {@code IntentService}, while ensuring that the device does not go back to sleep in the transition.
  * The {@code IntentService} calls {@code GcmBroadcastReceiver.completeWakefulIntent()} when it is ready to release the wake lock.
  */
-
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
 
     @Override

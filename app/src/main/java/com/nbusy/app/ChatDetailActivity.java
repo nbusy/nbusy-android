@@ -1,9 +1,14 @@
 package com.nbusy.app;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 
+import android.os.IBinder;
 import android.view.MenuItem;
 
 /**
@@ -17,47 +22,70 @@ import android.view.MenuItem;
  */
 public class ChatDetailActivity extends Activity {
 
+    /* get an instance of WorkerService */
+    private WorkerService workerService;
+
+    private ServiceConnection workerServiceConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder binder) {
+            WorkerService.WorkerServiceBinder workerServiceBinder = (WorkerService.WorkerServiceBinder) binder;
+            workerService = workerServiceBinder.getService();
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            workerService = null;
+        }
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Intent intent = new Intent(this, WorkerService.class);
+        bindService(intent, workerServiceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unbindService(workerServiceConnection);
+    }
+    /* get an instance of WorkerService */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_detail);
 
         // Show the Up button in the action bar.
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // savedInstanceState is non-null when there is fragment state
-        // saved from previous configurations of this activity
-        // (e.g. when rotating the screen from portrait to landscape).
-        // In this case, the fragment will automatically be re-added
-        // to its container so we don't need to manually add it.
-        // For more information, see the Fragments API guide at:
-        //
-        // http://developer.android.com/guide/components/fragments.html
-        //
-        if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putString(ChatDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(ChatDetailFragment.ARG_ITEM_ID));
-            ChatDetailFragment fragment = new ChatDetailFragment();
-            fragment.setArguments(arguments);
-            getFragmentManager().beginTransaction()
-                    .add(R.id.chat_detail_container, fragment)
-                    .commit();
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        // savedInstanceState is non-null when there is fragment state saved from previous configurations of this activity
+        // (e.g. when rotating the screen from portrait to landscape)
+        // in this case, the fragment will automatically be re-added to its container so we don't need to manually add it
+        if (savedInstanceState != null) {
+            return;
+        }
+
+        // Set activity title
+        String chatId = getIntent().getStringExtra(ChatDetailFragment.ARG_ITEM_ID);
+        setTitle(chatId);
+
+        // create the detail fragment and add it to the activity using a fragment transaction.
+        Bundle arguments = new Bundle();
+        arguments.putString(ChatDetailFragment.ARG_ITEM_ID, chatId);
+        ChatDetailFragment fragment = new ChatDetailFragment();
+        fragment.setArguments(arguments);
+        getFragmentManager().beginTransaction().add(R.id.chat_detail_container, fragment).commit();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
+            // this ID represents the Home or Up button
+            // in the case of this activity, the Up button is shown
             navigateUpTo(new Intent(this, ChatListActivity.class));
             return true;
         }
