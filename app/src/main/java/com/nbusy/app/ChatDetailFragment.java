@@ -110,6 +110,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         // we need map[itemIndex]=messageId map in the fragment so when we receive a broadcast about
         // a certain message with given ID is delivered we can update it
         // if the view is not visible, we can just update the underlying array storage so notifyOnChange won't be called (not to update whole page)
+        // underlying data should always be updated regardless of visibility (as well as persistence)
     }
 
     @Override
