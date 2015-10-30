@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -20,6 +21,8 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
     // view holder pattern template (just like page objects in selenium, minus the auto inflation)
     static class ViewHolder {
         TextView body;
+        LinearLayout metadata;
+        TextView check;
         TextView sent;
     }
 
@@ -38,6 +41,8 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
             viewHolder = new ViewHolder();
             convertView = inflater.inflate(R.layout.message_list_row, parent, false);
             viewHolder.body = (TextView) convertView.findViewById(R.id.body);
+            viewHolder.metadata = (LinearLayout) convertView.findViewById(R.id.metadata);
+            viewHolder.check = (TextView) convertView.findViewById(R.id.check);
             viewHolder.sent = (TextView) convertView.findViewById(R.id.sent);
 
             // view lookup cache stored in tag
@@ -51,6 +56,7 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
 
         if (message.owner) {
             viewHolder.body.setGravity(Gravity.END);
+            viewHolder.metadata.setGravity(Gravity.END);
         }
 
         return convertView;
