@@ -106,6 +106,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     public void onMessageSent() {
         // set checkmark view to visible and text to a single checkmark character
+        // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
+        // we need map[itemIndex]=messageId map in the fragment so when we receive a broadcast about
+        // a certain message with given ID is delivered we can update it
+        // if the view is not visible, we can just update the underlying array storage so notifyOnChange won't be called (not to update whole page)
     }
 
     @Override
