@@ -25,7 +25,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     public ChatDetailFragment() {
 //        Bundle bundle = getArguments();
-//        this.jsonRpc = (JsonRpc)bundle.get("jsonRpc");
+//        this.workerService = (WorkerService)bundle.get("workerService");
     }
 
     /**
