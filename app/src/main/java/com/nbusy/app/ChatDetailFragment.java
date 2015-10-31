@@ -23,6 +23,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     // 2) expose worker service as an interface from the host activity and access it directly via getActivity().workerService.doWork()
     // 3) bind it to application context: http://stackoverflow.com/questions/15235773/bind-service-to-fragmentactivity-or-fragment
 
+    public ChatDetailFragment() {
+//        Bundle bundle = getArguments();
+//        this.jsonRpc = (JsonRpc)bundle.get("jsonRpc");
+    }
 
     /**
      * The fragment argument representing the item ID that this fragment represents.
@@ -35,17 +39,6 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     private List<Message> messages;
 
     private MessageListArrayAdapter messageAdapter;
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public ChatDetailFragment() {
-//        messageQueue = Queue.GetInstance...
-    }
-
-//    public ChatDetailFragment(IMessageQueue) {
-//    }
 
 //    @Override
 //    public void onPause(){

@@ -6,9 +6,14 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.neptulon.JsonRpc;
+import com.neptulon.JsonRpcClient;
+
 import java.util.Objects;
 
 public class WorkerService extends Service {
+
+    private final JsonRpc jsonRpc = new JsonRpcClient();
 
     public final static String STARTED_BY = "StartedBy";
 
