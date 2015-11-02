@@ -19,7 +19,7 @@ import java.util.List;
 public class ChatDetailFragment extends ListFragment implements View.OnClickListener {
 
     // todo: how to get the worker service here:
-    // 1) getActivity().bindService(Intent, ServiceConnection, int);
+    // 1) start service in application context and stop on app destory http://stackoverflow.com/questions/987072/using-application-context-everywhere
     // 2) expose worker service as an interface from the host activity and access it directly via getActivity().workerService.doWork()
     // 3) bind it to application context: http://stackoverflow.com/questions/15235773/bind-service-to-fragmentactivity-or-fragment
 
