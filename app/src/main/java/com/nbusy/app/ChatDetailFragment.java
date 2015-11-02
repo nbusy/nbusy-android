@@ -89,10 +89,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             return;
         }
 
-        // add message to task list and the UI
+        // add message to task list and the UI, and clear text
         messageAdapter.add(new Message("me", message, "now", true));
-
-        // todo: send message to backend and clear text if successful
         editText.setText("");
     }
 

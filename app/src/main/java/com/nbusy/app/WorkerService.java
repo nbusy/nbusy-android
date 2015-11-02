@@ -13,21 +13,20 @@ import java.util.Objects;
 
 public class WorkerService extends Service {
 
+    // todo: stopSelf() after all queue is done if terminateAfterDone is true
+    // todo: stopService() when all queue is done and application is terminated completely (not hidden activities but complete termination, or with a timeout after hidden activities)
+
     private final JsonRpc jsonRpc = new JsonRpcClient();
-
-    public final static String STARTED_BY = "StartedBy";
-
     private final IBinder binder = new WorkerServiceBinder();
-
     private final LocalBroadcastManager lbm = null; // send results back to caller from background threads..
 
     // whether to terminate after task queue is done or keep running
     private boolean terminateAfterDone;
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        // allow binding to this local service directly so anyone can call public functions on this service directly
-        return binder;
+    public final static String STARTED_BY = "StartedBy";
+
+    public boolean getRunning() {
+        return true;
     }
 
     @Override
@@ -48,6 +47,12 @@ public class WorkerService extends Service {
         return Service.START_STICKY;
     }
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        // allow binding to this local service directly so anyone can call public functions on this service directly
+        return binder;
+    }
+
     /**
      * Returns an instance of this service so binding components can directly call public methods of this service.
      */
@@ -56,11 +61,4 @@ public class WorkerService extends Service {
             return WorkerService.this;
         }
     }
-
-    public boolean getRunning() {
-        return true;
-    }
-
-    // todo: stopSelf() after all queue is done if terminateAfterDone is true
-    // todo: stopService() when all queue is done and application is terminated completely (not hidden activities but complete termination, or with a timeout after hidden activities)
 }
