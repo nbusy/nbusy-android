@@ -36,9 +36,9 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     private static final String PROPERTY_APP_VERSION = "appVer";
     private static final String PROPERTY_REG_ID = "regId";
     private static final String SENDER_ID = "218602439235";
+    private final AtomicInteger msgId = new AtomicInteger();
     private GoogleCloudMessaging gcm;
     private String regId;
-    private AtomicInteger msgId = new AtomicInteger();
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet device.
