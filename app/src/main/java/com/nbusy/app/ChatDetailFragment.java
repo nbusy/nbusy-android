@@ -22,6 +22,9 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     // 1) start service in application context and stop on app destroy and get service instance with getApplicationContext: http://stackoverflow.com/questions/987072/using-application-context-everywhere
     // 2) expose worker service as an interface from the host activity and access it directly via getActivity().workerService.doWork()
     // 3) bind it to application context: http://stackoverflow.com/questions/15235773/bind-service-to-fragmentactivity-or-fragment
+    // 4) ** get it with IOC and never bother with service aspects as we're all in same process and same thread and just use workerService.sendMsg(...)
+
+    private final WorkerService workerService = null;
 
     public ChatDetailFragment() {
 //        Bundle bundle = getArguments();
@@ -90,6 +93,13 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // add message to task list and the UI, and clear text
+
+        // block ui thread -or- just display infinite progress bar and ignore re-clicks (or both)
+        // workerService.sendMessage(msg, msgSavedCallback, msgDeliveredCallback, msgReadCallback)
+        // msgSavedCallback - clear editText as we can register new msgs now
+        // msgDeliveredCallback - checkmark view enabled on this newly created view for the new message (but how not to reference the view -or- use retained fragment)
+        // or use LBM for loose coupling and not to have a reference to fragment so no need for retained fragment
+
         messageAdapter.add(new Message("me", message, "now", true));
         editText.setText("");
     }
