@@ -16,7 +16,8 @@ public class WorkerService extends Service {
     // todo: stopService() when all queue is done and application is terminated completely (not hidden activities but complete termination, or with a timeout after hidden activities)
 
     private static final String TAG = WorkerService.class.getSimpleName();
-    public final static String STARTED_BY = "StartedBy";
+    public static final String STARTED_BY = "StartedBy";
+    private final Worker worker = WorkerSingleton.getWorker();
     private boolean terminateAfterDone; // whether to terminate after task queue is done, or keep running
 
     @Override
@@ -33,6 +34,12 @@ public class WorkerService extends Service {
 
         // we want this service to continue running until it is explicitly stopped, so return sticky
         return Service.START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        WorkerSingleton.destroyWorker();
     }
 
     /* Local service binding */
