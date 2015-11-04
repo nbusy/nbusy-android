@@ -84,6 +84,18 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        workerService.getEventBus().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        workerService.getEventBus().unregister(this);
+    }
+
     public void sendMessage() {
         // do not submit blank lines
         EditText editText = (EditText) getView().findViewById(R.id.edit_message);

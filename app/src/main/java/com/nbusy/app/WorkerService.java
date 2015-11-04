@@ -4,8 +4,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 
+import com.google.common.eventbus.EventBus;
 import com.neptulon.JsonRpc;
 import com.neptulon.JsonRpcClient;
 
@@ -16,18 +16,11 @@ public class WorkerService extends Service {
     // todo: stopSelf() after all queue is done if terminateAfterDone is true
     // todo: stopService() when all queue is done and application is terminated completely (not hidden activities but complete termination, or with a timeout after hidden activities)
 
+    private static final String TAG = ChatListActivity.class.getSimpleName();
     private final JsonRpc jsonRpc = new JsonRpcClient();
-    private final IBinder binder = new WorkerServiceBinder();
-    private final LocalBroadcastManager lbm = null; // send results back to caller from background threads..
-
-    // whether to terminate after task queue is done or keep running
-    private boolean terminateAfterDone;
-
+    private final EventBus eventBus = new EventBus(TAG);
     public final static String STARTED_BY = "StartedBy";
-
-    public boolean getRunning() {
-        return true;
-    }
+    private boolean terminateAfterDone; // whether to terminate after task queue is done, or keep running
 
     @Override
     public void onCreate() {
@@ -47,11 +40,12 @@ public class WorkerService extends Service {
         return Service.START_STICKY;
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        // allow binding to this local service directly so anyone can call public functions on this service directly
-        return binder;
+    public EventBus getEventBus() {
+        return eventBus;
     }
+
+    /* Local service binding */
+    private final IBinder binder = new WorkerServiceBinder();
 
     /**
      * Returns an instance of this service so binding components can directly call public methods of this service.
@@ -61,4 +55,11 @@ public class WorkerService extends Service {
             return WorkerService.this;
         }
     }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        // allow binding to this local service directly so anyone can call public functions on this service directly
+        return binder;
+    }
+    /* Local service binding */
 }
