@@ -24,7 +24,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     // 3) bind it to application context: http://stackoverflow.com/questions/15235773/bind-service-to-fragmentactivity-or-fragment
     // 4) ** get it with IOC and never bother with service aspects as we're all in same process and same thread and just use workerService.sendMsg(...)
 
-    private final WorkerService workerService = null;
+    private final Worker worker = new Worker();
 
     public ChatDetailFragment() {
 //        Bundle bundle = getArguments();
@@ -87,13 +87,13 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
-        workerService.getEventBus().register(this);
+        worker.getEventBus().register(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        workerService.getEventBus().unregister(this);
+        worker.getEventBus().unregister(this);
     }
 
     public void sendMessage() {
