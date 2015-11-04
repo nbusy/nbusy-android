@@ -37,7 +37,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     private static final String PROPERTY_REG_ID = "regId";
     private static final String SENDER_ID = "218602439235";
     private final AtomicInteger msgId = new AtomicInteger();
-    private final Worker worker = WorkerSingleton.getWorker();
+    private final Worker worker = WorkerSingleton.getWorker(); // todo: this needs to be done by NBusyApplication to be deterministic (but can we access network during Application.onCreate?)
     private GoogleCloudMessaging gcm;
     private String regId;
 
