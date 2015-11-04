@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.common.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,7 +118,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         editText.setText("");
     }
 
-    public void onMessageSent() {
+    @Subscribe
+    public void onMessageSent(Worker.StoredMsg storedMsg) {
         // set checkmark view to visible and text to a single checkmark character
         // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
         // we need map[itemIndex]=messageId map in the fragment so when we receive a broadcast about

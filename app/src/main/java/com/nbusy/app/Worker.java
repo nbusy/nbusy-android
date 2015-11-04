@@ -26,6 +26,21 @@ public class Worker {
         return eventBus;
     }
 
+    /* events */
+    public class StoredMsg {
+        public final int msgId;
+
+        public StoredMsg(int msgId) {
+            this.msgId = msgId;
+        }
+    }
+    /* events */
+
+    public void SendMsg(Message msg) {
+        // todo: use AsyncTask here or depend on jsonRpc.SendMsgTask(callback)
+        eventBus.post(new StoredMsg(123));
+    }
+
     private void init() {
         // todo: initiate connection to nbusy server using neptulon json-rpc java client (or nbusy java client which wraps that and auto-adds all routes)?
     }
