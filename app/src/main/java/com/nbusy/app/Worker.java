@@ -1,8 +1,8 @@
 package com.nbusy.app;
 
 import com.google.common.eventbus.EventBus;
-import com.neptulon.JsonRpc;
-import com.neptulon.JsonRpcClient;
+import com.nbusy.sdk.NBusy;
+import com.nbusy.sdk.NBusyClient;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -10,16 +10,16 @@ import com.neptulon.JsonRpcClient;
  */
 public class Worker {
     private static final String TAG = Worker.class.getSimpleName();
-    private final JsonRpc jsonRpc;
+    private final NBusy nbusy;
     private final EventBus eventBus;
 
-    public Worker(JsonRpc jsonRpc, EventBus eventBus) {
-        this.jsonRpc = jsonRpc;
+    public Worker(NBusy nbusy, EventBus eventBus) {
+        this.nbusy = nbusy;
         this.eventBus = eventBus;
     }
 
     public Worker() {
-        this(new JsonRpcClient(), new EventBus(TAG));
+        this(new NBusyClient(), new EventBus(TAG));
     }
 
     public EventBus getEventBus() {
@@ -37,7 +37,7 @@ public class Worker {
     /* events */
 
     public void SendMsg(Message msg) {
-        // todo: use AsyncTask here or depend on jsonRpc.SendMsgTask(callback)
+        // todo: use AsyncTask here or depend on neptulonJsonRpc.SendMsgTask(callback)
         eventBus.post(new StoredMsg(123));
     }
 
