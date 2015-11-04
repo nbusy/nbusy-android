@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.common.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +21,17 @@ import java.util.List;
 public class ChatDetailFragment extends ListFragment implements View.OnClickListener {
 
     // todo: how to get the worker service here:
-    // 1) getActivity().bindService(Intent, ServiceConnection, int);
+    // 1) start service in application context and stop on app destroy and get service instance with getApplicationContext: http://stackoverflow.com/questions/987072/using-application-context-everywhere
     // 2) expose worker service as an interface from the host activity and access it directly via getActivity().workerService.doWork()
     // 3) bind it to application context: http://stackoverflow.com/questions/15235773/bind-service-to-fragmentactivity-or-fragment
+    // 4) ** get it with IOC and never bother with service aspects as we're all in same process and same thread and just use workerService.sendMsg(...)
 
+    private final Worker worker = new Worker();
+
+    public ChatDetailFragment() {
+//        Bundle bundle = getArguments();
+//        this.workerService = (WorkerService)bundle.get("workerService");
+    }
 
     /**
      * The fragment argument representing the item ID that this fragment represents.
@@ -35,17 +44,6 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     private List<Message> messages;
 
     private MessageListArrayAdapter messageAdapter;
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public ChatDetailFragment() {
-//        messageQueue = Queue.GetInstance...
-    }
-
-//    public ChatDetailFragment(IMessageQueue) {
-//    }
 
 //    @Override
 //    public void onPause(){
@@ -88,6 +86,18 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        worker.getEventBus().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        worker.getEventBus().unregister(this);
+    }
+
     public void sendMessage() {
         // do not submit blank lines
         EditText editText = (EditText) getView().findViewById(R.id.edit_message);
@@ -96,16 +106,28 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             return;
         }
 
-        // add message to task list and the UI
+        // add message to task list and the UI, and clear text
+
+        // block ui thread -or- just display infinite progress bar and ignore re-clicks (or both)
+        // workerService.sendMessage(msg, msgSavedCallback, msgDeliveredCallback, msgReadCallback)
+        // msgSavedCallback - clear editText as we can register new msgs now
+        // msgDeliveredCallback - checkmark view enabled on this newly created view for the new message (but how not to reference the view -or- use retained fragment)
+        // or use LBM for loose coupling and not to have a reference to fragment so no need for retained fragment
 
         messageAdapter.add(new Message("me", message, "now", true));
-
-        // todo: send message to backend and clear text if successful
         editText.setText("");
     }
 
-    public void onMessageSent() {
+    @Subscribe
+    public void onMessageSent(Worker.StoredMsg storedMsg) {
         // set checkmark view to visible and text to a single checkmark character
+        // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
+        // we need map[itemIndex]=messageId map in the fragment so when we receive a broadcast about
+        // a certain message with given ID is delivered we can update it
+        // if the view is not visible, we can just update the underlying array storage so notifyOnChange won't be called (not to update whole page)
+        // underlying data should always be updated regardless of visibility (as well as persistence)
+
+        // would all of this logic be in the adapter?
     }
 
     @Override

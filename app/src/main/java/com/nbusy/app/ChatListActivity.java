@@ -36,9 +36,9 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     private static final String PROPERTY_APP_VERSION = "appVer";
     private static final String PROPERTY_REG_ID = "regId";
     private static final String SENDER_ID = "218602439235";
+    private final AtomicInteger msgId = new AtomicInteger();
     private GoogleCloudMessaging gcm;
     private String regId;
-    AtomicInteger msgId = new AtomicInteger();
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet device.
@@ -48,6 +48,13 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // start the worker service
+        Intent serviceIntent = new Intent(this, WorkerService.class);
+        serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
+        this.startService(serviceIntent);
+
+        // set view(s)
         setContentView(R.layout.activity_chat_list);
 
         if (findViewById(R.id.chat_detail_container) != null) {
@@ -71,11 +78,6 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("just testing from Android simulator");
         sendGcmMessage("test 2");
         sendGcmMessage("test 3");
-
-        // start the worker service
-        Intent serviceIntent = new Intent(this, WorkerService.class);
-        serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
-        this.startService(serviceIntent);
     }
 
     /**

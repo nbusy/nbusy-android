@@ -4,32 +4,24 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 
 import java.util.Objects;
 
+/**
+ * Hosts {@link Worker} class to ensure continuous operation even when no activity is visible.
+ */
 public class WorkerService extends Service {
 
+    // todo: stopSelf() after all queue is done if terminateAfterDone is true
+    // todo: stopService() when all queue is done and application is terminated completely (not hidden activities but complete termination, or with a timeout after hidden activities)
+
+    private static final String TAG = WorkerService.class.getSimpleName();
     public final static String STARTED_BY = "StartedBy";
-
-    private final IBinder binder = new WorkerServiceBinder();
-
-    private final LocalBroadcastManager lbm = null; // send results back to caller from background threads..
-
-    // whether to terminate after task queue is done or keep running
-    private boolean terminateAfterDone;
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // allow binding to this local service directly so anyone can call public functions on this service directly
-        return binder;
-    }
+    private boolean terminateAfterDone; // whether to terminate after task queue is done, or keep running
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        // todo: initiate connection to nbusy server using neptulon json-rpc java client (or nbusy java client which wraps that and auto-adds all routes)?
     }
 
     @Override
@@ -43,6 +35,9 @@ public class WorkerService extends Service {
         return Service.START_STICKY;
     }
 
+    /* Local service binding */
+    private final IBinder binder = new WorkerServiceBinder();
+
     /**
      * Returns an instance of this service so binding components can directly call public methods of this service.
      */
@@ -52,10 +47,10 @@ public class WorkerService extends Service {
         }
     }
 
-    public boolean getRunning() {
-        return true;
+    @Override
+    public IBinder onBind(Intent intent) {
+        // allow binding to this local service directly so anyone can call public functions on this service directly
+        return binder;
     }
-
-    // todo: stopSelf() after all queue is done if terminateAfterDone is true
-    // todo: stopService() when all queue is done and application is terminated completely (not hidden activities but complete termination, or with a timeout after hidden activities)
+    /* Local service binding */
 }
