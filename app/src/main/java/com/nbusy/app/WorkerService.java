@@ -11,6 +11,9 @@ import com.neptulon.JsonRpcClient;
 
 import java.util.Objects;
 
+/**
+ * Hosts {@link Worker} class to ensure continuous operation even when no activity is visible.
+ */
 public class WorkerService extends Service {
 
     // todo: stopSelf() after all queue is done if terminateAfterDone is true
