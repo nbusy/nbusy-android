@@ -1,5 +1,8 @@
 sudo: false
 language: android
+env:
+  global:
+    - ADB_INSTALL_TIMEOUT=10 # minutes (2 minutes by default)
 android:
   components:
     # Use the latest revision of Android SDK Tools
