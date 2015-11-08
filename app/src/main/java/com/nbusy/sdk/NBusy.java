@@ -8,11 +8,13 @@ public interface NBusy {
      *
      * @return
      */
-    boolean Connect();
+    boolean connect();
 
     /**
      *
      * @return
      */
-    boolean Close();
+    boolean close();
+
+//    ListenableFuture<String> connectAsync();
 }

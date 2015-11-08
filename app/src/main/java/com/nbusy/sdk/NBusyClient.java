@@ -5,12 +5,12 @@ package com.nbusy.sdk;
  */
 public class NBusyClient implements NBusy {
     @Override
-    public boolean Connect() {
+    public boolean connect() {
         return false;
     }
 
     @Override
-    public boolean Close() {
+    public boolean close() {
         return false;
     }
 }
