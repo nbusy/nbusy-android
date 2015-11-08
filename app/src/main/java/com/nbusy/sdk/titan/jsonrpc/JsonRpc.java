@@ -1,7 +1,7 @@
-package com.nbusy.sdk.devastator.neptulon;
+package com.nbusy.sdk.titan.jsonrpc;
 
 /**
  * Neptulon JSON-RPC 2.0 client interface: https://github.com/neptulon/jsonrpc
  */
-public interface NeptulonJsonRpc {
+public interface JsonRpc {
 }

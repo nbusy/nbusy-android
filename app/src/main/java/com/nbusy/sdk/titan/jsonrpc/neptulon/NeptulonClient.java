@@ -1,4 +1,4 @@
-package com.nbusy.sdk.devastator.neptulon;
+package com.nbusy.sdk.titan.jsonrpc.neptulon;
 
 /**
  * Neptulon client implementation: https://github.com/neptulon/neptulon
