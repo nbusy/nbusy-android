@@ -16,5 +16,5 @@ public interface NBusy {
      */
     boolean close();
 
-//    ListenableFuture<String> connectAsync();
+//    ListenableFuture<String> connectAsync(); // this could go into NBusyAsync
 }
