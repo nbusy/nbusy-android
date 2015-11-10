@@ -12,6 +12,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLSocket;
@@ -42,19 +43,19 @@ public class NeptulonClient implements Neptulon {
 
         // set CA cert to trust
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        Certificate ca = cf.generateCertificate(caCertStream);
+        X509Certificate ca = (X509Certificate)cf.generateCertificate(caCertStream);
         KeyStore caKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         caKeyStore.load(null, null);
-        caKeyStore.setCertificateEntry("ca", ca);
+        caKeyStore.setCertificateEntry(ca.getSubjectX500Principal().getName(), ca);
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(caKeyStore);
         factory.setTrustManagers(tmf.getTrustManagers());
 
         // set client cert
-        Certificate cl = cf.generateCertificate(clientCertStream);
+        X509Certificate cl = (X509Certificate)cf.generateCertificate(clientCertStream);
         KeyStore clientKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         clientKeyStore.load(null, null);
-        clientKeyStore.setKeyEntry("client", null, new Certificate[]{cl});
+        clientKeyStore.setKeyEntry(cl.getSubjectX500Principal().getName(), null, new Certificate[]{cl});
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         kmf.init(clientKeyStore, new char[]{});
 
