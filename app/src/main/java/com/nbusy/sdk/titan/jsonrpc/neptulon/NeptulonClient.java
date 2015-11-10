@@ -8,10 +8,12 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -21,35 +23,40 @@ import javax.net.ssl.TrustManagerFactory;
 public class NeptulonClient implements Neptulon {
     private SSLSocket socket;
 
-    public void connect(String pemEncodedCaCert) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
-        InputStream caCertStream = new ByteArrayInputStream(pemEncodedCaCert.getBytes());
-        SSLCertificateSocketFactory factory = getSocketFactory(caCertStream);
+    public void connect(String pemEncodedCaCert, String pemEncodedClientCert) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+        SSLCertificateSocketFactory factory;
+        try (InputStream caCertStream = new ByteArrayInputStream(pemEncodedCaCert.getBytes());
+             InputStream clientCertStream = new ByteArrayInputStream(pemEncodedClientCert.getBytes())) {
+            factory = getSocketFactory(caCertStream, clientCertStream);
+        }
 
-        socket = (SSLSocket)factory.createSocket("localhost", 8081);
+        socket = (SSLSocket) factory.createSocket("localhost", 8081);
     }
 
     public void close() throws IOException {
         socket.close();
     }
 
-    private SSLCertificateSocketFactory getSocketFactory(InputStream caCertStream) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
-        SSLCertificateSocketFactory factory = (SSLCertificateSocketFactory)SSLCertificateSocketFactory.getDefault(60 * 1000, null);
+    private SSLCertificateSocketFactory getSocketFactory(InputStream caCertStream, InputStream clientCertStream) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        SSLCertificateSocketFactory factory = (SSLCertificateSocketFactory) SSLCertificateSocketFactory.getDefault(60 * 1000, null);
+
+        // set CA cert to trust
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-
-        Certificate ca;
-        try {
-            ca = cf.generateCertificate(caCertStream);
-        } finally {
-            caCertStream.close();
-        }
-
-        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        keyStore.load(null, null);
-        keyStore.setCertificateEntry("ca", ca);
-        String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-        tmf.init(keyStore);
+        Certificate ca = cf.generateCertificate(caCertStream);
+        KeyStore caKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        caKeyStore.load(null, null);
+        caKeyStore.setCertificateEntry("ca", ca);
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(caKeyStore);
         factory.setTrustManagers(tmf.getTrustManagers());
+
+        // set client cert
+        Certificate cl = cf.generateCertificate(clientCertStream);
+        KeyStore clientKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        clientKeyStore.load(null, null);
+        clientKeyStore.setKeyEntry("client", null, new Certificate[]{cl});
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(clientKeyStore, new char[]{});
 
         return factory;
     }
