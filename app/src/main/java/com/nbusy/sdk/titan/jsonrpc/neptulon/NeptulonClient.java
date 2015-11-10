@@ -24,11 +24,11 @@ import javax.net.ssl.TrustManagerFactory;
 public class NeptulonClient implements Neptulon {
     private SSLSocket socket;
 
-    public void connect(String pemEncodedCaCert, String pemEncodedClientCert) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+    public void connect(String pemEncodedCaCert, String pemEncodedClientCert, byte[] privateKey) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
         SSLCertificateSocketFactory factory;
         try (InputStream caCertStream = new ByteArrayInputStream(pemEncodedCaCert.getBytes());
              InputStream clientCertStream = new ByteArrayInputStream(pemEncodedClientCert.getBytes())) {
-            factory = getSocketFactory(caCertStream, clientCertStream);
+            factory = getSocketFactory(caCertStream, clientCertStream, privateKey);
         }
 
         socket = (SSLSocket) factory.createSocket("localhost", 8081);
@@ -38,7 +38,7 @@ public class NeptulonClient implements Neptulon {
         socket.close();
     }
 
-    private SSLCertificateSocketFactory getSocketFactory(InputStream caCertStream, InputStream clientCertStream) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    private SSLCertificateSocketFactory getSocketFactory(InputStream caCertStream, InputStream clientCertStream, byte[] privateKey) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
         SSLCertificateSocketFactory factory = (SSLCertificateSocketFactory) SSLCertificateSocketFactory.getDefault(60 * 1000, null);
 
         // set CA cert to trust
@@ -55,9 +55,14 @@ public class NeptulonClient implements Neptulon {
         X509Certificate cl = (X509Certificate)cf.generateCertificate(clientCertStream);
         KeyStore clientKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         clientKeyStore.load(null, null);
-        clientKeyStore.setKeyEntry(cl.getSubjectX500Principal().getName(), null, new Certificate[]{cl});
+        clientKeyStore.setKeyEntry(cl.getSubjectX500Principal().getName(), privateKey, new Certificate[]{cl});
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         kmf.init(clientKeyStore, new char[]{});
+
+        // todo: alternative approach if above doesn't work
+//        keyStore = KeyStore.getInstance("PKCS12");
+//        fis = new FileInputStream(certificateFile);
+//        keyStore.load(fis, clientCertPassword.toCharArray());
 
         return factory;
     }
