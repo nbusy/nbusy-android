@@ -1,8 +1,8 @@
 package com.nbusy.app;
 
 import com.google.common.eventbus.EventBus;
-import com.nbusy.sdk.NBusy;
-import com.nbusy.sdk.NBusyClient;
+import com.nbusy.sdk.Client;
+import com.nbusy.sdk.ClientImp;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -10,16 +10,16 @@ import com.nbusy.sdk.NBusyClient;
  */
 public class Worker {
     private static final String TAG = Worker.class.getSimpleName();
-    private final NBusy nbusy;
+    private final Client client;
     private final EventBus eventBus;
 
-    public Worker(NBusy nbusy, EventBus eventBus) {
-        this.nbusy = nbusy;
+    public Worker(Client client, EventBus eventBus) {
+        this.client = client;
         this.eventBus = eventBus;
     }
 
     public Worker() {
-        this(new NBusyClient(), new EventBus(TAG));
+        this(new ClientImp(), new EventBus(TAG));
     }
 
     public EventBus getEventBus() {

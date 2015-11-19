@@ -19,9 +19,9 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManagerFactory;
 
 /**
- * Neptulon client implementation: https://github.com/neptulon/neptulon
+ * Neptulon connection implementation: https://github.com/neptulon/neptulon
  */
-public class NeptulonClient implements Neptulon {
+public class ConnImp implements Conn {
     private SSLSocket socket;
 
     public void connect(String pemEncodedCaCert, String pemEncodedClientCert, byte[] privateKey) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
@@ -38,6 +38,7 @@ public class NeptulonClient implements Neptulon {
         socket.close();
     }
 
+    // todo: use SSLSocketFactory instead with manual validation, not to use Android specific classes in this generic Java client
     private SSLCertificateSocketFactory getSocketFactory(InputStream caCertStream, InputStream clientCertStream, byte[] privateKey) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
         SSLCertificateSocketFactory factory = (SSLCertificateSocketFactory) SSLCertificateSocketFactory.getDefault(60 * 1000, null);
 
