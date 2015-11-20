@@ -22,15 +22,17 @@ import javax.net.ssl.TrustManagerFactory;
  * Neptulon connection implementation: https://github.com/neptulon/neptulon
  */
 public class ConnImp implements Conn {
+    private final SSLCertificateSocketFactory factory;
     private SSLSocket socket;
 
-    public void connect(String pemEncodedCaCert, String pemEncodedClientCert, byte[] privateKey) throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
-        SSLCertificateSocketFactory factory;
+    public ConnImp(String pemEncodedCaCert, String pemEncodedClientCert, byte[] privateKey) throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
         try (InputStream caCertStream = new ByteArrayInputStream(pemEncodedCaCert.getBytes());
              InputStream clientCertStream = new ByteArrayInputStream(pemEncodedClientCert.getBytes())) {
             factory = getSocketFactory(caCertStream, clientCertStream, privateKey);
         }
+    }
 
+    public void connect() throws IOException {
         socket = (SSLSocket) factory.createSocket("localhost", 8081);
     }
 
@@ -43,7 +45,7 @@ public class ConnImp implements Conn {
 
         // set CA cert to trust
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        X509Certificate ca = (X509Certificate)cf.generateCertificate(caCertStream);
+        X509Certificate ca = (X509Certificate) cf.generateCertificate(caCertStream);
         KeyStore caKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         caKeyStore.load(null, null);
         caKeyStore.setCertificateEntry(ca.getSubjectX500Principal().getName(), ca);
@@ -52,7 +54,7 @@ public class ConnImp implements Conn {
         factory.setTrustManagers(tmf.getTrustManagers());
 
         // set client cert
-        X509Certificate cl = (X509Certificate)cf.generateCertificate(clientCertStream);
+        X509Certificate cl = (X509Certificate) cf.generateCertificate(clientCertStream);
         KeyStore clientKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         clientKeyStore.load(null, null);
         clientKeyStore.setKeyEntry(cl.getSubjectX500Principal().getName(), privateKey, new Certificate[]{cl});
