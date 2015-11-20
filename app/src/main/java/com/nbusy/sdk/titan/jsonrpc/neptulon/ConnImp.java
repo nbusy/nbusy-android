@@ -38,7 +38,6 @@ public class ConnImp implements Conn {
         socket.close();
     }
 
-    // todo: use SSLSocketFactory instead with manual validation, not to use Android specific classes in this generic Java client
     private SSLCertificateSocketFactory getSocketFactory(InputStream caCertStream, InputStream clientCertStream, byte[] privateKey) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
         SSLCertificateSocketFactory factory = (SSLCertificateSocketFactory) SSLCertificateSocketFactory.getDefault(60 * 1000, null);
 
