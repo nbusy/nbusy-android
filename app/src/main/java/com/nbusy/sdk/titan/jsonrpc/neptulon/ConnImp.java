@@ -66,6 +66,8 @@ public class ConnImp implements Conn {
 //        fis = new FileInputStream(certificateFile);
 //        keyStore.load(fis, clientCertPassword.toCharArray());
 
+        // more options can be found at: http://stackoverflow.com/questions/23103174/does-okhttp-support-accepting-self-signed-ssl-certs/24401795#24401795
+
         return factory;
     }
 }

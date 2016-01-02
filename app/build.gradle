@@ -33,6 +33,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-identity:8.3.0'
     compile 'com.google.android.gms:play-services-plus:8.3.0'
     compile 'com.google.android.gms:play-services-gcm:8.3.0'
-    compile 'com.google.code.gson:gson:2.4'
-    compile 'com.google.guava:guava:18.0'
+    compile 'com.google.code.gson:gson:2.5'
+    compile 'com.google.guava:guava:19.0'
+    compile 'com.squareup.okhttp3:okhttp:3.0.0-RC1'
 }
