@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.nbusy.sdk.titan.neptulon.ConnImp;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -79,6 +80,8 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("just testing from Android simulator");
         sendGcmMessage("test 2");
         sendGcmMessage("test 3");
+
+        ConnImp conn = new ConnImp();
     }
 
     /**

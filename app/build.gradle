@@ -36,4 +36,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.5'
     compile 'com.google.guava:guava:19.0'
     compile 'com.squareup.okhttp3:okhttp:3.0.0-RC1'
+    compile 'com.squareup.okhttp3:okhttp-ws:3.0.0-RC1'
 }
