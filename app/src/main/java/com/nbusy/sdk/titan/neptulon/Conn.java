@@ -1,4 +1,4 @@
-package com.nbusy.sdk.titan.jsonrpc.neptulon;
+package com.nbusy.sdk.titan.neptulon;
 
 /**
  * Neptulon connection interface: https://github.com/neptulon/neptulon
