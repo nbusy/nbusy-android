@@ -16,8 +16,8 @@ import okio.Buffer;
 /**
  * Neptulon connection implementation: https://github.com/neptulon/neptulon
  */
-public class ConnImp implements Conn {
-    public ConnImp() {
+public class ConnImpl implements Conn {
+    public ConnImpl() {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url("ws://10.0.2.2:3010").build();
         WebSocketCall call = WebSocketCall.create(client, request);

@@ -21,11 +21,11 @@ import javax.net.ssl.TrustManagerFactory;
 /**
  * Neptulon TCP connection implementation: https://github.com/neptulon/neptulon
  */
-public class TCPConnImp implements Conn {
+public class TCPConnImpl implements Conn {
     private final SSLCertificateSocketFactory factory;
     private SSLSocket socket;
 
-    public TCPConnImp(String pemEncodedCaCert, String pemEncodedClientCert, byte[] privateKey) throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
+    public TCPConnImpl(String pemEncodedCaCert, String pemEncodedClientCert, byte[] privateKey) throws IOException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
         try (InputStream caCertStream = new ByteArrayInputStream(pemEncodedCaCert.getBytes());
              InputStream clientCertStream = new ByteArrayInputStream(pemEncodedClientCert.getBytes())) {
             factory = getSocketFactory(caCertStream, clientCertStream, privateKey);

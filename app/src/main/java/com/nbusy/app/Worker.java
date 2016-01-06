@@ -2,7 +2,7 @@ package com.nbusy.app;
 
 import com.google.common.eventbus.EventBus;
 import com.nbusy.sdk.Client;
-import com.nbusy.sdk.ClientImp;
+import com.nbusy.sdk.ClientImpl;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -19,7 +19,7 @@ public class Worker {
     }
 
     public Worker() {
-        this(new ClientImp(), new EventBus(TAG));
+        this(new ClientImpl(), new EventBus(TAG));
     }
 
     public EventBus getEventBus() {
