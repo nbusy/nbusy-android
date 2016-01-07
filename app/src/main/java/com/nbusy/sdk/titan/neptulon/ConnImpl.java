@@ -2,6 +2,7 @@ package com.nbusy.sdk.titan.neptulon;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -17,6 +18,7 @@ import okio.Buffer;
  * Neptulon connection implementation: https://github.com/neptulon/neptulon
  */
 public class ConnImpl implements Conn {
+    private static final Logger logger = Logger.getLogger(ConnImpl.class.getSimpleName());
     private final OkHttpClient client;
     private final Request request;
     private final WebSocketCall wsCall;
@@ -41,22 +43,17 @@ public class ConnImpl implements Conn {
     }
 
     public void connect() {
-        // enqueue a new listener to execute the websocket call
+        // enqueue a listener to initiate the WebSocket connection
         wsCall.enqueue(new WebSocketListener() {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 ws = webSocket;
-                try {
-                    webSocket.sendMessage(RequestBody.create(WebSocket.TEXT, "{\"ID\": \"123\", \"Method\": \"test2\"}"));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-//                throw new RuntimeException("connected!");
+                logger.info("WebSocket connected.");
             }
 
             @Override
             public void onFailure(IOException e, Response response) {
-                throw new RuntimeException(e);
+                logger.warning("WebSocket connection closed with error: " + e.getMessage());
             }
 
             @Override
@@ -73,15 +70,17 @@ public class ConnImpl implements Conn {
 
             @Override
             public void onPong(Buffer payload) {
-                throw new RuntimeException("got pong!");
             }
 
             @Override
             public void onClose(int code, String reason) {
-                throw new RuntimeException("closed!");
+                logger.info("WebSocket closed.");
             }
-            // ...
         });
+    }
+
+    public void send() throws IOException {
+        ws.sendMessage(RequestBody.create(WebSocket.TEXT, "{\"ID\": \"123\", \"Method\": \"test2\"}"));
     }
 
     public void close() throws IOException {
