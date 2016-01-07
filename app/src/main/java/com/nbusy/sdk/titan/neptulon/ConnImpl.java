@@ -19,7 +19,12 @@ import okio.Buffer;
 public class ConnImpl implements Conn {
     public ConnImpl() {
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url("ws://10.0.2.2:3010").build();
+        Request request = new Request.Builder()
+//                .connectTimeout(10, TimeUnit.SECONDS)
+//                .writeTimeout(10, TimeUnit.SECONDS)
+//                .readTimeout(30, TimeUnit.SECONDS)
+                .url("ws://10.0.2.2:3010")
+                .build();
         WebSocketCall call = WebSocketCall.create(client, request);
         call.enqueue(new WebSocketListener() {
             @Override
@@ -59,5 +64,6 @@ public class ConnImpl implements Conn {
             }
             // ...
         });
+//        call.cancel();
     }
 }
