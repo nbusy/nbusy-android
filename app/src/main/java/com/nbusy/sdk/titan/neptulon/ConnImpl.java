@@ -17,7 +17,7 @@ import okio.Buffer;
 /**
  * Neptulon connection implementation: https://github.com/neptulon/neptulon
  */
-public class ConnImpl implements Conn {
+public class ConnImpl implements Conn, WebSocketListener {
     private static final Logger logger = Logger.getLogger(ConnImpl.class.getSimpleName());
     private final OkHttpClient client;
     private final Request request;
@@ -43,40 +43,8 @@ public class ConnImpl implements Conn {
     }
 
     public void connect() {
-        // enqueue a listener to initiate the WebSocket connection
-        wsCall.enqueue(new WebSocketListener() {
-            @Override
-            public void onOpen(WebSocket webSocket, Response response) {
-                ws = webSocket;
-                logger.info("WebSocket connected.");
-            }
-
-            @Override
-            public void onFailure(IOException e, Response response) {
-                logger.warning("WebSocket connection closed with error: " + e.getMessage());
-            }
-
-            @Override
-            public void onMessage(ResponseBody message) throws IOException {
-//                private final Gson gson = new Gson();
-//                Gist gist = gson.fromJson(response.body().charStream(), Gist.class);
-//                for (Map.Entry<String, GistFile> entry : gist.files.entrySet()) {
-//                    System.out.println(entry.getKey());
-//                    System.out.println(entry.getValue().content);
-//                }
-                throw new RuntimeException("got message!" + message.string());
-//                message.close(); needed?
-            }
-
-            @Override
-            public void onPong(Buffer payload) {
-            }
-
-            @Override
-            public void onClose(int code, String reason) {
-                logger.info("WebSocket closed.");
-            }
-        });
+        // enqueue this listener implementation to initiate the WebSocket connection
+        wsCall.enqueue(this);
     }
 
     public void send() throws IOException {
@@ -86,5 +54,37 @@ public class ConnImpl implements Conn {
     public void close() throws IOException {
         wsCall.cancel();
         ws.close(0, "");
+    }
+
+    @Override
+    public void onOpen(WebSocket webSocket, Response response) {
+        ws = webSocket;
+        logger.info("WebSocket connected.");
+    }
+
+    @Override
+    public void onFailure(IOException e, Response response) {
+        logger.warning("WebSocket connection closed with error: " + e.getMessage());
+    }
+
+    @Override
+    public void onMessage(ResponseBody message) throws IOException {
+//                private final Gson gson = new Gson();
+//                Gist gist = gson.fromJson(response.body().charStream(), Gist.class);
+//                for (Map.Entry<String, GistFile> entry : gist.files.entrySet()) {
+//                    System.out.println(entry.getKey());
+//                    System.out.println(entry.getValue().content);
+//                }
+        throw new RuntimeException("got message!" + message.string());
+//                message.close(); needed?
+    }
+
+    @Override
+    public void onPong(Buffer payload) {
+    }
+
+    @Override
+    public void onClose(int code, String reason) {
+        logger.info("WebSocket closed.");
     }
 }
