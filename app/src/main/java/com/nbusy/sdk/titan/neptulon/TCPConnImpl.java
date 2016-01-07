@@ -21,7 +21,7 @@ import javax.net.ssl.TrustManagerFactory;
 /**
  * Neptulon TCP connection implementation: https://github.com/neptulon/neptulon/tree/raw-tcp
  */
-public class TCPConnImpl implements Conn {
+public class TCPConnImpl {
     private final SSLCertificateSocketFactory factory;
     private SSLSocket socket;
 
