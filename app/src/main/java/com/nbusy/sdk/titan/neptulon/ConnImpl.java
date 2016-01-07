@@ -27,7 +27,10 @@ public class ConnImpl implements /*Conn,*/ WebSocketListener {
     private final WebSocketCall wsCall;
     private WebSocket ws;
 
-    public ConnImpl() {
+    /**
+     * Initializes a new connection with given server URL.
+     */
+    public ConnImpl(String url) {
         client = new OkHttpClient.Builder()
                 .connectTimeout(45, TimeUnit.SECONDS)
                 .writeTimeout(300, TimeUnit.SECONDS)
@@ -35,33 +38,40 @@ public class ConnImpl implements /*Conn,*/ WebSocketListener {
                 .build();
 
         request = new Request.Builder()
-                .url("ws://10.0.2.2:3010")
+                .url(url)
                 .build();
 
         wsCall = WebSocketCall.create(client, request);
     }
 
+    /**
+     * Initializes a new connection with default server URL: "ws://10.0.2.2:3000" ("ws://127.0.0.1:3000" on Android emulator host machine).
+     */
+    public ConnImpl() {
+        this("ws://10.0.2.2:3010");
+    }
+
     /*
-     * Conn implementation.
+     * == Conn implementation.
      */
 
-//    @Override
+    //    @Override
     public void useTLS(byte[] ca, byte[] clientCert, byte[] clientCertKey) {
         // todo: https://github.com/square/okhttp/wiki/HTTPS
     }
 
-//    @Override
+    //    @Override
     public void connect() {
         // enqueue this listener implementation to initiate the WebSocket connection
         wsCall.enqueue(this);
     }
 
-//    @Override
+    //    @Override
     public void send() throws IOException {
         ws.sendMessage(RequestBody.create(WebSocket.TEXT, "{\"ID\": \"123\", \"Method\": \"test2\"}"));
     }
 
-//    @Override
+    //    @Override
     public void close() throws IOException {
         ws.close(0, "");
     }
@@ -86,10 +96,12 @@ public class ConnImpl implements /*Conn,*/ WebSocketListener {
         Message msg = gson.fromJson(message.string(), Message.class);
         if (!msg.method.isEmpty()) {
             // handle request message
+            // todo: return new ReqCtx(....).Next();
             return;
         }
 
         // handle response message
+        // todo: return resHandler(ResCtx);
     }
 
     @Override
