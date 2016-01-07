@@ -1,7 +1,7 @@
 package com.nbusy.sdk.titan.neptulon;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -17,15 +17,21 @@ import okio.Buffer;
  * Neptulon connection implementation: https://github.com/neptulon/neptulon
  */
 public class ConnImpl implements Conn {
+    private final OkHttpClient client;
+
     public ConnImpl() {
-        OkHttpClient client = new OkHttpClient();
+        client = new OkHttpClient.Builder()
+                .connectTimeout(45, TimeUnit.SECONDS)
+                .writeTimeout(300, TimeUnit.SECONDS)
+                .readTimeout(300, TimeUnit.SECONDS)
+                .build();
+
         Request request = new Request.Builder()
-//                .connectTimeout(10, TimeUnit.SECONDS)
-//                .writeTimeout(10, TimeUnit.SECONDS)
-//                .readTimeout(30, TimeUnit.SECONDS)
                 .url("ws://10.0.2.2:3010")
                 .build();
+
         WebSocketCall call = WebSocketCall.create(client, request);
+
         call.enqueue(new WebSocketListener() {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
@@ -66,5 +72,9 @@ public class ConnImpl implements Conn {
             // ...
         });
 //        call.cancel();
+    }
+
+    public void useTLS(byte[] ca, byte[] clientCert, byte[] clientCertKey) {
+        // todo: https://github.com/square/okhttp/wiki/HTTPS
     }
 }
