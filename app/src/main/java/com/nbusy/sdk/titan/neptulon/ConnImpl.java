@@ -38,19 +38,23 @@ public class ConnImpl implements Conn, WebSocketListener {
         wsCall = WebSocketCall.create(client, request);
     }
 
+    @Override
     public void useTLS(byte[] ca, byte[] clientCert, byte[] clientCertKey) {
         // todo: https://github.com/square/okhttp/wiki/HTTPS
     }
 
+//    @Override
     public void connect() {
         // enqueue this listener implementation to initiate the WebSocket connection
         wsCall.enqueue(this);
     }
 
+//    @Override
     public void send() throws IOException {
         ws.sendMessage(RequestBody.create(WebSocket.TEXT, "{\"ID\": \"123\", \"Method\": \"test2\"}"));
     }
 
+//    @Override
     public void close() throws IOException {
         wsCall.cancel();
         ws.close(0, "");
