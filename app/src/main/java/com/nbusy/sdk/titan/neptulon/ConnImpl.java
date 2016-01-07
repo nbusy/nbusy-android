@@ -1,5 +1,7 @@
 package com.nbusy.sdk.titan.neptulon;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -19,6 +21,7 @@ import okio.Buffer;
  */
 public class ConnImpl implements Conn, WebSocketListener {
     private static final Logger logger = Logger.getLogger(ConnImpl.class.getSimpleName());
+    private final Gson gson = new Gson();
     private final OkHttpClient client;
     private final Request request;
     private final WebSocketCall wsCall;
@@ -56,7 +59,6 @@ public class ConnImpl implements Conn, WebSocketListener {
 
 //    @Override
     public void close() throws IOException {
-        wsCall.cancel();
         ws.close(0, "");
     }
 
@@ -73,14 +75,13 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void onMessage(ResponseBody message) throws IOException {
-//                private final Gson gson = new Gson();
-//                Gist gist = gson.fromJson(response.body().charStream(), Gist.class);
-//                for (Map.Entry<String, GistFile> entry : gist.files.entrySet()) {
-//                    System.out.println(entry.getKey());
-//                    System.out.println(entry.getValue().content);
-//                }
-        throw new RuntimeException("got message!" + message.string());
-//                message.close(); needed?
+        Message msg = gson.fromJson(message.string(), Message.class);
+        if (!msg.method.isEmpty()) {
+            // handle request message
+            return;
+        }
+
+        // handle response message
     }
 
     @Override
