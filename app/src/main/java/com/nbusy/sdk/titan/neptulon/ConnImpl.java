@@ -19,7 +19,7 @@ import okio.Buffer;
 /**
  * Neptulon connection implementation: https://github.com/neptulon/neptulon
  */
-public class ConnImpl implements Conn, WebSocketListener {
+public class ConnImpl implements /*Conn,*/ WebSocketListener {
     private static final Logger logger = Logger.getLogger(ConnImpl.class.getSimpleName());
     private final Gson gson = new Gson();
     private final OkHttpClient client;
@@ -41,7 +41,11 @@ public class ConnImpl implements Conn, WebSocketListener {
         wsCall = WebSocketCall.create(client, request);
     }
 
-    @Override
+    /*
+     * Conn implementation.
+     */
+
+//    @Override
     public void useTLS(byte[] ca, byte[] clientCert, byte[] clientCertKey) {
         // todo: https://github.com/square/okhttp/wiki/HTTPS
     }
@@ -61,6 +65,10 @@ public class ConnImpl implements Conn, WebSocketListener {
     public void close() throws IOException {
         ws.close(0, "");
     }
+
+    /*
+     * WebSocketListener implementation.
+     */
 
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
