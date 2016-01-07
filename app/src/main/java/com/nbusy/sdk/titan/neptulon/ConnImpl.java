@@ -18,6 +18,9 @@ import okio.Buffer;
  */
 public class ConnImpl implements Conn {
     private final OkHttpClient client;
+    private final Request request;
+    private final WebSocketCall wsCall;
+    private WebSocket ws;
 
     public ConnImpl() {
         client = new OkHttpClient.Builder()
@@ -26,15 +29,23 @@ public class ConnImpl implements Conn {
                 .readTimeout(300, TimeUnit.SECONDS)
                 .build();
 
-        Request request = new Request.Builder()
+        request = new Request.Builder()
                 .url("ws://10.0.2.2:3010")
                 .build();
 
-        WebSocketCall call = WebSocketCall.create(client, request);
+        wsCall = WebSocketCall.create(client, request);
+    }
 
-        call.enqueue(new WebSocketListener() {
+    public void useTLS(byte[] ca, byte[] clientCert, byte[] clientCertKey) {
+        // todo: https://github.com/square/okhttp/wiki/HTTPS
+    }
+
+    public void connect() {
+        // enqueue a new listener to execute the websocket call
+        wsCall.enqueue(new WebSocketListener() {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
+                ws = webSocket;
                 try {
                     webSocket.sendMessage(RequestBody.create(WebSocket.TEXT, "{\"ID\": \"123\", \"Method\": \"test2\"}"));
                 } catch (IOException e) {
@@ -71,10 +82,10 @@ public class ConnImpl implements Conn {
             }
             // ...
         });
-//        call.cancel();
     }
 
-    public void useTLS(byte[] ca, byte[] clientCert, byte[] clientCertKey) {
-        // todo: https://github.com/square/okhttp/wiki/HTTPS
+    public void close() throws IOException {
+        wsCall.cancel();
+        ws.close(0, "");
     }
 }
