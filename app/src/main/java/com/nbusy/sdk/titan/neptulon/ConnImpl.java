@@ -51,6 +51,7 @@ public class ConnImpl implements Conn {
 //                    System.out.println(entry.getValue().content);
 //                }
                 throw new RuntimeException("got message!" + message.string());
+//                message.close(); needed?
             }
 
             @Override
