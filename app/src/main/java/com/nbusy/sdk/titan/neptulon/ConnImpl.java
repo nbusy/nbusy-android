@@ -3,6 +3,8 @@ package com.nbusy.sdk.titan.neptulon;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -25,12 +27,15 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final OkHttpClient client;
     private final Request request;
     private final WebSocketCall wsCall;
+    private final List<Middleware> middleware;
     private WebSocket ws;
 
     /**
      * Initializes a new connection with given server URL.
      */
     public ConnImpl(String url) {
+        middleware = new ArrayList<>();
+
         client = new OkHttpClient.Builder()
                 .connectTimeout(45, TimeUnit.SECONDS)
                 .writeTimeout(300, TimeUnit.SECONDS)
@@ -69,8 +74,8 @@ public class ConnImpl implements Conn, WebSocketListener {
     }
 
     @Override
-    public void middleware() {
-
+    public void middleware(Middleware mw) {
+        middleware.add(mw);
     }
 
     @Override
@@ -86,8 +91,9 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void sendRequest(int resHandler) {
+        Object src = new Object();
         try {
-            ws.sendMessage(RequestBody.create(WebSocket.TEXT, "{\"ID\": \"123\", \"Method\": \"test2\"}"));
+            ws.sendMessage(RequestBody.create(WebSocket.TEXT, gson.toJson(src)));
         } catch (IOException e) {
             e.printStackTrace();
         }

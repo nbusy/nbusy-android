@@ -23,7 +23,7 @@ public interface Conn {
     /**
      * Registers middleware to handle incoming request messages.
      */
-    void middleware();
+    void middleware(Middleware mw);
 
     /**
      * Connects to the given WebSocket server.
