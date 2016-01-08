@@ -131,14 +131,14 @@ public class ConnImpl implements Conn, WebSocketListener {
     @Override
     public void onMessage(ResponseBody message) throws IOException {
         Message msg = gson.fromJson(message.string(), Message.class);
-        if (!msg.method.isEmpty()) {
-            // handle request message
-            // todo: return new ReqCtx(....).Next();
+        if (msg.method.isEmpty()) {
+            // handle response message
+            // todo: return resHandler(ResCtx);
             return;
         }
 
-        // handle response message
-        // todo: return resHandler(ResCtx);
+        // handle request message
+        // todo: return new ReqCtx(....).Next();
     }
 
     @Override
