@@ -19,7 +19,7 @@ import okio.Buffer;
 /**
  * Neptulon connection implementation: https://github.com/neptulon/neptulon
  */
-public class ConnImpl implements /*Conn,*/ WebSocketListener {
+public class ConnImpl implements Conn, WebSocketListener {
     private static final Logger logger = Logger.getLogger(ConnImpl.class.getSimpleName());
     private final Gson gson = new Gson();
     private final OkHttpClient client;
@@ -45,39 +45,70 @@ public class ConnImpl implements /*Conn,*/ WebSocketListener {
     }
 
     /**
-     * Initializes a new connection with default server URL: "ws://10.0.2.2:3000" ("ws://127.0.0.1:3000" on Android emulator host machine).
+     * Initializes a new connection with default server URL: "ws://10.0.2.2:3000"
+     * which connects to "ws://127.0.0.1:3000" on Android emulator host machine.
      */
     public ConnImpl() {
         this("ws://10.0.2.2:3010");
     }
 
     /*
-     * == Conn implementation.
+     * ######## Conn Implementation ########
      */
 
-    //    @Override
+    @Override
     public void useTLS(byte[] ca, byte[] clientCert, byte[] clientCertKey) {
         // todo: https://github.com/square/okhttp/wiki/HTTPS
+        // * pin and use a single trusted custom server cert
+        // * limit ciphers and TLS version
     }
 
-    //    @Override
+    @Override
+    public void setDeadline(int seconds) {
+
+    }
+
+    @Override
+    public void middleware() {
+
+    }
+
+    @Override
     public void connect() {
         // enqueue this listener implementation to initiate the WebSocket connection
         wsCall.enqueue(this);
     }
 
-    //    @Override
-    public void send() throws IOException {
-        ws.sendMessage(RequestBody.create(WebSocket.TEXT, "{\"ID\": \"123\", \"Method\": \"test2\"}"));
+    @Override
+    public void remoteAddr() {
+
     }
 
-    //    @Override
-    public void close() throws IOException {
-        ws.close(0, "");
+    @Override
+    public void sendRequest(int resHandler) {
+        try {
+            ws.sendMessage(RequestBody.create(WebSocket.TEXT, "{\"ID\": \"123\", \"Method\": \"test2\"}"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void sendRequestArr(int resHandler) {
+
+    }
+
+    @Override
+    public void close() {
+        try {
+            ws.close(0, "");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /*
-     * WebSocketListener implementation.
+     * ######## WebSocketListener Implementation ########
      */
 
     @Override
@@ -106,6 +137,7 @@ public class ConnImpl implements /*Conn,*/ WebSocketListener {
 
     @Override
     public void onPong(Buffer payload) {
+        logger.info("WebSocket pong received.");
     }
 
     @Override
