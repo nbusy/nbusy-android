@@ -2,10 +2,13 @@ package com.nbusy.sdk.titan.neptulon;
 
 import com.google.gson.Gson;
 
+import java.util.List;
+
 /**
  * Handler for responses.
  */
-public abstract class ResHandler<T> {
+public abstract class ReqHandler<T> {
+    List<Middleware> middleware;
     abstract Class<T> getType();
 
     abstract void handler(Response<T> res);
