@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -29,6 +31,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final Request request;
     private final WebSocketCall wsCall;
     private final List<Middleware> middleware;
+    private final Map<String, ResHandler> resRoutes;
     private WebSocket ws;
 
     /**
@@ -36,6 +39,7 @@ public class ConnImpl implements Conn, WebSocketListener {
      */
     public ConnImpl(String url) {
         middleware = new ArrayList<>();
+        resRoutes = new HashMap<>();
 
         client = new OkHttpClient.Builder()
                 .connectTimeout(45, TimeUnit.SECONDS)
@@ -101,8 +105,10 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void sendRequest(String method, Object params, ResHandler handler) {
-        com.nbusy.sdk.titan.neptulon.Request r = new com.nbusy.sdk.titan.neptulon.Request(UUID.randomUUID().toString(), method, params);
+        String id = UUID.randomUUID().toString();
+        com.nbusy.sdk.titan.neptulon.Request r = new com.nbusy.sdk.titan.neptulon.Request(id, method, params);
         send(r);
+        resRoutes.put(id, handler);
     }
 
     @Override
