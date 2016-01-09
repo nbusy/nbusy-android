@@ -66,20 +66,17 @@ class Message {
         this.result = result;
         this.error = error;
     }
-}
 
-/**
- * Incoming JSON-RPC response error object representation.
- */
-class ResErrorIn {
-    final int code;
-    final String message;
-    final JsonObject data;
+    class ResError {
+        final int code;
+        final String message;
+        final JsonObject data;
 
-    ResErrorIn(int code, String message, JsonObject data) {
-        this.code = code;
-        this.message = message;
-        this.data = data;
+        ResError(int code, String message, JsonObject data) {
+            this.code = code;
+            this.message = message;
+            this.data = data;
+        }
     }
 }
 
