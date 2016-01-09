@@ -6,3 +6,4 @@ package com.nbusy.sdk.titan.neptulon;
 public interface Middleware {
     void Middleware();
 }
+

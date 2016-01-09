@@ -37,17 +37,13 @@ public interface Conn {
 
     /**
      * Sends a JSON-RPC request through the connection with an auto generated request ID.
-     *
-     * @param resHandler is called when a response is returned.
      */
-    void sendRequest(int resHandler);
+    void sendRequest(String method, Object params, ResHandler resHandler);
 
     /**
      * Sends a JSON-RPC request through the connection, with array params and auto generated request ID.
-     *
-     * @param resHandler is called when a response is returned.
      */
-    void sendRequestArr(int resHandler);
+    void sendRequestArr(String method, ResHandler handler, Object... params);
 
     /**
      * Closes the connection.

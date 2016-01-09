@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -57,6 +58,15 @@ public class ConnImpl implements Conn, WebSocketListener {
         this("ws://10.0.2.2:3010");
     }
 
+    private void send(Object src) {
+        try {
+            ws.sendMessage(RequestBody.create(WebSocket.TEXT, gson.toJson(src)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            close();
+        }
+    }
+
     /*
      * ######## Conn Implementation ########
      */
@@ -90,17 +100,13 @@ public class ConnImpl implements Conn, WebSocketListener {
     }
 
     @Override
-    public void sendRequest(int resHandler) {
-        Object src = new Object();
-        try {
-            ws.sendMessage(RequestBody.create(WebSocket.TEXT, gson.toJson(src)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void sendRequest(String method, Object params, ResHandler handler) {
+        com.nbusy.sdk.titan.neptulon.Request r = new com.nbusy.sdk.titan.neptulon.Request(UUID.randomUUID().toString(), method, params);
+        send(r);
     }
 
     @Override
-    public void sendRequestArr(int resHandler) {
+    public void sendRequestArr(String method, ResHandler handler, Object... params) {
 
     }
 
