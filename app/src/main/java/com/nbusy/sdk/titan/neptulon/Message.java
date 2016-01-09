@@ -1,6 +1,6 @@
 package com.nbusy.sdk.titan.neptulon;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 
 /**
  * JSON-RPC request object.
@@ -53,11 +53,11 @@ class Response<T> {
 class Message {
     final String id;
     final String method;
-    final JsonObject params;
-    final JsonObject result;
+    final JsonElement params;
+    final JsonElement result;
     final ResError error;
 
-    public Message(String id, String method, JsonObject params, JsonObject result, ResError error) {
+    public Message(String id, String method, JsonElement params, JsonElement result, ResError error) {
         this.id = id;
         this.method = method;
         this.params = params;
@@ -68,9 +68,9 @@ class Message {
     class ResError {
         final int code;
         final String message;
-        final JsonObject data;
+        final JsonElement data;
 
-        ResError(int code, String message, JsonObject data) {
+        ResError(int code, String message, JsonElement data) {
             this.code = code;
             this.message = message;
             this.data = data;

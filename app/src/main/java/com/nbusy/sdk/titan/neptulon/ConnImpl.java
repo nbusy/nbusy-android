@@ -152,6 +152,8 @@ public class ConnImpl implements Conn, WebSocketListener {
 
         // handle request message
         ResHandler handler = resHandlers.get(msg.id);
+        com.nbusy.sdk.titan.neptulon.Response res = new com.nbusy.sdk.titan.neptulon.Response(msg.id, gson.fromJson(msg.result, handler.getType()), null);
+        handler.Handler(res);
     }
 
     @Override
