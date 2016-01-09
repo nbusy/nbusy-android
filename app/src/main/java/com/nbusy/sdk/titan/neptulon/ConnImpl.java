@@ -142,7 +142,8 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void onMessage(ResponseBody message) throws IOException {
-        Message msg = gson.fromJson(message.string(), Message.class);
+        String msgStr = message.string();
+        Message msg = gson.fromJson(msgStr, Message.class);
         if (msg.method.isEmpty()) {
             // handle response message
             // todo: return resHandler(ResCtx);
@@ -151,7 +152,6 @@ public class ConnImpl implements Conn, WebSocketListener {
 
         // handle request message
         ResHandler handler = resHandlers.get(msg.id);
-        com.nbusy.sdk.titan.neptulon.Response res = new com.nbusy.sdk.titan.neptulon.Response<>()
     }
 
     @Override
