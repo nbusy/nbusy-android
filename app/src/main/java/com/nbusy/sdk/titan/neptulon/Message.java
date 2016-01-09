@@ -3,14 +3,14 @@ package com.nbusy.sdk.titan.neptulon;
 import com.google.gson.JsonObject;
 
 /**
- * Outgoing JSON-RPC request object representation.
+ * JSON-RPC request object.
  */
-class Request {
+class Request<T> {
     final String id;
     final String method;
-    final Object params;
+    final T params;
 
-    Request(String id, String method, Object params) {
+    Request(String id, String method, T params) {
         this.id = id;
         this.method = method;
         this.params = params;
@@ -18,34 +18,32 @@ class Request {
 }
 
 /**
- * Outgoing JSON-RPC response object representation.
+ * JSON-RPC response object.
  */
-class Response {
+class Response<T> {
     final String id;
-    final Object result;
+    final T result;
     final ResError error;
 
-    Response(String id, Object result, ResError error) {
+    Response(String id, T result, ResError error) {
         this.id = id;
         this.result = result;
         this.error = error;
     }
-}
 
-/**
- * Outgoing JSON-RPC response error object representation.
- */
-class ResError {
-    final int code;
-    final String message;
-    final Object data;
+    class ResError<K> {
+        final int code;
+        final String message;
+        final K data;
 
-    ResError(int code, String message, Object data) {
-        this.code = code;
-        this.message = message;
-        this.data = data;
+        ResError(int code, String message, K data) {
+            this.code = code;
+            this.message = message;
+            this.data = data;
+        }
     }
 }
+
 
 /**
  * Generic (request or response) JSON-RPC message representation for incoming messages.

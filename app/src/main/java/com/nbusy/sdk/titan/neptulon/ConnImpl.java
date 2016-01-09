@@ -31,7 +31,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final Request request;
     private final WebSocketCall wsCall;
     private final List<Middleware> middleware;
-    private final Map<String, ResHandler> resRoutes;
+    private final Map<String, ResHandler> resHandlers;
     private WebSocket ws;
 
     /**
@@ -39,7 +39,7 @@ public class ConnImpl implements Conn, WebSocketListener {
      */
     public ConnImpl(String url) {
         middleware = new ArrayList<>();
-        resRoutes = new HashMap<>();
+        resHandlers = new HashMap<>();
 
         client = new OkHttpClient.Builder()
                 .connectTimeout(45, TimeUnit.SECONDS)
@@ -108,7 +108,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         String id = UUID.randomUUID().toString();
         com.nbusy.sdk.titan.neptulon.Request r = new com.nbusy.sdk.titan.neptulon.Request(id, method, params);
         send(r);
-        resRoutes.put(id, handler);
+        resHandlers.put(id, handler);
     }
 
     @Override
@@ -150,7 +150,8 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
 
         // handle request message
-        // todo: return new ReqCtx(....).Next();
+        ResHandler handler = resHandlers.get(msg.id);
+        com.nbusy.sdk.titan.neptulon.Response res = new com.nbusy.sdk.titan.neptulon.Response<>()
     }
 
     @Override
