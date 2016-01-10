@@ -38,7 +38,7 @@ public interface Conn {
     /**
      * Sends a JSON-RPC request through the connection with an auto generated request ID.
      */
-    void sendRequest(String method, Object params, ResHandler resHandler);
+    <T> void sendRequest(String method, T params, ResHandler resHandler);
 
     /**
      * Sends a JSON-RPC request through the connection, with array params and auto generated request ID.

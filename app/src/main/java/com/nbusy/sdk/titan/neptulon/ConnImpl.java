@@ -104,9 +104,9 @@ public class ConnImpl implements Conn, WebSocketListener {
     }
 
     @Override
-    public void sendRequest(String method, Object params, ResHandler handler) {
+    public <T> void sendRequest(String method, T params, ResHandler handler) {
         String id = UUID.randomUUID().toString();
-        com.nbusy.sdk.titan.neptulon.Request r = new com.nbusy.sdk.titan.neptulon.Request(id, method, params);
+        com.nbusy.sdk.titan.neptulon.Request r = new com.nbusy.sdk.titan.neptulon.Request<>(id, method, params);
         send(r);
         resHandlers.put(id, handler);
     }
