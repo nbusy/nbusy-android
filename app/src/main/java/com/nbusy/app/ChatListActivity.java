@@ -85,15 +85,23 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
 
         // TODO: remove this test code
         ConnImpl conn = new ConnImpl();
-        conn.sendRequest("test", new Test("wow"), new ResHandler<Test>() {
+        conn.connect();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        conn.sendRequest("test", new Test("wow"), new ResHandler<String>() {
             @Override
-             public Class<Test> getType() {
-                return Test.class;
+             public Class<String> getType() {
+                return String.class;
             }
 
             @Override
-            public void handler(Response<Test> res) {
-
+            public void handler(Response<String> res) {
+                Log.i(TAG, "Received response: " + res.result);
             }
         });
     }

@@ -4,9 +4,9 @@ package com.nbusy.sdk.titan.neptulon;
  * JSON-RPC response object.
  */
 public class Response<T> {
-    final String id;
-    final T result;
-    final ResError error;
+    public final String id;
+    public final T result;
+    public final ResError error;
 
     Response(String id, T result, ResError error) {
         this.id = id;

@@ -59,7 +59,7 @@ public class ConnImpl implements Conn, WebSocketListener {
      * which connects to "ws://127.0.0.1:3000" on Android emulator host machine.
      */
     public ConnImpl() {
-        this("ws://10.0.2.2:3010");
+        this("ws://10.0.2.2:3000");
     }
 
     private void send(Object src) {
@@ -143,15 +143,15 @@ public class ConnImpl implements Conn, WebSocketListener {
     @Override
     public void onMessage(ResponseBody message) throws IOException {
         String msgStr = message.string();
+        logger.info("Incoming message: " + msgStr);
         Message msg = gson.fromJson(msgStr, Message.class);
-        if (msg.method.isEmpty()) {
+        if (msg.method == null || msg.method.isEmpty()) {
             // handle response message
-            // todo: return resHandler(ResCtx);
+            resHandlers.get(msg.id).execute(gson, msg);
             return;
         }
 
         // handle request message
-        resHandlers.get(msg.id).execute(gson, msg);
     }
 
     @Override
