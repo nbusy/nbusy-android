@@ -11,6 +11,8 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.nbusy.sdk.titan.neptulon.ConnImpl;
+import com.nbusy.sdk.titan.neptulon.ResHandler;
+import com.nbusy.sdk.titan.neptulon.Response;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -81,7 +83,27 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("test 2");
         sendGcmMessage("test 3");
 
+        // TODO: remove this test code
         ConnImpl conn = new ConnImpl();
+        conn.sendRequest("test", new Test("wow"), new ResHandler<Test>() {
+            @Override
+             public Class<Test> getType() {
+                return Test.class;
+            }
+
+            @Override
+            public void handler(Response<Test> res) {
+
+            }
+        });
+    }
+
+    class Test {
+        final String message;
+
+        Test(String message) {
+            this.message = message;
+        }
     }
 
     /**
