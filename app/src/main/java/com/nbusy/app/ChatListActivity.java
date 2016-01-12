@@ -10,9 +10,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.nbusy.sdk.titan.neptulon.ConnImpl;
-import com.nbusy.sdk.titan.neptulon.ResHandler;
-import com.nbusy.sdk.titan.neptulon.Response;
+import neptulon.ConnImpl;
+import neptulon.ResHandler;
+import neptulon.Response;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;

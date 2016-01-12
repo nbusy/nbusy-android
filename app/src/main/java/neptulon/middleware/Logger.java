@@ -1,4 +1,4 @@
-package com.nbusy.sdk.titan.neptulon.middleware;
+package neptulon.middleware;
 
 /**
  * Neptulon request/response logger middleware.

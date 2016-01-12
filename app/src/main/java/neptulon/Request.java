@@ -1,4 +1,4 @@
-package com.nbusy.sdk.titan.neptulon;
+package neptulon;
 
 /**
  * JSON-RPC request object.

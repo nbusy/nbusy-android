@@ -1,4 +1,4 @@
-package com.nbusy.sdk.titan;
+package titan;
 
 /**
  * Titan client interface: https://github.com/nb-titan/titan

@@ -1,4 +1,4 @@
-package com.nbusy.sdk.titan.neptulon;
+package neptulon;
 
 import com.google.gson.Gson;
 
@@ -106,7 +106,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     @Override
     public <T> void sendRequest(String method, T params, ResHandler handler) {
         String id = UUID.randomUUID().toString();
-        com.nbusy.sdk.titan.neptulon.Request r = new com.nbusy.sdk.titan.neptulon.Request<>(id, method, params);
+        neptulon.Request r = new neptulon.Request<>(id, method, params);
         send(r);
         resHandlers.put(id, handler);
     }
