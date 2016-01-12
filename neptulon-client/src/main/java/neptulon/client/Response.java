@@ -1,4 +1,4 @@
-package neptulon;
+package neptulon.client;
 
 /**
  * JSON-RPC response object.

@@ -1,4 +1,4 @@
-package neptulon;
+package neptulon.client;
 
 import com.google.gson.JsonElement;
 

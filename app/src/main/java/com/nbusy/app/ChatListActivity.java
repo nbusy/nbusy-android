@@ -10,12 +10,13 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import neptulon.ConnImpl;
-import neptulon.ResHandler;
-import neptulon.Response;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import neptulon.client.ConnImpl;
+import neptulon.client.ResHandler;
+import neptulon.client.Response;
 
 /**
  * An activity representing a list of Chats. This activity

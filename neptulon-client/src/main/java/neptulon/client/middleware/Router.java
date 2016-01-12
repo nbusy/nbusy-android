@@ -1,4 +1,4 @@
-package neptulon.middleware;
+package neptulon.client.middleware;
 
 /**
  * Neptulon router middleware.

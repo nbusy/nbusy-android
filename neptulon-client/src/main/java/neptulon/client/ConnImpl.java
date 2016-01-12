@@ -1,4 +1,4 @@
-package neptulon;
+package neptulon.client;
 
 import com.google.gson.Gson;
 
@@ -106,7 +106,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     @Override
     public <T> void sendRequest(String method, T params, ResHandler handler) {
         String id = UUID.randomUUID().toString();
-        neptulon.Request r = new neptulon.Request<>(id, method, params);
+        neptulon.client.Request r = new neptulon.client.Request<>(id, method, params);
         send(r);
         resHandlers.put(id, handler);
     }

@@ -1,4 +1,4 @@
-package neptulon;
+package neptulon.client;
 
 /**
  * Neptulon connection interface: https://github.com/neptulon/neptulon
