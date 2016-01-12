@@ -1,7 +1,13 @@
+group 'neptulon.client'
+version '0.1'
+
 apply plugin: 'java'
 
 sourceCompatibility = 1.7
-targetCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])

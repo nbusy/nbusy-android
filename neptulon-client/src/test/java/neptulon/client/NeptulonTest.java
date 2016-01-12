@@ -10,4 +10,8 @@ public class NeptulonTest {
     public void emailValidator_CorrectEmailSimple_ReturnsTrue() {
         assertThat("hazelnuts", 3, equalTo(3));
     }
+    @Test
+    public void emailValidator_CorrectEmailSimple_ReturnsTrue2() {
+        assertThat("hazelnuts", 3, equalTo(3));
+    }
 }
