@@ -16,5 +16,5 @@ public interface Client {
      */
     boolean close();
 
-//    ListenableFuture<String> connectAsync(); // this could go into NBusyAsync // still, future vs callback?
+//    ListenableFuture<String> connectAsync(); // still, future vs callback?
 }
