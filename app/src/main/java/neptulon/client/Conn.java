@@ -31,6 +31,11 @@ public interface Conn {
     void connect();
 
     /**
+     * Whether the connection is established.
+     */
+    boolean isConnected();
+
+    /**
      * Returns the remote network address.
      */
     void remoteAddr();

@@ -33,6 +33,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final List<Middleware> middleware;
     private final Map<String, ResHandler> resHandlers;
     private WebSocket ws;
+    private boolean connected;
 
     /**
      * Initializes a new connection with given server URL.
@@ -92,10 +93,26 @@ public class ConnImpl implements Conn, WebSocketListener {
         middleware.add(mw);
     }
 
+    // todo: add default router
+    // handleRequest(method, .....) { if isClientConn... else exception } // same goes for go-client
+
     @Override
     public void connect() {
+        // add sender middleware as the last middleware in stack
+        middleware.add(new Middleware() {
+            @Override
+            public void handler(ReqCtx req) {
+                send(req);
+            }
+        });
+
         // enqueue this listener implementation to initiate the WebSocket connection
         wsCall.enqueue(this);
+    }
+
+    @Override
+    public boolean isConnected() {
+        return ws != null && connected;
     }
 
     @Override
@@ -118,6 +135,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void close() {
+        connected = false;
         try {
             ws.close(0, "");
         } catch (IOException e) {
@@ -132,11 +150,13 @@ public class ConnImpl implements Conn, WebSocketListener {
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
         ws = webSocket;
+        connected = true;
         logger.info("WebSocket connected.");
     }
 
     @Override
     public void onFailure(IOException e, Response response) {
+        connected = false;
         logger.warning("WebSocket connection closed with error: " + e.getMessage());
     }
 
@@ -152,6 +172,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
 
         // handle request message
+        new ReqCtx(msg.id, msg.method, msg.params, middleware, gson).next();
     }
 
     @Override
@@ -161,6 +182,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void onClose(int code, String reason) {
+        connected = false;
         logger.info("WebSocket closed.");
     }
 }
