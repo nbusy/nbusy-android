@@ -27,6 +27,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     // 4) ** get it with IOC and never bother with service aspects as we're all in same process and same thread and just use workerService.sendMsg(...)
 
     private final Worker worker = WorkerSingleton.getWorker(); // todo: get this from activity during onCreate()
+    private String chatId;
 
     public ChatDetailFragment() {
 //        Bundle bundle = getArguments();
@@ -62,13 +63,15 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
+            chatId = (String)arguments.get(ARG_ITEM_ID);
+
             // load the content specified by the fragment arguments
             messages = new ArrayList<>();
 
             Message m1 = new Message("Teoman Soygul", "Lorem ip sum my message...", "8:50", true);
             messages.add(m1);
 
-            Message m2 = new Message("User ID: " + arguments.get(ARG_ITEM_ID), "Test test.", "Just now", false);
+            Message m2 = new Message("User ID: " + chatId, "Test test.", "Just now", false);
             messages.add(m2);
 
             messageAdapter = new MessageListArrayAdapter(getActivity(), messages);
@@ -106,16 +109,17 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             return;
         }
 
-        // add message to task list and the UI, and clear text
+
+
+        // add message to the UI, and clear message box
+        messageAdapter.add(new Message("me", message, "now", true));
+        editText.setText("");
 
         // block ui thread -or- just display infinite progress bar and ignore re-clicks (or both)
         // workerService.sendMessage(msg, msgSavedCallback, msgDeliveredCallback, msgReadCallback)
         // msgSavedCallback - clear editText as we can register new msgs now
         // msgDeliveredCallback - checkmark view enabled on this newly created view for the new message (but how not to reference the view -or- use retained fragment)
         // or use LBM for loose coupling and not to have a reference to fragment so no need for retained fragment
-
-        messageAdapter.add(new Message("me", message, "now", true));
-        editText.setText("");
     }
 
     @Subscribe
