@@ -92,13 +92,13 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             return;
         }
 
+        // temporarily disable message box and the send button until message is saved to disk
+        messageBox.setEnabled(false);
+        sendButton.setEnabled(false);
+
         // send message to the server
         Message msg = new Message("me", message, "now", true);
         worker.sendMessage(msg);
-
-        // temporarily disable message box and the send button until message is saved to disk
-        messageBox.setFocusable(false);
-        sendButton.setFocusable(false);
     }
 
     @Subscribe
@@ -108,8 +108,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         messageBox.setText("");
 
         // enable message box and the send button again
-        messageBox.setFocusableInTouchMode(true);
-        sendButton.setFocusableInTouchMode(true);
+        messageBox.setEnabled(true);
+        sendButton.setEnabled(true);
     }
 
     @Subscribe
