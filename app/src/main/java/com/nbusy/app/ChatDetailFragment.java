@@ -108,7 +108,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
         // send message to the server
         Message msg = new Message("me", message, "now", true);
-        worker.sendMsg(msg);
+        worker.sendMessage(msg);
 
         // add message to the UI, and clear message box
         messageAdapter.add(msg);
@@ -122,7 +122,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     }
 
     @Subscribe
-    public void onMessageSent(Worker.StoredMsg storedMsg) {
+    public void onMessageSent(Worker.MessageSavedEvent storedMsg) {
         // set checkmark view to visible and text to a single checkmark character
         // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
         // we need map[itemIndex]=messageId map in the fragment so when we receive a broadcast about
