@@ -1,8 +1,14 @@
 package com.nbusy.app;
 
+import android.util.Log;
+
 import com.google.common.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
+
+import neptulon.client.ConnImpl;
+import neptulon.client.ResHandler;
+import neptulon.client.Response;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -32,7 +38,35 @@ public class Worker {
     }
 
     private void init() {
-        // todo: initiate connection to nbusy server using neptulon json-rpc java client (or nbusy java client which wraps that and auto-adds all routes)?
+        // TODO: remove this test code
+        ConnImpl conn = new ConnImpl();
+        conn.connect();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        class Test {
+            final String message;
+
+            Test(String message) {
+                this.message = message;
+            }
+        }
+
+        conn.sendRequest("test", new Test("wow"), new ResHandler<String>() {
+            @Override
+            public Class<String> getType() {
+                return String.class;
+            }
+
+            @Override
+            public void handler(Response<String> res) {
+                Log.i(TAG, "Received response: " + res.result);
+            }
+        });
     }
 
     /************ Event Object ************/

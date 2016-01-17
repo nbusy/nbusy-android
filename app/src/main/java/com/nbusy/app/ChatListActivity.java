@@ -14,10 +14,6 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import neptulon.client.ConnImpl;
-import neptulon.client.ResHandler;
-import neptulon.client.Response;
-
 /**
  * An activity representing a list of Chats. This activity
  * has different presentations for handset and tablet-size devices. On
@@ -41,7 +37,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     private static final String PROPERTY_REG_ID = "regId";
     private static final String SENDER_ID = "218602439235";
     private final AtomicInteger msgId = new AtomicInteger();
-    private final Worker worker = WorkerSingleton.getWorker(); // todo: this needs to be done by NBusyApplication to be deterministic (but can we access network during Application.onCreate?)
+    private final Worker worker = WorkerSingleton.getWorker();
     private GoogleCloudMessaging gcm;
     private String regId;
 
@@ -80,39 +76,10 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
             registerInBackground();
         }
 
+        // todo: remove this test code
         sendGcmMessage("just testing from Android simulator");
         sendGcmMessage("test 2");
         sendGcmMessage("test 3");
-
-        // TODO: remove this test code
-        ConnImpl conn = new ConnImpl();
-        conn.connect();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        conn.sendRequest("test", new Test("wow"), new ResHandler<String>() {
-            @Override
-             public Class<String> getType() {
-                return String.class;
-            }
-
-            @Override
-            public void handler(Response<String> res) {
-                Log.i(TAG, "Received response: " + res.result);
-            }
-        });
-    }
-
-    class Test {
-        final String message;
-
-        Test(String message) {
-            this.message = message;
-        }
     }
 
     /**
