@@ -36,7 +36,7 @@ public class Worker {
     }
     /* events */
 
-    public void SendMsg(Message msg) {
+    public void sendMsg(Message msg) {
         // todo: use AsyncTask here or depend on neptulonJsonRpc.SendMsgTask(callback)
         eventBus.post(new StoredMsg(123));
     }

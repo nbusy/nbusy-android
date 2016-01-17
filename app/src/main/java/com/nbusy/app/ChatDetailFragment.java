@@ -109,10 +109,12 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             return;
         }
 
-
+        // send message to the server
+        Message msg = new Message("me", message, "now", true);
+        worker.sendMsg(msg);
 
         // add message to the UI, and clear message box
-        messageAdapter.add(new Message("me", message, "now", true));
+        messageAdapter.add(msg);
         editText.setText("");
 
         // block ui thread -or- just display infinite progress bar and ignore re-clicks (or both)
