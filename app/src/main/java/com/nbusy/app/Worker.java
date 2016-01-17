@@ -33,8 +33,7 @@ public class Worker {
     }
 
     public void sendMessage(Message msg) {
-        // todo: use AsyncTask here or depend on neptulonJsonRpc.SendMsgTask(callback)
-        eventBus.post(new MessageSavedEvent(123));
+        eventBus.post(new MessageSavedEvent(msg.from, msg.body, msg.sent, msg.owner));
     }
 
     private void init() {
@@ -69,29 +68,25 @@ public class Worker {
         });
     }
 
-    /************ Event Object ************/
+    /*****************
+     * Event Objects *
+     *****************/
 
-    public class MessageSavedEvent {
-        public final int msgId;
-
-        public MessageSavedEvent(int msgId) {
-            this.msgId = msgId;
+    public class MessageSavedEvent extends Message {
+        MessageSavedEvent(String from, String body, String sent, boolean owner) {
+            super(from, body, sent, owner);
         }
     }
 
-    public class MessageSentEvent {
-        public final int msgId;
-
-        public MessageSentEvent(int msgId) {
-            this.msgId = msgId;
+    public class MessageSentEvent extends Message {
+        MessageSentEvent(String from, String body, String sent, boolean owner) {
+            super(from, body, sent, owner);
         }
     }
 
-    public class MessageDeliveredEvent {
-        public final int msgId;
-
-        public MessageDeliveredEvent(int msgId) {
-            this.msgId = msgId;
+    public class MessageDeliveredEvent extends Message {
+        MessageDeliveredEvent(String from, String body, String sent, boolean owner) {
+            super(from, body, sent, owner);
         }
     }
 }

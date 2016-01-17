@@ -20,19 +20,10 @@ import java.util.List;
  */
 public class ChatDetailFragment extends ListFragment implements View.OnClickListener {
 
-    // todo: how to get the worker service here:
-    // 1) start service in application context and stop on app destroy and get service instance with getApplicationContext: http://stackoverflow.com/questions/987072/using-application-context-everywhere
-    // 2) expose worker service as an interface from the host activity and access it directly via getActivity().workerService.doWork()
-    // 3) bind it to application context: http://stackoverflow.com/questions/15235773/bind-service-to-fragmentactivity-or-fragment
-    // 4) ** get it with IOC and never bother with service aspects as we're all in same process and same thread and just use workerService.sendMsg(...)
-
     private final Worker worker = WorkerSingleton.getWorker();
+    private EditText messageBox;
+    private Button sendButton;
     private String chatId;
-
-    public ChatDetailFragment() {
-//        Bundle bundle = getArguments();
-//        this.workerService = (WorkerService)bundle.get("workerService");
-    }
 
     /**
      * The fragment argument representing the item ID that this fragment represents.
@@ -46,13 +37,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     private MessageListArrayAdapter messageAdapter;
 
-//    @Override
-//    public void onPause(){
-//        super.onPause();
-//        if(isFinishing()){
-//            // store data
-//        }
-//    }
+    public ChatDetailFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,7 +46,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
-            chatId = (String)arguments.get(ARG_ITEM_ID);
+            chatId = (String) arguments.get(ARG_ITEM_ID);
 
             // load the content specified by the fragment arguments
             messages = new ArrayList<>();
@@ -80,8 +66,9 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat_detail, container, false);
 
-        Button sendButton = (Button) rootView.findViewById(R.id.send_button);
+        sendButton = (Button) rootView.findViewById(R.id.send_button);
         sendButton.setOnClickListener(this);
+        messageBox = (EditText) rootView.findViewById(R.id.edit_message);
 
         return rootView;
     }
@@ -100,8 +87,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     public void sendMessage() {
         // do not submit blank lines
-        EditText editText = (EditText) getView().findViewById(R.id.edit_message);
-        String message = editText.getText().toString().trim();
+        String message = messageBox.getText().toString().trim();
         if (message.isEmpty()) {
             return;
         }
@@ -110,19 +96,24 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         Message msg = new Message("me", message, "now", true);
         worker.sendMessage(msg);
 
-        // add message to the UI, and clear message box
-        messageAdapter.add(msg);
-        editText.setText("");
-
-        // block ui thread -or- just display infinite progress bar and ignore re-clicks (or both)
-        // workerService.sendMessage(msg, msgSavedCallback, msgDeliveredCallback, msgReadCallback)
-        // msgSavedCallback - clear editText as we can register new msgs now
-        // msgDeliveredCallback - checkmark view enabled on this newly created view for the new message (but how not to reference the view -or- use retained fragment)
-        // or use LBM for loose coupling and not to have a reference to fragment so no need for retained fragment
+        // temporarily disable message box and the send button until message is saved to disk
+        messageBox.setFocusable(false);
+        sendButton.setFocusable(false);
     }
 
     @Subscribe
-    public void onMessageSent(Worker.MessageSavedEvent storedMsg) {
+    public void addMessageToScreen(Worker.MessageSavedEvent e) {
+        // add message to the UI, and clear message box
+        messageAdapter.add(e);
+        messageBox.setText("");
+
+        // enable message box and the send button again
+        messageBox.setFocusableInTouchMode(true);
+        sendButton.setFocusableInTouchMode(true);
+    }
+
+    @Subscribe
+    public void addCheckMarkToMessage(Worker.MessageSentEvent e) {
         // set checkmark view to visible and text to a single checkmark character
         // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
         // we need map[itemIndex]=messageId map in the fragment so when we receive a broadcast about
@@ -131,6 +122,11 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         // underlying data should always be updated regardless of visibility (as well as persistence)
 
         // would all of this logic be in the adapter?
+    }
+
+    @Subscribe
+    public void addDoubleCheckMarkToMessage(Worker.MessageDeliveredEvent e) {
+
     }
 
     @Override

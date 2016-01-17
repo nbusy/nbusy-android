@@ -3,7 +3,7 @@ package com.nbusy.app;
 /**
  * A message within a chat.
  */
-final class Message {
+class Message {
     final String from; // sender of this message
     final String body; // message text
     final String sent; // message sent date/time
