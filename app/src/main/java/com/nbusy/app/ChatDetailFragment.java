@@ -7,11 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import com.google.common.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A fragment representing a single Chat detail screen, along with the messages in the chat.
@@ -20,56 +23,76 @@ import java.util.List;
  */
 public class ChatDetailFragment extends ListFragment implements View.OnClickListener {
 
-    // todo: how to get the worker service here:
-    // 1) start service in application context and stop on app destroy and get service instance with getApplicationContext: http://stackoverflow.com/questions/987072/using-application-context-everywhere
-    // 2) expose worker service as an interface from the host activity and access it directly via getActivity().workerService.doWork()
-    // 3) bind it to application context: http://stackoverflow.com/questions/15235773/bind-service-to-fragmentactivity-or-fragment
-    // 4) ** get it with IOC and never bother with service aspects as we're all in same process and same thread and just use workerService.sendMsg(...)
+    public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
+    private final Worker worker = WorkerSingleton.getWorker();
+    private String chatId;
+    private List<Message> messages; // chat messages that this fragment is presenting
+    private Map<String, Integer> messageIDtoIndex; // message ID -> messages[index]
+    private MessageListArrayAdapter messageAdapter;
+    private ListView messageListView;
+    private EditText messageBox;
+    private Button sendButton;
 
-    private final Worker worker = new Worker();
+    private void sendMessage() {
+        // do not submit blank lines
+        String message = messageBox.getText().toString().trim();
+        if (message.isEmpty()) {
+            return;
+        }
 
-    public ChatDetailFragment() {
-//        Bundle bundle = getArguments();
-//        this.workerService = (WorkerService)bundle.get("workerService");
+        // temporarily disable message box and the send button until message is saved to disk
+        messageBox.setEnabled(false);
+        sendButton.setEnabled(false);
+
+        // send message to the server
+        Message msg = new Message(Integer.toString(messages.size()), "me", message, "now", false);
+        worker.sendMessage(msg);
     }
 
-    /**
-     * The fragment argument representing the item ID that this fragment represents.
-     */
-    public static final String ARG_ITEM_ID = "item_id";
+    private void addCheckMarkToMessage(String msgID, boolean doubleCheck) {
+        // update the check mark on the updated item only as per
+        // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
+        int location = messageIDtoIndex.get(msgID);
+        View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
+        if (v != null) {
+            v.findViewById(R.id.check).setVisibility(View.VISIBLE);
+            Message msg = messages.get(location);
+            msg.sentToServer = true;
+            msg.delivered = doubleCheck;
+            return;
+        }
 
-    /**
-     * The chat messages that this fragment is presenting.
-     */
-    private List<Message> messages;
+        // element is not visible on the view yet so we have to update the entire list view via adapter now
+        Message msg = messageAdapter.getItem(location);
+        msg.sentToServer = true;
+        msg.delivered = doubleCheck;
+    }
 
-    private MessageListArrayAdapter messageAdapter;
 
-//    @Override
-//    public void onPause(){
-//        super.onPause();
-//        if(isFinishing()){
-//            // store data
-//        }
-//    }
+    /**************************
+     * ListFragment Overrides *
+     **************************/
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // retain this fragment instance across configuration changes for AsyncTask to post back changes to the correct instance
-//        setRetainInstance(true);
-
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
+            chatId = (String) arguments.get(ARG_ITEM_ID);
+
             // load the content specified by the fragment arguments
             messages = new ArrayList<>();
+            messageIDtoIndex = new HashMap<>();
 
-            Message m1 = new Message("Teoman Soygul", "Lorem ip sum my message...", "8:50", true);
+            Message m1 = new Message("1", "Teoman Soygul", "Lorem ip sum my message...", "8:50", true);
+            m1.sentToServer = m1.delivered = true;
+            Message m2 = new Message("2", "User ID: " + chatId, "Test test.", "Just now", false);
+            m2.sentToServer = m2.delivered = true;
             messages.add(m1);
-
-            Message m2 = new Message("User ID: " + arguments.get(ARG_ITEM_ID), "Test test.", "Just now", false);
+            messageIDtoIndex.put(m1.id, messages.size() - 1);
             messages.add(m2);
+            messageIDtoIndex.put(m2.id, messages.size() - 1);
 
             messageAdapter = new MessageListArrayAdapter(getActivity(), messages);
             setListAdapter(messageAdapter);
@@ -80,8 +103,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat_detail, container, false);
 
-        Button sendButton = (Button) rootView.findViewById(R.id.send_button);
+        messageListView = (ListView) rootView.findViewById(android.R.id.list);
+        sendButton = (Button) rootView.findViewById(R.id.send_button);
         sendButton.setOnClickListener(this);
+        messageBox = (EditText) rootView.findViewById(R.id.edit_message);
 
         return rootView;
     }
@@ -98,37 +123,9 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         worker.getEventBus().unregister(this);
     }
 
-    public void sendMessage() {
-        // do not submit blank lines
-        EditText editText = (EditText) getView().findViewById(R.id.edit_message);
-        String message = editText.getText().toString().trim();
-        if (message.isEmpty()) {
-            return;
-        }
-
-        // add message to task list and the UI, and clear text
-
-        // block ui thread -or- just display infinite progress bar and ignore re-clicks (or both)
-        // workerService.sendMessage(msg, msgSavedCallback, msgDeliveredCallback, msgReadCallback)
-        // msgSavedCallback - clear editText as we can register new msgs now
-        // msgDeliveredCallback - checkmark view enabled on this newly created view for the new message (but how not to reference the view -or- use retained fragment)
-        // or use LBM for loose coupling and not to have a reference to fragment so no need for retained fragment
-
-        messageAdapter.add(new Message("me", message, "now", true));
-        editText.setText("");
-    }
-
-    @Subscribe
-    public void onMessageSent(Worker.StoredMsg storedMsg) {
-        // set checkmark view to visible and text to a single checkmark character
-        // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
-        // we need map[itemIndex]=messageId map in the fragment so when we receive a broadcast about
-        // a certain message with given ID is delivered we can update it
-        // if the view is not visible, we can just update the underlying array storage so notifyOnChange won't be called (not to update whole page)
-        // underlying data should always be updated regardless of visibility (as well as persistence)
-
-        // would all of this logic be in the adapter?
-    }
+    /**********************************
+     * View.OnClickListener Overrides *
+     **********************************/
 
     @Override
     public void onClick(View v) {
@@ -137,5 +134,31 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
                 sendMessage();
                 break;
         }
+    }
+
+    /******************************
+     * Worker Event Subscriptions *
+     ******************************/
+
+    @Subscribe
+    public void addMessageToScreen(Worker.MessageSavedEvent e) {
+        // add message to the UI, and clear message box
+        messageAdapter.add(e);
+        messageIDtoIndex.put(e.id, messages.size() - 1);
+        messageBox.setText("");
+
+        // enable message box and the send button again
+        messageBox.setEnabled(true);
+        sendButton.setEnabled(true);
+    }
+
+    @Subscribe
+    public void addCheckMarkToMessage(Worker.MessageSentEvent e) {
+        addCheckMarkToMessage(e.id, false);
+    }
+
+    @Subscribe
+    public void addDoubleCheckMarkToMessage(Worker.MessageDeliveredEvent e) {
+        addCheckMarkToMessage(e.id, true);
     }
 }

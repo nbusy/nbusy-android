@@ -37,6 +37,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     private static final String PROPERTY_REG_ID = "regId";
     private static final String SENDER_ID = "218602439235";
     private final AtomicInteger msgId = new AtomicInteger();
+    private final Worker worker = WorkerSingleton.getWorker();
     private GoogleCloudMessaging gcm;
     private String regId;
 
@@ -75,6 +76,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
             registerInBackground();
         }
 
+        // todo: remove this test code
         sendGcmMessage("just testing from Android simulator");
         sendGcmMessage("test 2");
         sendGcmMessage("test 3");
