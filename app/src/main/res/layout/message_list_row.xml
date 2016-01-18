@@ -24,11 +24,12 @@
 
         <!-- message sent check mark -->
         <TextView
+            android:visibility="gone"
             android:id="@+id/check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="3dp"
-            android:text="✓" />
+            android:text="✓✓" />
 
         <!-- message sent time -->
         <TextView
