@@ -33,6 +33,46 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     private EditText messageBox;
     private Button sendButton;
 
+    private void sendMessage() {
+        // do not submit blank lines
+        String message = messageBox.getText().toString().trim();
+        if (message.isEmpty()) {
+            return;
+        }
+
+        // temporarily disable message box and the send button until message is saved to disk
+        messageBox.setEnabled(false);
+        sendButton.setEnabled(false);
+
+        // send message to the server
+        Message msg = new Message(Integer.toString(messages.size()), "me", message, "now", false);
+        worker.sendMessage(msg);
+    }
+
+    private void addCheckMarkToMessage(String msgID, boolean doubleCheck) {
+        // update the check mark on the updated item only as per
+        // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
+        int location = messageIDtoIndex.get(msgID);
+        View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
+        if (v != null) {
+            v.findViewById(R.id.check).setVisibility(View.VISIBLE);
+            Message msg = messages.get(location);
+            msg.sentToServer = true;
+            msg.delivered = doubleCheck;
+            return;
+        }
+
+        // element is not visible on the view yet so we have to update the entire list view via adapter now
+        Message msg = messageAdapter.getItem(location);
+        msg.sentToServer = true;
+        msg.delivered = doubleCheck;
+    }
+
+
+    /**************************
+     * ListFragment Overrides *
+     **************************/
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +123,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         worker.getEventBus().unregister(this);
     }
 
+    /**********************************
+     * View.OnClickListener Overrides *
+     **********************************/
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -92,31 +136,15 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
     }
 
-    public void sendMessage() {
-        // do not submit blank lines
-        String message = messageBox.getText().toString().trim();
-        if (message.isEmpty()) {
-            return;
-        }
-
-        // temporarily disable message box and the send button until message is saved to disk
-        messageBox.setEnabled(false);
-        sendButton.setEnabled(false);
-
-        // send message to the server
-        Message msg = new Message(Integer.toString(messages.size()), "me", message, "now", false);
-        worker.sendMessage(msg);
-    }
-
-    /***********************
-     * Event Subscriptions *
-     ***********************/
+    /******************************
+     * Worker Event Subscriptions *
+     ******************************/
 
     @Subscribe
     public void addMessageToScreen(Worker.MessageSavedEvent e) {
         // add message to the UI, and clear message box
         messageAdapter.add(e);
-        messageIDtoIndex.put(e.id, messages.size()-1);
+        messageIDtoIndex.put(e.id, messages.size() - 1);
         messageBox.setText("");
 
         // enable message box and the send button again
@@ -126,22 +154,11 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     @Subscribe
     public void addCheckMarkToMessage(Worker.MessageSentEvent e) {
-        // update the check mark on the updated item only as per
-        // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
-        int location = messageIDtoIndex.get(e.id);
-        View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
-        if (v != null) {
-            v.findViewById(R.id.check).setVisibility(View.VISIBLE);
-            messages.get(location).sentToServer = true;
-            return;
-        }
-
-        // element is not visible on the view yet so we have to update the entire list view via adapter now
-        messageAdapter.getItem(location).sentToServer = true;
+        addCheckMarkToMessage(e.id, false);
     }
 
     @Subscribe
     public void addDoubleCheckMarkToMessage(Worker.MessageDeliveredEvent e) {
-
+        addCheckMarkToMessage(e.id, true);
     }
 }
