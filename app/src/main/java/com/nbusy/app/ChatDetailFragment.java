@@ -20,25 +20,13 @@ import java.util.List;
  */
 public class ChatDetailFragment extends ListFragment implements View.OnClickListener {
 
+    public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
     private EditText messageBox;
     private Button sendButton;
     private String chatId;
-
-    /**
-     * The fragment argument representing the item ID that this fragment represents.
-     */
-    public static final String ARG_ITEM_ID = "item_id";
-
-    /**
-     * The chat messages that this fragment is presenting.
-     */
-    private List<Message> messages;
-
+    private List<Message> messages; // chat messages that this fragment is presenting
     private MessageListArrayAdapter messageAdapter;
-
-    public ChatDetailFragment() {
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,9 +40,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             messages = new ArrayList<>();
 
             Message m1 = new Message("Teoman Soygul", "Lorem ip sum my message...", "8:50", true);
-            messages.add(m1);
-
             Message m2 = new Message("User ID: " + chatId, "Test test.", "Just now", false);
+            messages.add(m1);
             messages.add(m2);
 
             messageAdapter = new MessageListArrayAdapter(getActivity(), messages);
@@ -127,6 +114,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     @Subscribe
     public void addCheckMarkToMessage(Worker.MessageSentEvent e) {
+
+
         // set check mark view to visible and text to a single check mark character
         // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
         // we need map[itemIndex]=messageId map in the fragment so when we receive a broadcast about
