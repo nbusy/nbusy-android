@@ -23,12 +23,12 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
-    private ListView messageListView;
-    private EditText messageBox;
-    private Button sendButton;
     private String chatId;
     private List<Message> messages; // chat messages that this fragment is presenting
     private MessageListArrayAdapter messageAdapter;
+    private ListView messageListView;
+    private EditText messageBox;
+    private Button sendButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,12 +118,18 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     @Subscribe
     public void addCheckMarkToMessage(Worker.MessageSentEvent e) {
 
+        // update the check mark on the updated item only as per: http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
+        View v = messageListView.getChildAt(2);
+        if (v != null) {
+            v.findViewById(R.id.check).setVisibility(View.VISIBLE);
+        }
 
         // set check mark view to visible and text to a single check mark character
         // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
         // we need map[itemIndex]=messageId map in the fragment so when we receive a broadcast about
         // a certain message with given ID is delivered we can update it
-        // if the view is not visible, we can just update the underlying array storage so notifyOnChange won't be called (not to update whole page)
+        // if the view is not visible, we can just update the underlying array storage (private List<Message> messages)
+        // so notifyOnChange won't be called (not to update whole page)
         // underlying data should always be updated regardless of visibility (as well as persistence)
 
         // would all of this logic be in the adapter?
