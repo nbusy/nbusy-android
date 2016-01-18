@@ -85,6 +85,15 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         worker.getEventBus().unregister(this);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.send_button:
+                sendMessage();
+                break;
+        }
+    }
+
     public void sendMessage() {
         // do not submit blank lines
         String message = messageBox.getText().toString().trim();
@@ -100,6 +109,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         Message msg = new Message("me", message, "now", true);
         worker.sendMessage(msg);
     }
+
+    /***********************
+     * Event Subscriptions *
+     ***********************/
 
     @Subscribe
     public void addMessageToScreen(Worker.MessageSavedEvent e) {
@@ -127,14 +140,5 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     @Subscribe
     public void addDoubleCheckMarkToMessage(Worker.MessageDeliveredEvent e) {
 
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.send_button:
-                sendMessage();
-                break;
-        }
     }
 }
