@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -22,6 +23,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
+    private ListView messageListView;
     private EditText messageBox;
     private Button sendButton;
     private String chatId;
@@ -53,6 +55,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat_detail, container, false);
 
+        messageListView = (ListView) rootView.findViewById(android.R.id.list);
         sendButton = (Button) rootView.findViewById(R.id.send_button);
         sendButton.setOnClickListener(this);
         messageBox = (EditText) rootView.findViewById(R.id.edit_message);
