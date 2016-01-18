@@ -104,7 +104,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         sendButton.setEnabled(false);
 
         // send message to the server
-        Message msg = new Message("3", "me", message, "now", false);
+        Message msg = new Message(Integer.toString(messages.size()), "me", message, "now", false);
         worker.sendMessage(msg);
     }
 
@@ -129,7 +129,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         // update the check mark on the updated item only as per
         // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
         int location = messageIDtoIndex.get(e.id);
-        View v = messageListView.getChildAt(location);
+        View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
         if (v != null) {
             v.findViewById(R.id.check).setVisibility(View.VISIBLE);
             messages.get(location).sentToServer = true;
@@ -138,19 +138,6 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
         // element is not visible on the view yet so we have to update the entire list view via adapter now
         messageAdapter.getItem(location).sentToServer = true;
-
-
-
-
-        // set check mark view to visible and text to a single check mark character
-        // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
-        // we need map[itemIndex]=messageId map in the fragment so when we receive a broadcast about
-        // a certain message with given ID is delivered we can update it
-        // if the view is not visible, we can just update the underlying array storage (private List<Message> messages)
-        // so notifyOnChange won't be called (not to update whole page)
-        // underlying data should always be updated regardless of visibility (as well as persistence)
-
-        // would all of this logic be in the adapter?
     }
 
     @Subscribe
