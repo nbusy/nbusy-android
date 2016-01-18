@@ -33,7 +33,8 @@ public class Worker {
     }
 
     public void sendMessage(Message msg) {
-        eventBus.post(new MessageSavedEvent(msg.from, msg.body, msg.sent, msg.owner));
+        eventBus.post(new MessageSavedEvent(msg.id, msg.from, msg.body, msg.sent, msg.owner));
+        eventBus.post(new MessageSentEvent(msg.id, msg.from, msg.body, msg.sent, msg.owner));
     }
 
     private void init() {
@@ -73,20 +74,23 @@ public class Worker {
      *****************/
 
     public class MessageSavedEvent extends Message {
-        MessageSavedEvent(String from, String body, String sent, boolean owner) {
-            super(from, body, sent, owner);
+        MessageSavedEvent(String id, String from, String body, String sent, boolean owner) {
+            super(id, from, body, sent, owner);
         }
     }
 
     public class MessageSentEvent extends Message {
-        MessageSentEvent(String from, String body, String sent, boolean owner) {
-            super(from, body, sent, owner);
+        MessageSentEvent(String id, String from, String body, String sent, boolean owner) {
+            super(id, from, body, sent, owner);
+            sentToServer = true;
         }
     }
 
     public class MessageDeliveredEvent extends Message {
-        MessageDeliveredEvent(String from, String body, String sent, boolean owner) {
-            super(from, body, sent, owner);
+        MessageDeliveredEvent(String id, String from, String body, String sent, boolean owner) {
+            super(id, from, body, sent, owner);
+            sentToServer = true;
+            delivered = true;
         }
     }
 }

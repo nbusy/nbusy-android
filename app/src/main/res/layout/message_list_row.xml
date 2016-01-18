@@ -24,7 +24,6 @@
 
         <!-- message sent check mark -->
         <TextView
-            android:visibility="gone"
             android:id="@+id/check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

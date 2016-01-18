@@ -53,6 +53,11 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
 
         viewHolder.body.setText(message.body);
         viewHolder.sent.setText(message.sent);
+        if (!message.sentToServer && !message.delivered) {
+            viewHolder.check.setVisibility(View.GONE);
+        } else if (message.sentToServer && !message.delivered) {
+            viewHolder.check.setText("✓");
+        }
 
         if (message.owner) {
             viewHolder.body.setGravity(Gravity.END);

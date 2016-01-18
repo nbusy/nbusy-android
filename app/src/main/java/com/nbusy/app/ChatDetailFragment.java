@@ -12,7 +12,9 @@ import android.widget.ListView;
 import com.google.common.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A fragment representing a single Chat detail screen, along with the messages in the chat.
@@ -25,6 +27,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     private final Worker worker = WorkerSingleton.getWorker();
     private String chatId;
     private List<Message> messages; // chat messages that this fragment is presenting
+    private Map<String, Integer> messageIDtoIndex; // message ID -> messages[index]
     private MessageListArrayAdapter messageAdapter;
     private ListView messageListView;
     private EditText messageBox;
@@ -40,11 +43,16 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
             // load the content specified by the fragment arguments
             messages = new ArrayList<>();
+            messageIDtoIndex = new HashMap<>();
 
-            Message m1 = new Message("Teoman Soygul", "Lorem ip sum my message...", "8:50", true);
-            Message m2 = new Message("User ID: " + chatId, "Test test.", "Just now", false);
+            Message m1 = new Message("1", "Teoman Soygul", "Lorem ip sum my message...", "8:50", true);
+            m1.sentToServer = m1.delivered = true;
+            Message m2 = new Message("2", "User ID: " + chatId, "Test test.", "Just now", false);
+            m2.sentToServer = m2.delivered = true;
             messages.add(m1);
+            messageIDtoIndex.put(m1.id, messages.size() - 1);
             messages.add(m2);
+            messageIDtoIndex.put(m2.id, messages.size() - 1);
 
             messageAdapter = new MessageListArrayAdapter(getActivity(), messages);
             setListAdapter(messageAdapter);
@@ -96,7 +104,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         sendButton.setEnabled(false);
 
         // send message to the server
-        Message msg = new Message("me", message, "now", true);
+        Message msg = new Message("3", "me", message, "now", false);
         worker.sendMessage(msg);
     }
 
@@ -108,6 +116,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     public void addMessageToScreen(Worker.MessageSavedEvent e) {
         // add message to the UI, and clear message box
         messageAdapter.add(e);
+        messageIDtoIndex.put(e.id, messages.size()-1);
         messageBox.setText("");
 
         // enable message box and the send button again
@@ -117,12 +126,21 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     @Subscribe
     public void addCheckMarkToMessage(Worker.MessageSentEvent e) {
-
-        // update the check mark on the updated item only as per: http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
-        View v = messageListView.getChildAt(2);
+        // update the check mark on the updated item only as per
+        // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
+        int location = messageIDtoIndex.get(e.id);
+        View v = messageListView.getChildAt(location);
         if (v != null) {
             v.findViewById(R.id.check).setVisibility(View.VISIBLE);
+            messages.get(location).sentToServer = true;
+            return;
         }
+
+        // element is not visible on the view yet so we have to update the entire list view via adapter now
+        messageAdapter.getItem(location).sentToServer = true;
+
+
+
 
         // set check mark view to visible and text to a single check mark character
         // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
