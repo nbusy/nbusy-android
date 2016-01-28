@@ -16,6 +16,7 @@ public class Worker {
     public Worker(Client client, EventBus eventBus) {
         this.client = client;
         this.eventBus = eventBus;
+        client.connect();
     }
 
     public Worker() {
@@ -28,6 +29,8 @@ public class Worker {
 
     public void sendMessage(Message msg) {
         eventBus.post(new MessageSavedEvent(msg.id, msg.from, msg.body, msg.sent, msg.owner));
+
+
         eventBus.post(new MessageSentEvent(msg.id, msg.from, msg.body, msg.sent, msg.owner));
     }
 
