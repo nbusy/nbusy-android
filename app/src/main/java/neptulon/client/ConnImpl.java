@@ -30,8 +30,8 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final OkHttpClient client;
     private final Request request;
     private final WebSocketCall wsCall;
-    private final List<Middleware> middleware;
-    private final Map<String, ResHandler> resHandlers;
+    private final List<Middleware> middleware = new ArrayList<>();
+    private final Map<String, ResHandler> resHandlers = new HashMap<>();
     private WebSocket ws;
     private boolean connected;
 
@@ -39,9 +39,6 @@ public class ConnImpl implements Conn, WebSocketListener {
      * Initializes a new connection with given server URL.
      */
     public ConnImpl(String url) {
-        middleware = new ArrayList<>();
-        resHandlers = new HashMap<>();
-
         client = new OkHttpClient.Builder()
                 .connectTimeout(45, TimeUnit.SECONDS)
                 .writeTimeout(300, TimeUnit.SECONDS)
@@ -63,18 +60,20 @@ public class ConnImpl implements Conn, WebSocketListener {
         this("ws://10.0.2.2:3000");
     }
 
-    private void send(Object src) {
+    void send(Object src) {
+        String m =  gson.toJson(src);
+        logger.info("Outgoing message: " + m);
         try {
-            ws.sendMessage(RequestBody.create(WebSocket.TEXT, gson.toJson(src)));
+            ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
         } catch (IOException e) {
             e.printStackTrace();
             close();
         }
     }
 
-    /*
-     * ######## Conn Implementation ########
-     */
+    /***********************
+     * Conn Implementation *
+     ***********************/
 
     @Override
     public void useTLS(byte[] ca, byte[] clientCert, byte[] clientCertKey) {
@@ -98,14 +97,6 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void connect() {
-        // add sender middleware as the last middleware in stack
-        middleware.add(new Middleware() {
-            @Override
-            public void handler(ReqCtx req) {
-                send(req);
-            }
-        });
-
         // enqueue this listener implementation to initiate the WebSocket connection
         wsCall.enqueue(this);
     }
@@ -143,9 +134,9 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
     }
 
-    /*
-     * ######## WebSocketListener Implementation ########
-     */
+    /************************************
+     * WebSocketListener Implementation *
+     ************************************/
 
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
@@ -172,7 +163,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
 
         // handle request message
-        new ReqCtx(msg.id, msg.method, msg.params, middleware, gson).next();
+        new ReqCtx(this, msg.id, msg.method, msg.params, middleware, gson).next();
     }
 
     @Override

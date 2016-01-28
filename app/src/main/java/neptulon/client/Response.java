@@ -8,7 +8,7 @@ public class Response<T> {
     public final T result;
     public final ResError error;
 
-    Response(String id, T result, ResError error) {
+    public Response(String id, T result, ResError error) {
         this.id = id;
         this.result = result;
         this.error = error;
