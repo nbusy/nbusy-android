@@ -15,6 +15,4 @@ public interface Client {
      * @return
      */
     boolean close();
-
-//    ListenableFuture<String> connectAsync(); // still, future vs callback?
 }
