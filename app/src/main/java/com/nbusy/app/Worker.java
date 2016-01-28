@@ -29,7 +29,7 @@ public class Worker {
 
     public void sendMessage(Message msg) {
         eventBus.post(new MessageSavedEvent(msg.id, msg.from, msg.body, msg.sent, msg.owner));
-
+//client.send();
 
         eventBus.post(new MessageSentEvent(msg.id, msg.from, msg.body, msg.sent, msg.owner));
     }

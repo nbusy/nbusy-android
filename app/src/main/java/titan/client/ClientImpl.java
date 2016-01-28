@@ -14,6 +14,11 @@ public class ClientImpl implements Client {
     }
 
     @Override
+    public void send(String to, Message msg) {
+
+    }
+
+    @Override
     public void close() {
 
     }
