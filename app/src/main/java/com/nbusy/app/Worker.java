@@ -4,6 +4,8 @@ import com.google.common.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
+import java.util.UUID;
+
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
  * All notifications from this class is sent out using an event bus.
@@ -28,6 +30,7 @@ public class Worker {
     }
 
     public void sendMessage(Message msg) {
+        String id = UUID.randomUUID().toString();
         eventBus.post(new MessageSavedEvent(msg.id, msg.from, msg.body, msg.sent, msg.owner));
 //client.send();
 
