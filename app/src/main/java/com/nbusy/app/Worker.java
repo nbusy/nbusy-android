@@ -41,6 +41,8 @@ public class Worker {
      * Event Objects *
      *****************/
 
+    // todo: any way to use annotations rather than inheritance like this every time?
+
     public class MessageSavedEvent extends Message {
         MessageSavedEvent(String id, String from, String body, String sent, boolean owner) {
             super(id, from, body, sent, owner);
