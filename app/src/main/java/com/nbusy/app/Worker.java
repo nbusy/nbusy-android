@@ -29,25 +29,26 @@ public class Worker {
 
     public void sendMessage(Message msg) {
         //client.send(msg, callback)
-        eventBus.post(new MessageSentEvent(msg.id, msg.from, msg.body, msg.sent, msg.owner));
+        eventBus.post(new MessageSentEvent(msg.id));
     }
 
     /*****************
      * Event Objects *
      *****************/
 
-    public class MessageSentEvent extends Message {
-        MessageSentEvent(String id, String from, String body, String sent, boolean owner) {
-            super(id, from, body, sent, owner);
-            sentToServer = true;
+    public class MessageSentEvent {
+        final String id;
+
+        public MessageSentEvent(String id) {
+            this.id = id;
         }
     }
 
-    public class MessageDeliveredEvent extends Message {
-        MessageDeliveredEvent(String id, String from, String body, String sent, boolean owner) {
-            super(id, from, body, sent, owner);
-            sentToServer = true;
-            delivered = true;
+    public class MessageDeliveredEvent {
+        final String id;
+
+        public MessageDeliveredEvent(String id) {
+            this.id = id;
         }
     }
 }

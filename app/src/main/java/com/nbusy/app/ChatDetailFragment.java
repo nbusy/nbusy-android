@@ -46,7 +46,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         messageIDtoIndex.put(msg.id, messages.size() - 1);
         messageBox.setText("");
 
-        // initiate process to send the message to the server
+        // send the message to the server
         worker.sendMessage(msg);
     }
 
