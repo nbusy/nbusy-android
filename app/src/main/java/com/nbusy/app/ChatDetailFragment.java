@@ -2,13 +2,13 @@ package com.nbusy.app;
 
 import android.app.ListFragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -54,25 +54,23 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     }
 
     private void addCheckMarkToMessage(String msgID, boolean doubleCheck) {
-        // update the check mark on the updated item only as per
-        // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
+        // only update if message belongs to this chat
         int location = messageIDtoIndex.get(msgID);
         if (location == 0) {
             return;
         }
 
+        // update the check mark on the updated item only as per:
+        //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
         View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
         if (v != null) {
-            Log.d(TAG, "Message ID: " + location + ", is visible and check mark status is being updated.");
+            if (doubleCheck) {
+                ((TextView)v.findViewById(R.id.check)).setText("✓✓");
+            }
             v.findViewById(R.id.check).setVisibility(View.VISIBLE);
-            Message msg = messages.get(location);
-            msg.sentToServer = true;
-            msg.delivered = doubleCheck;
-            return;
         }
 
-        // element is not visible on the view yet so we have to update the entire list view via adapter now
-        Message msg = messageAdapter.getItem(location);
+        Message msg = messages.get(location);
         msg.sentToServer = true;
         msg.delivered = doubleCheck;
     }
