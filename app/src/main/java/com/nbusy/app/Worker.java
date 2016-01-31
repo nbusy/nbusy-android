@@ -4,8 +4,6 @@ import com.google.common.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
-import java.util.UUID;
-
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
  * All notifications from this class is sent out using an event bus.
@@ -30,24 +28,13 @@ public class Worker {
     }
 
     public void sendMessage(Message msg) {
-        String id = UUID.randomUUID().toString();
-        eventBus.post(new MessageSavedEvent(msg.id, msg.from, msg.body, msg.sent, msg.owner));
-//client.send();
-
+        //client.send(msg, callback)
         eventBus.post(new MessageSentEvent(msg.id, msg.from, msg.body, msg.sent, msg.owner));
     }
 
     /*****************
      * Event Objects *
      *****************/
-
-    // todo: any way to use annotations rather than inheritance like this every time?
-
-    public class MessageSavedEvent extends Message {
-        MessageSavedEvent(String id, String from, String body, String sent, boolean owner) {
-            super(id, from, body, sent, owner);
-        }
-    }
 
     public class MessageSentEvent extends Message {
         MessageSentEvent(String id, String from, String body, String sent, boolean owner) {

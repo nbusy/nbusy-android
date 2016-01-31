@@ -40,12 +40,13 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             return;
         }
 
-        // temporarily disable message box and the send button until message is saved to disk
-        messageBox.setEnabled(false);
-        sendButton.setEnabled(false);
-
-        // send message to the server
+        // add message to the UI, and clear message box
         Message msg = new Message(Integer.toString(messages.size()), "me", message, "now", false);
+        messageAdapter.add(msg);
+        messageIDtoIndex.put(msg.id, messages.size() - 1);
+        messageBox.setText("");
+
+        // initiate process to send the message to the server
         worker.sendMessage(msg);
     }
 
@@ -67,7 +68,6 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         msg.sentToServer = true;
         msg.delivered = doubleCheck;
     }
-
 
     /**************************
      * ListFragment Overrides *
@@ -139,18 +139,6 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     /******************************
      * Worker Event Subscriptions *
      ******************************/
-
-    @Subscribe
-    public void addMessageToScreen(Worker.MessageSavedEvent e) {
-        // add message to the UI, and clear message box
-        messageAdapter.add(e);
-        messageIDtoIndex.put(e.id, messages.size() - 1);
-        messageBox.setText("");
-
-        // enable message box and the send button again
-        messageBox.setEnabled(true);
-        sendButton.setEnabled(true);
-    }
 
     @Subscribe
     public void addCheckMarkToMessage(Worker.MessageSentEvent e) {
