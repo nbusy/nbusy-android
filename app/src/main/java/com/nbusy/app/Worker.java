@@ -1,5 +1,7 @@
 package com.nbusy.app;
 
+import android.os.AsyncTask;
+
 import com.google.common.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
@@ -27,9 +29,26 @@ public class Worker {
         return eventBus;
     }
 
-    public void sendMessage(Message msg) {
+    public void sendMessage(final Message msg) {
         //client.send(msg, callback)
-        eventBus.post(new MessageSentEvent(msg.id));
+        class SimulateClient extends AsyncTask {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                eventBus.post(new MessageSentEvent(msg.id));
+            }
+        }
+
+        new SimulateClient().execute(null, null, null);
     }
 
     /*****************
