@@ -54,6 +54,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         // update the check mark on the updated item only as per
         // http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
         int location = messageIDtoIndex.get(msgID);
+        if (location == 0) {
+            return;
+        }
+
         View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
         if (v != null) {
             v.findViewById(R.id.check).setVisibility(View.VISIBLE);
