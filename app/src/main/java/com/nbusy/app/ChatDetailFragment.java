@@ -65,7 +65,6 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             return;
         }
 
-        // todo: move this into MessageStore in Worker and use Flux like immutable state + API sig { subscribe, dispatch, getState }
         Message msg = messages.get(location);
         msg.sentToServer = true;
         msg.delivered = doubleCheck;
