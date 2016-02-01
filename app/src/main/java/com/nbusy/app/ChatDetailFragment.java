@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.google.common.eventbus.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +39,13 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     private void sendMessage() {
         // do not submit blank lines
-        String message = messageBox.getText().toString().trim();
-        if (message.isEmpty()) {
+        String messageBody = messageBox.getText().toString().trim();
+        if (messageBody.isEmpty()) {
             return;
         }
 
         // add message to the UI, and clear message box
-        Message msg = new Message(UUID.randomUUID().toString(), "me", message, "now", false);
+        Message msg = new Message(UUID.randomUUID().toString(), "Teoman Soygul", messageBody, Calendar.getInstance().getTime().toString(), true);
         messageIDtoIndex.put(msg.id, messages.size());
         messageAdapter.add(msg);
         messageBox.setText("");
