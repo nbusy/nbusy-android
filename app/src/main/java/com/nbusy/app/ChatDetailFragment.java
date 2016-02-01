@@ -60,6 +60,11 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             return;
         }
 
+        // todo: move this into MessageStore in Worker and use Flux like immutable state + API sig { subscribe, dispatch, getState }
+        Message msg = messages.get(location);
+        msg.sentToServer = true;
+        msg.delivered = doubleCheck;
+
         // update the check mark on the updated item only as per:
         //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
         View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
@@ -69,10 +74,6 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             }
             v.findViewById(R.id.check).setVisibility(View.VISIBLE);
         }
-
-        Message msg = messages.get(location);
-        msg.sentToServer = true;
-        msg.delivered = doubleCheck;
     }
 
     /**************************
