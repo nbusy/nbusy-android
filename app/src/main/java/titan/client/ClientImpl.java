@@ -14,7 +14,7 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void sendMessage(String to, String msg) {
+    public void sendMessage(String to, String msg, Callback sentToServerCallback, Callback deliveredCallback) {
 
     }
 

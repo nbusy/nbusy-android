@@ -6,7 +6,8 @@ package titan.client;
 public interface Client {
     void connect();
 
-    void sendMessage(String to, String msg);
+    // todo: will the callback throw exception when the service stops?
+    void sendMessage(String to, String msg, Callback sentToServerCallback, Callback deliveredCallback);
 
     void close();
 }
