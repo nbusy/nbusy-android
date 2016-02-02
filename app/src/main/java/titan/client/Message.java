@@ -1,7 +1,11 @@
 package titan.client;
 
-/**
- * Created by teo on 28/01/16.
- */
 public class Message {
+    private final String to;
+    private final String body;
+
+    public Message(String to, String body) {
+        this.to = to;
+        this.body = body;
+    }
 }

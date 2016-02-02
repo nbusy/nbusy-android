@@ -5,4 +5,7 @@ package com.nbusy.sdk;
  */
 public class ClientImpl extends titan.client.ClientImpl implements Client {
 
+    public ClientImpl() {
+        super(conn);
+    }
 }

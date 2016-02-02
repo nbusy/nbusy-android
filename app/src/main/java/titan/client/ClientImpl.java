@@ -1,5 +1,9 @@
 package titan.client;
 
+import java.util.Objects;
+import java.util.logging.Logger;
+
+import neptulon.client.Conn;
 import neptulon.client.ConnImpl;
 import neptulon.client.ResHandler;
 import neptulon.client.Response;
@@ -9,41 +13,25 @@ import titan.client.callbacks.Callback;
  * Titan client implementation: https://github.com/titan-x/titan
  */
 public class ClientImpl implements Client {
+    private static final Logger logger = Logger.getLogger(ClientImpl.class.getSimpleName());
+    private final Conn conn;
+
+    public ClientImpl(Conn conn) {
+        this.conn = conn;
+    }
+
+    public ClientImpl() {
+        this(new ConnImpl());
+    }
+
     @Override
     public void connect() {
-
-    }
-
-    @Override
-    public void sendMessage(String to, String msg, Callback sentToServerCallback, Callback deliveredCallback) {
-
-    }
-
-    @Override
-    public void close() {
-
-    }
-
-    private void init() {
-        // TODO: remove this test code
-        ConnImpl conn = new ConnImpl();
         conn.connect();
+    }
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        class Test {
-            final String message;
-
-            Test(String message) {
-                this.message = message;
-            }
-        }
-
-        conn.sendRequest("test", new Test("wow"), new ResHandler<String>() {
+    @Override
+    public void sendMessage(String to, String msg, final Callback sentToServerCallback, final Callback deliveredCallback) {
+        conn.sendRequest("test", new Message(to, msg), new ResHandler<String>() {
             @Override
             public Class<String> getType() {
                 return String.class;
@@ -51,8 +39,24 @@ public class ClientImpl implements Client {
 
             @Override
             public void handler(Response<String> res) {
-//                Log.i(TAG, "Received response: " + res.result);
+                logger.info("Received response to sendMsg request: " + res.result);
+                if (Objects.equals(res.result, "ACK")) {
+                    sentToServerCallback.callback();
+                    return;
+                }
+                if (Objects.equals(res.result, "delivered")) {
+                    deliveredCallback.callback();
+                    return;
+                }
+
+                logger.info("Received unknown response to sendMsg request: " + res.result);
+                close();
             }
         });
+    }
+
+    @Override
+    public void close() {
+        conn.close();
     }
 }
