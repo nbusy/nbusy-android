@@ -31,7 +31,7 @@ public class ClientImpl implements Client {
 
     @Override
     public void sendMessage(String to, String msg, final Callback sentToServerCallback, final Callback deliveredCallback) {
-        conn.sendRequest("test", new Message(to, msg), new ResHandler<String>() {
+        conn.sendRequest("echo", new Message(to, msg), new ResHandler<String>() {
             @Override
             public Class<String> getType() {
                 return String.class;
@@ -39,7 +39,7 @@ public class ClientImpl implements Client {
 
             @Override
             public void handler(Response<String> res) {
-                logger.info("Received response to sendMsg request: " + res.result);
+                logger.info("Received response to sendMessage request: " + res.result);
                 if (Objects.equals(res.result, "ACK")) {
                     sentToServerCallback.callback();
                     return;
@@ -49,7 +49,7 @@ public class ClientImpl implements Client {
                     return;
                 }
 
-                logger.info("Received unknown response to sendMsg request: " + res.result);
+                logger.info("Received unknown response to sendMessage request: " + res.result);
                 close();
             }
         });
