@@ -1,67 +1,75 @@
 package neptulon.client;
 
+import neptulon.client.middleware.Echo;
+import neptulon.client.middleware.Logger;
+import neptulon.client.middleware.Router;
 import org.junit.Test;
+
+import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 public class NeptulonTest {
-    public static final String URL = "ws://127.0.0.1:3000";
+    private static final String URL = "ws://127.0.0.1:3001";
 
     @Test
-    public void emailValidator_CorrectEmailSimple_ReturnsTrue() {
-        assertThat("hazelnuts", 3, equalTo(3));
-    }
-
-    @Test
-    public void connect() {
+    public void connect() throws InterruptedException {
         if (isTravis()) {
             return;
         }
 
-        class Test {
-            final String message;
-
-            Test(String message) {
-                this.message = message;
-            }
-        }
-
         Conn conn = new ConnImpl(URL);
+        conn.middleware(new Logger());
+        Router router = new Router();
+        router.request("echo", new Echo());
+        conn.middleware(router);
+
         conn.connect();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        Thread.sleep(100);
         assertThat("Connection was not established in time.", conn.isConnected());
 
-        // todo: add middleware to log the incoming message here and replace logger inside response handler with verifier
-        // and release v0.1 corresponding to Neptulon v0.1
+        final CountDownLatch counter = new CountDownLatch(2); // todo: add one more for ws.onClose
 
-        conn.middleware(new Middleware() {
+        conn.sendRequest("echo", new EchoMessage("Hello from Java client!"), new ResHandler<Object>() {
             @Override
-            public void handler(ReqCtx req) {
+            public Class<Object> getType() {
+                return Object.class;
+            }
 
+            @Override
+            public void handler(Response<Object> res) {
+                System.out.println("Received 'echo' response: " + res.result);
+                counter.countDown();
             }
         });
 
-        conn.sendRequest("test", new Test("wow"), new ResHandler<String>() {
+        conn.sendRequest("close", new EchoMessage("Bye from Java client!"), new ResHandler<Object>() {
             @Override
-            public Class<String> getType() {
-                return String.class;
+            public Class<Object> getType() {
+                return Object.class;
             }
 
             @Override
-            public void handler(Response<String> res) {
-                System.out.println("Received response: " + res.result);
+            public void handler(Response<Object> res) {
+                System.out.println("Received 'close' response: " + res.result);
+                counter.countDown();
             }
         });
+
+        counter.await();
+        conn.close();
     }
 
     private boolean isTravis() {
         return System.getenv().containsKey("TRAVIS");
+    }
+
+    private class EchoMessage {
+        final String message;
+
+        EchoMessage(String message) {
+            this.message = message;
+        }
     }
 }

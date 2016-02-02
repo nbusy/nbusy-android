@@ -1,67 +1,34 @@
 package titan.client;
 
+import neptulon.client.middleware.Echo;
+import neptulon.client.middleware.Logger;
+import neptulon.client.middleware.Router;
 import org.junit.Test;
+
+import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 public class TitanTest {
-    public static final String URL = "ws://127.0.0.1:3000";
+    private static final String URL = "ws://127.0.0.1:3001";
 
     @Test
-    public void emailValidator_CorrectEmailSimple_ReturnsTrue() {
-        assertThat("hazelnuts", 3, equalTo(3));
-    }
-
-    @Test
-    public void connect() {
+    public void connect() throws InterruptedException {
         if (isTravis()) {
             return;
         }
-
-        class Test {
-            final String message;
-
-            Test(String message) {
-                this.message = message;
-            }
-        }
-
-        Conn conn = new ConnImpl(URL);
-        conn.connect();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        assertThat("Connection was not established in time.", conn.isConnected());
-
-        // todo: add middleware to log the incoming message here and replace logger inside response handler with verifier
-        // and release v0.1 corresponding to Neptulon v0.1
-
-        conn.middleware(new Middleware() {
-            @Override
-            public void handler(ReqCtx req) {
-
-            }
-        });
-
-        conn.sendRequest("test", new Test("wow"), new ResHandler<String>() {
-            @Override
-            public Class<String> getType() {
-                return String.class;
-            }
-
-            @Override
-            public void handler(Response<String> res) {
-                System.out.println("Received response: " + res.result);
-            }
-        });
     }
 
     private boolean isTravis() {
         return System.getenv().containsKey("TRAVIS");
+    }
+
+    private class EchoMessage {
+        final String message;
+
+        EchoMessage(String message) {
+            this.message = message;
+        }
     }
 }
