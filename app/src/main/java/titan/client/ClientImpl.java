@@ -3,6 +3,7 @@ package titan.client;
 import neptulon.client.ConnImpl;
 import neptulon.client.ResHandler;
 import neptulon.client.Response;
+import titan.client.callbacks.Callback;
 
 /**
  * Titan client implementation: https://github.com/titan-x/titan

@@ -1,5 +1,7 @@
 package titan.client;
 
+import titan.client.callbacks.Callback;
+
 /**
  * Titan client interface: https://github.com/titan-x/titan
  */
