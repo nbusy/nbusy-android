@@ -22,7 +22,7 @@ public class Worker {
     }
 
     public Worker() {
-        this(new ClientImpl(), new EventBus(TAG));
+        this(new ClientImpl("ws://10.0.0.2:3001"), new EventBus(TAG));
     }
 
     public EventBus getEventBus() {

@@ -17,16 +17,22 @@ public class ClientImpl implements Client {
     private final Conn conn;
 
     public ClientImpl(Conn conn) {
+        conn.middleware(new neptulon.client.middleware.Logger());
         this.conn = conn;
     }
 
-    public ClientImpl() {
-        this(new ConnImpl());
+    public ClientImpl(String url) {
+        this(new ConnImpl(url));
     }
 
     @Override
     public void connect() {
         conn.connect();
+    }
+
+    @Override
+    public boolean isConnected() {
+        return conn.isConnected();
     }
 
     @Override

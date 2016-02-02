@@ -1,11 +1,10 @@
 package titan.client;
 
-import neptulon.client.middleware.Echo;
-import neptulon.client.middleware.Logger;
-import neptulon.client.middleware.Router;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
+
+import titan.client.callbacks.Callback;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -18,17 +17,29 @@ public class TitanTest {
         if (isTravis()) {
             return;
         }
+
+        Client client = new ClientImpl(URL);
+        client.connect();
+        Thread.sleep(100);
+        assertThat("Connection was not established in time.", client.isConnected());
+
+        final CountDownLatch counter = new CountDownLatch(2); // todo: add one more for ws.onClose
+
+        class CB implements Callback {
+            @Override
+            public void callback() {
+                System.out.println("Received 'send' response.");
+                counter.countDown();
+            }
+        }
+
+        client.sendMessage("2", "Hello from Titan client!", new CB(), new CB());
+
+        counter.await();
+        client.close();
     }
 
     private boolean isTravis() {
         return System.getenv().containsKey("TRAVIS");
-    }
-
-    private class EchoMessage {
-        final String message;
-
-        EchoMessage(String message) {
-            this.message = message;
-        }
     }
 }
