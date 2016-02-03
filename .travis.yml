@@ -34,7 +34,7 @@ before_script:
   - adb shell input keyevent 82 &
 
 script:
-  - ./gradlew clean connectedCheck -PdisablePreDex # todo: swap 'clean build' with 'clean connectedCheck' to get back to default travis build script: https://docs.travis-ci.com/user/languages/android#Default-Test-Command-for-Gradle
+  - ./gradlew build connectedCheck -PdisablePreDex # todo: swap 'build' with 'build connectedCheck' to get back to default travis build script: https://docs.travis-ci.com/user/languages/android#Default-Test-Command-for-Gradle
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
