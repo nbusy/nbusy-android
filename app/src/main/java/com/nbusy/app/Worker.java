@@ -31,7 +31,7 @@ public class Worker {
 
     public void sendMessage(final Message msg) {
         //client.send(msg, callback)
-        class SimulateClient extends AsyncTask {
+        class SimulateClient extends AsyncTask<Object, Object, Object> {
             @Override
             protected Object doInBackground(Object[] params) {
                 try {
