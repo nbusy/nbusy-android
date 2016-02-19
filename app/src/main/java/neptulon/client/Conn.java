@@ -28,12 +28,7 @@ public interface Conn {
     /**
      * Connects to the given WebSocket server.
      */
-    void connect();
-
-    /**
-     * Whether the connection is established.
-     */
-    boolean isConnected();
+    void connect(); // todo: add callbacks for success/fail (or use events like okwebsockets?)
 
     /**
      * Returns the remote network address.

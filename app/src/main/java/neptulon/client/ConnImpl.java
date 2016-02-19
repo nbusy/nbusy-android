@@ -102,11 +102,6 @@ public class ConnImpl implements Conn, WebSocketListener {
     }
 
     @Override
-    public boolean isConnected() {
-        return ws != null && connected;
-    }
-
-    @Override
     public void remoteAddr() {
 
     }

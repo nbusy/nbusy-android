@@ -16,7 +16,7 @@ import titan.client.callbacks.Callback;
 public class ClientImpl implements Client {
     private static final Logger logger = Logger.getLogger(ClientImpl.class.getSimpleName());
     private final Conn conn;
-    private String userId;
+    private boolean connected;
 
     public ClientImpl(Conn conn) {
         conn.middleware(new neptulon.client.middleware.Logger());
@@ -30,11 +30,6 @@ public class ClientImpl implements Client {
     @Override
     public void connect() {
         conn.connect();
-    }
-
-    @Override
-    public boolean isConnected() {
-        return conn.isConnected();
     }
 
     @Override
