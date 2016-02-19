@@ -46,10 +46,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // add message to the UI, and clear message box
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        String strDate = sdf.format(c.getTime());
-        Message msg = new Message(UUID.randomUUID().toString(), "Teoman Soygul", messageBody, strDate, true);
+        String date = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
+        Message msg = new Message(UUID.randomUUID().toString(), "Teoman Soygul", messageBody, date, true);
         messageIDtoIndex.put(msg.id, messages.size());
         messageAdapter.add(msg);
         messageBox.setText("");
