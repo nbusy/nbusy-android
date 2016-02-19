@@ -1,5 +1,6 @@
 package titan.client;
 
+import java.util.Date;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -15,6 +16,7 @@ import titan.client.callbacks.Callback;
 public class ClientImpl implements Client {
     private static final Logger logger = Logger.getLogger(ClientImpl.class.getSimpleName());
     private final Conn conn;
+    private String userId;
 
     public ClientImpl(Conn conn) {
         conn.middleware(new neptulon.client.middleware.Logger());
@@ -37,7 +39,7 @@ public class ClientImpl implements Client {
 
     @Override
     public void sendMessage(String to, String msg, final Callback sentToServerCallback, final Callback deliveredCallback) {
-        conn.sendRequest("echo", new Message("", to, "", msg), new ResHandler<String>() {
+        conn.sendRequest("echo", new Message(userId, to, new Date(), msg), new ResHandler<String>() {
             @Override
             public Class<String> getType() {
                 return String.class;

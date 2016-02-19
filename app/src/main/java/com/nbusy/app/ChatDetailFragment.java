@@ -14,7 +14,7 @@ import com.google.common.eventbus.Subscribe;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +46,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // add message to the UI, and clear message box
-        String date = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
+        String date = new SimpleDateFormat("HH:mm").format(new Date());
         Message msg = new Message(UUID.randomUUID().toString(), "Teoman Soygul", messageBody, date, true);
         messageIDtoIndex.put(msg.id, messages.size());
         messageAdapter.add(msg);
