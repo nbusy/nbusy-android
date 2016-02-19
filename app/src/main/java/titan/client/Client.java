@@ -10,7 +10,6 @@ public interface Client {
 
     void jwtAuth(String token, Callback success, Callback fail);
 
-    // todo: will the callback throw exception when the service stops?
     void sendMessage(String to, String msg, Callback sentToServer, Callback delivered);
 
     void close();
