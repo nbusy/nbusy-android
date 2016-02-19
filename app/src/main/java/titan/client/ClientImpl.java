@@ -38,8 +38,13 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void sendMessage(String to, String msg, final Callback sentToServerCallback, final Callback deliveredCallback) {
-        conn.sendRequest("echo", new Message(userId, to, new Date(), msg), new ResHandler<String>() {
+    public void jwtAuth(String token, Callback success, Callback fail) {
+
+    }
+
+    @Override
+    public void sendMessage(String to, String msg, final Callback sentToServer, final Callback delivered) {
+        conn.sendRequest("echo", new Message("", to, new Date(), msg), new ResHandler<String>() {
             @Override
             public Class<String> getType() {
                 return String.class;
@@ -49,11 +54,11 @@ public class ClientImpl implements Client {
             public void handler(Response<String> res) {
                 logger.info("Received response to sendMessage request: " + res.result);
                 if (Objects.equals(res.result, "ACK")) {
-                    sentToServerCallback.callback();
+                    sentToServer.callback();
                     return;
                 }
                 if (Objects.equals(res.result, "delivered")) {
-                    deliveredCallback.callback();
+                    delivered.callback();
                     return;
                 }
 
