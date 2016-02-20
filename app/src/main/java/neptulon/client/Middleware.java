@@ -6,4 +6,3 @@ package neptulon.client;
 public interface Middleware {
     void handler(ReqCtx ctx);
 }
-

@@ -27,8 +27,10 @@ public interface Conn {
 
     /**
      * Connects to the given WebSocket server.
+     *
+     * @param handler Handler for connection/disconnection events.
      */
-    void connect(); // todo: add callbacks for success/fail (or use events like okwebsockets?)
+    void connect(ConnHandler handler);
 
     /**
      * Returns the remote network address.
