@@ -30,10 +30,6 @@ public class ReqCtx {
         this.gson = gson;
     }
 
-    public Conn getConn() {
-        return conn;
-    }
-
     public String getID() {
         return id;
     }

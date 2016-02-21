@@ -2,8 +2,7 @@ package neptulon.client;
 
 import com.google.gson.Gson;
 
-// todo: make this into an interface and move to callbacks package:
-// interface ResCallback { callback(ResCtx ctx); }
+// todo: make this into an interface and move to callbacks package: interface ResCallback { callback(ResCtx ctx); }
 
 /**
  * Handler for responses.
