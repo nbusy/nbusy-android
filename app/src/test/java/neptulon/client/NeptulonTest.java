@@ -8,11 +8,8 @@ import neptulon.client.middleware.Router;
 
 import org.junit.Test;
 
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class NeptulonTest {
     private static final String URL = "ws://127.0.0.1:3001";

@@ -8,8 +8,6 @@ import java.util.concurrent.TimeUnit;
 import neptulon.client.callbacks.ConnCallback;
 import titan.client.callbacks.SendMessageCallback;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-
 public class TitanTest {
     private static final String URL = "ws://127.0.0.1:3001";
 
