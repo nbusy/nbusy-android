@@ -12,11 +12,10 @@ public class TitanTest {
     private static final String URL = "ws://127.0.0.1:3001";
 
     @Test
-    public void connect() throws InterruptedException {
+    public void neptulonTestExternalClient() throws InterruptedException {
         if (isTravis()) {
             return;
         }
-
 
         Client client = new ClientImpl(URL);
         final CountDownLatch connCounter = new CountDownLatch(1);

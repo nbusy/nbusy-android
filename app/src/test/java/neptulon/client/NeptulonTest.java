@@ -15,7 +15,7 @@ public class NeptulonTest {
     private static final String URL = "ws://127.0.0.1:3001";
 
     @Test
-    public void connect() throws InterruptedException {
+    public void testExternalClient() throws InterruptedException {
         if (isTravis()) {
             return;
         }

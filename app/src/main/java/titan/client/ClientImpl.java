@@ -8,7 +8,6 @@ import neptulon.client.Conn;
 import neptulon.client.ResCtx;
 import neptulon.client.callbacks.ConnCallback;
 import neptulon.client.ConnImpl;
-import neptulon.client.Response;
 import neptulon.client.callbacks.ResCallback;
 import titan.client.callbacks.JwtAuthCallback;
 import titan.client.callbacks.SendMessageCallback;
@@ -19,7 +18,6 @@ import titan.client.callbacks.SendMessageCallback;
 public class ClientImpl implements Client {
     private static final Logger logger = Logger.getLogger(ClientImpl.class.getSimpleName());
     private final Conn conn;
-    private boolean connected;
 
     public ClientImpl(Conn conn) {
         conn.middleware(new neptulon.client.middleware.Logger());
