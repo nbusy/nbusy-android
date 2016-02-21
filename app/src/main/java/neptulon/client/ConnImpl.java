@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import neptulon.client.callbacks.ConnCallback;
+import neptulon.client.callbacks.ResCallback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -32,7 +33,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final Request request;
     private final WebSocketCall wsCall;
     private final List<Middleware> middleware = new ArrayList<>();
-    private final Map<String, ResHandler> resHandlers = new HashMap<>();
+    private final Map<String, ResCallback> resCallbacks = new HashMap<>();
     private WebSocket ws;
     private boolean connected;
     private ConnCallback connCallback;
@@ -110,15 +111,15 @@ public class ConnImpl implements Conn, WebSocketListener {
     }
 
     @Override
-    public <T> void sendRequest(String method, T params, ResHandler handler) {
+    public <T> void sendRequest(String method, T params, ResCallback cb) {
         String id = UUID.randomUUID().toString();
         neptulon.client.Request r = new neptulon.client.Request<>(id, method, params);
         send(r);
-        resHandlers.put(id, handler);
+        resCallbacks.put(id, cb);
     }
 
     @Override
-    public void sendRequestArr(String method, ResHandler handler, Object... params) {
+    public void sendRequestArr(String method, ResCallback cb, Object... params) {
 
     }
 
@@ -159,7 +160,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         Message msg = gson.fromJson(msgStr, Message.class);
         if (msg.method == null || msg.method.isEmpty()) {
             // handle response message
-            resHandlers.get(msg.id).execute(gson, msg);
+            resCallbacks.get(msg.id).handleResponse(new ResCtx(msg.id, msg.result, msg.error, gson));
             return;
         }
 

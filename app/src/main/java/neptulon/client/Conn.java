@@ -1,6 +1,7 @@
 package neptulon.client;
 
 import neptulon.client.callbacks.ConnCallback;
+import neptulon.client.callbacks.ResCallback;
 
 /**
  * Neptulon connection interface: https://github.com/neptulon/neptulon
@@ -42,12 +43,12 @@ public interface Conn {
     /**
      * Sends a JSON-RPC request through the connection with an auto generated request ID.
      */
-    <T> void sendRequest(String method, T params, ResHandler resHandler);
+    <T> void sendRequest(String method, T params, ResCallback cb);
 
     /**
      * Sends a JSON-RPC request through the connection, with array params and auto generated request ID.
      */
-    void sendRequestArr(String method, ResHandler handler, Object... params);
+    void sendRequestArr(String method, ResCallback cb, Object... params);
 
     /**
      * Closes the connection.

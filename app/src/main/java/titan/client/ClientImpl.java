@@ -5,10 +5,11 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 import neptulon.client.Conn;
+import neptulon.client.ResCtx;
 import neptulon.client.callbacks.ConnCallback;
 import neptulon.client.ConnImpl;
-import neptulon.client.ResHandler;
 import neptulon.client.Response;
+import neptulon.client.callbacks.ResCallback;
 import titan.client.callbacks.JwtAuthCallback;
 import titan.client.callbacks.SendMessageCallback;
 
@@ -41,25 +42,22 @@ public class ClientImpl implements Client {
 
     @Override
     public void sendMessage(String to, String msg, final SendMessageCallback cb) {
-        conn.sendRequest("echo", new Message("", to, new Date(), msg), new ResHandler<String>() {
+        conn.sendRequest("echo", new Message("", to, new Date(), msg), new ResCallback() {
             @Override
-            public Class<String> getType() {
-                return String.class;
-            }
+            public void handleResponse(ResCtx ctx) {
+                String res = ctx.getResult(String.class);
 
-            @Override
-            public void handler(Response<String> res) {
-                logger.info("Received response to sendMessage request: " + res.result);
-                if (Objects.equals(res.result, "ACK")) {
+                logger.info("Received response to sendMessage request: " + res);
+                if (Objects.equals(res, "ACK")) {
                     cb.sentToServer();
                     return;
                 }
-                if (Objects.equals(res.result, "delivered")) {
+                if (Objects.equals(res, "delivered")) {
                     cb.delivered();
                     return;
                 }
 
-                logger.info("Received unknown response to sendMessage request: " + res.result);
+                logger.info("Received unknown response to sendMessage request: " + res);
                 close();
             }
         });

@@ -9,10 +9,10 @@ import com.google.gson.JsonElement;
 public class ResCtx {
     private final String id;
     private final JsonElement result; // result parameters
-    private final JsonElement error; // response error (if any)
+    private final Message.ResError error; // response error (if any)
     private final Gson gson;
 
-    public ResCtx(String id, JsonElement result, JsonElement error, Gson gson) {
+    public ResCtx(String id, JsonElement result, Message.ResError error, Gson gson) {
         this.id = id;
         this.result = result;
         this.error = error;
@@ -26,9 +26,5 @@ public class ResCtx {
 
     public <T> T getResult(Class<T> classOfT) {
         return gson.fromJson(result, classOfT);
-    }
-
-    public <T> T getError(Class<T> classOfT) {
-        return gson.fromJson(error, classOfT);
     }
 }

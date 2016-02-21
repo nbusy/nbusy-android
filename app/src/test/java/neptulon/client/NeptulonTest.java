@@ -1,12 +1,14 @@
 package neptulon.client;
 
 import neptulon.client.callbacks.ConnCallback;
+import neptulon.client.callbacks.ResCallback;
 import neptulon.client.middleware.Echo;
 import neptulon.client.middleware.Logger;
 import neptulon.client.middleware.Router;
 
 import org.junit.Test;
 
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -41,28 +43,20 @@ public class NeptulonTest {
         });
         connCounter.await(1, TimeUnit.SECONDS);
 
-        conn.sendRequest("echo", new EchoMessage("Hello from Java client!"), new ResHandler<Object>() {
+        conn.sendRequest("echo", new EchoMessage("Hello from Java client!"), new ResCallback() {
             @Override
-            public Class<Object> getType() {
-                return Object.class;
-            }
-
-            @Override
-            public void handler(Response<Object> res) {
-                System.out.println("Received 'echo' response: " + res.result);
+            public void handleResponse(ResCtx ctx) {
+                Object res = ctx.getResult(Object.class);
+                System.out.println("Received 'echo' response: " + res);
                 msgCounter.countDown();
             }
         });
 
-        conn.sendRequest("close", new EchoMessage("Bye from Java client!"), new ResHandler<Object>() {
+        conn.sendRequest("close", new EchoMessage("Bye from Java client!"), new ResCallback() {
             @Override
-            public Class<Object> getType() {
-                return Object.class;
-            }
-
-            @Override
-            public void handler(Response<Object> res) {
-                System.out.println("Received 'close' response: " + res.result);
+            public void handleResponse(ResCtx ctx) {
+                Object res = ctx.getResult(Object.class);
+                System.out.println("Received 'close' response: " + res);
                 msgCounter.countDown();
             }
         });
