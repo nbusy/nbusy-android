@@ -9,7 +9,8 @@ import neptulon.client.ConnHandler;
 import neptulon.client.ConnImpl;
 import neptulon.client.ResHandler;
 import neptulon.client.Response;
-import titan.client.callbacks.Callback;
+import titan.client.callbacks.JwtAuthCallback;
+import titan.client.callbacks.SendMessageCallback;
 
 /**
  * Titan client implementation: https://github.com/titan-x/titan
@@ -34,12 +35,12 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void jwtAuth(String token, Callback success, Callback fail) {
+    public void jwtAuth(String token, final JwtAuthCallback cb) {
 
     }
 
     @Override
-    public void sendMessage(String to, String msg, final Callback sentToServer, final Callback delivered) {
+    public void sendMessage(String to, String msg, final SendMessageCallback cb) {
         conn.sendRequest("echo", new Message("", to, new Date(), msg), new ResHandler<String>() {
             @Override
             public Class<String> getType() {
@@ -50,11 +51,11 @@ public class ClientImpl implements Client {
             public void handler(Response<String> res) {
                 logger.info("Received response to sendMessage request: " + res.result);
                 if (Objects.equals(res.result, "ACK")) {
-                    sentToServer.callback();
+                    cb.sentToServer();
                     return;
                 }
                 if (Objects.equals(res.result, "delivered")) {
-                    delivered.callback();
+                    cb.delivered();
                     return;
                 }
 

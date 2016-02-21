@@ -6,10 +6,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import neptulon.client.ConnHandler;
-import titan.client.callbacks.Callback;
+import titan.client.callbacks.SendMessageCallback;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
 
 public class TitanTest {
     private static final String URL = "ws://127.0.0.1:3001";
@@ -37,15 +36,19 @@ public class TitanTest {
         });
         connCounter.await(1, TimeUnit.SECONDS);
 
-        class CB implements Callback {
+        client.sendMessage("2", "Hello from Titan client!", new SendMessageCallback() {
             @Override
-            public void callback() {
-                System.out.println("Received 'send' response.");
+            public void sentToServer() {
+                System.out.println("Received 'send' response: message delivered to server.");
                 msgCounter.countDown();
             }
-        }
 
-        client.sendMessage("2", "Hello from Titan client!", new CB(), new CB());
+            @Override
+            public void delivered() {
+                System.out.println("Received 'send' response: message delivered to user.");
+                msgCounter.countDown();
+            }
+        });
 
         msgCounter.await();
         client.close();
