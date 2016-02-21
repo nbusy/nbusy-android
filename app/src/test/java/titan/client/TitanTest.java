@@ -3,7 +3,9 @@ package titan.client;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
+import neptulon.client.ConnHandler;
 import titan.client.callbacks.Callback;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -18,24 +20,34 @@ public class TitanTest {
             return;
         }
 
-        Client client = new ClientImpl(URL);
-        client.connect();
-        Thread.sleep(100);
-//        assertThat("Connection was not established in time.", client.isConnected());
 
-        final CountDownLatch counter = new CountDownLatch(2); // todo: add one more for ws.onClose
+        Client client = new ClientImpl(URL);
+        final CountDownLatch connCounter = new CountDownLatch(1);
+        final CountDownLatch msgCounter = new CountDownLatch(2);
+        client.connect(new ConnHandler() {
+            @Override
+            public void connected() {
+                connCounter.countDown();
+            }
+
+            @Override
+            public void disconnected(String reason) {
+
+            }
+        });
+        connCounter.await(1, TimeUnit.SECONDS);
 
         class CB implements Callback {
             @Override
             public void callback() {
                 System.out.println("Received 'send' response.");
-                counter.countDown();
+                msgCounter.countDown();
             }
         }
 
         client.sendMessage("2", "Hello from Titan client!", new CB(), new CB());
 
-        counter.await();
+        msgCounter.await();
         client.close();
     }
 

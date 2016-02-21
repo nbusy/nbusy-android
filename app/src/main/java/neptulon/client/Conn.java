@@ -26,7 +26,7 @@ public interface Conn {
     void middleware(Middleware mw);
 
     /**
-     * Connects to the given WebSocket server.
+     * Connects to the given Neptulon server.
      *
      * @param handler Handler for connection/disconnection events.
      */

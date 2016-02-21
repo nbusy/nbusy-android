@@ -4,5 +4,6 @@ package neptulon.client;
  * Handler for connection event.
  */
 public interface ConnHandler {
-    void handler();
+    void connected();
+    void disconnected(String reason);
 }

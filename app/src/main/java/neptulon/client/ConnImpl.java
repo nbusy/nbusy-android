@@ -34,6 +34,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final Map<String, ResHandler> resHandlers = new HashMap<>();
     private WebSocket ws;
     private boolean connected;
+    private ConnHandler connHandler;
 
     /**
      * Initializes a new connection with given server URL.
@@ -96,8 +97,9 @@ public class ConnImpl implements Conn, WebSocketListener {
     // handleRequest(method, .....) { if isClientConn... else exception } // same goes for go-client
 
     @Override
-    public void connect() {
+    public void connect(ConnHandler handler) {
         // enqueue this listener implementation to initiate the WebSocket connection
+        connHandler = handler;
         wsCall.enqueue(this);
     }
 
@@ -138,12 +140,15 @@ public class ConnImpl implements Conn, WebSocketListener {
         ws = webSocket;
         connected = true;
         logger.info("WebSocket connected.");
+        connHandler.connected();
     }
 
     @Override
     public void onFailure(IOException e, Response response) {
         connected = false;
-        logger.warning("WebSocket connection closed with error: " + e.getMessage());
+        String reason = e.getMessage();
+        logger.warning("WebSocket connection closed with error: " + reason);
+        connHandler.disconnected(reason);
     }
 
     @Override

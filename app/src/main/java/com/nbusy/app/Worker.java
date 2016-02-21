@@ -6,6 +6,8 @@ import com.google.common.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
+import neptulon.client.ConnHandler;
+
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
  * All notifications from this class is sent out using an event bus.
@@ -18,7 +20,17 @@ public class Worker {
     public Worker(Client client, EventBus eventBus) {
         this.client = client;
         this.eventBus = eventBus;
-        client.connect();
+        client.connect(new ConnHandler() {
+            @Override
+            public void connected() {
+
+            }
+
+            @Override
+            public void disconnected(String reason) {
+
+            }
+        });
     }
 
     public Worker() {

@@ -3,9 +3,11 @@ package neptulon.client;
 import neptulon.client.middleware.Echo;
 import neptulon.client.middleware.Logger;
 import neptulon.client.middleware.Router;
+
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -24,12 +26,20 @@ public class NeptulonTest {
         Router router = new Router();
         router.request("echo", new Echo());
         conn.middleware(router);
+        final CountDownLatch connCounter = new CountDownLatch(1);
+        final CountDownLatch msgCounter = new CountDownLatch(2);
 
-        conn.connect();
-        Thread.sleep(100);
-//        assertThat("Connection was not established in time.", conn.isConnected());
+        conn.connect(new ConnHandler() {
+            @Override
+            public void connected() {
+                connCounter.countDown();
+            }
 
-        final CountDownLatch counter = new CountDownLatch(2); // todo: add one more for ws.onClose
+            @Override
+            public void disconnected(String reason) {
+            }
+        });
+        connCounter.await(1, TimeUnit.SECONDS);
 
         conn.sendRequest("echo", new EchoMessage("Hello from Java client!"), new ResHandler<Object>() {
             @Override
@@ -40,7 +50,7 @@ public class NeptulonTest {
             @Override
             public void handler(Response<Object> res) {
                 System.out.println("Received 'echo' response: " + res.result);
-                counter.countDown();
+                msgCounter.countDown();
             }
         });
 
@@ -53,11 +63,11 @@ public class NeptulonTest {
             @Override
             public void handler(Response<Object> res) {
                 System.out.println("Received 'close' response: " + res.result);
-                counter.countDown();
+                msgCounter.countDown();
             }
         });
 
-        counter.await();
+        msgCounter.await();
         conn.close();
     }
 
