@@ -13,7 +13,20 @@ import java.util.concurrent.TimeUnit;
 
 public class NeptulonTest {
     private static final String URL = "ws://127.0.0.1:3001";
+    private boolean isTravis() {
+        return System.getenv().containsKey("TRAVIS");
+    }
+    private class EchoMessage {
+        final String message;
 
+        EchoMessage(String message) {
+            this.message = message;
+        }
+    }
+
+    /**
+     * External client test case in line with the Neptulon external client test case specs and event flow.
+     */
     @Test
     public void testExternalClient() throws InterruptedException {
         if (isTravis()) {
@@ -60,17 +73,5 @@ public class NeptulonTest {
 
         msgCounter.await();
         conn.close();
-    }
-
-    private boolean isTravis() {
-        return System.getenv().containsKey("TRAVIS");
-    }
-
-    private class EchoMessage {
-        final String message;
-
-        EchoMessage(String message) {
-            this.message = message;
-        }
     }
 }

@@ -10,6 +10,9 @@ import titan.client.callbacks.SendMessageCallback;
 
 public class TitanTest {
     private static final String URL = "ws://127.0.0.1:3001";
+    private boolean isTravis() {
+        return System.getenv().containsKey("TRAVIS");
+    }
 
     @Test
     public void neptulonTestExternalClient() throws InterruptedException {
@@ -49,9 +52,5 @@ public class TitanTest {
 
         msgCounter.await();
         client.close();
-    }
-
-    private boolean isTravis() {
-        return System.getenv().containsKey("TRAVIS");
     }
 }
