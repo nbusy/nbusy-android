@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import neptulon.client.callbacks.ConnCallback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -34,7 +35,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final Map<String, ResHandler> resHandlers = new HashMap<>();
     private WebSocket ws;
     private boolean connected;
-    private ConnHandler connHandler;
+    private ConnCallback connCallback;
 
     /**
      * Initializes a new connection with given server URL.
@@ -97,9 +98,9 @@ public class ConnImpl implements Conn, WebSocketListener {
     // handleRequest(method, .....) { if isClientConn... else exception } // same goes for go-client
 
     @Override
-    public void connect(ConnHandler handler) {
+    public void connect(ConnCallback handler) {
         // enqueue this listener implementation to initiate the WebSocket connection
-        connHandler = handler;
+        connCallback = handler;
         wsCall.enqueue(this);
     }
 
@@ -140,7 +141,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         ws = webSocket;
         connected = true;
         logger.info("WebSocket connected.");
-        connHandler.connected();
+        connCallback.connected();
     }
 
     @Override
@@ -148,7 +149,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         connected = false;
         String reason = e.getMessage();
         logger.warning("WebSocket connection closed with error: " + reason);
-        connHandler.disconnected(reason);
+        connCallback.disconnected(reason);
     }
 
     @Override

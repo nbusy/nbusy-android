@@ -1,6 +1,6 @@
 package titan.client;
 
-import neptulon.client.ConnHandler;
+import neptulon.client.callbacks.ConnCallback;
 import titan.client.callbacks.JwtAuthCallback;
 import titan.client.callbacks.SendMessageCallback;
 
@@ -13,7 +13,7 @@ public interface Client {
      *
      * @param handler Handler for connection/disconnection events.
      */
-    void connect(ConnHandler handler);
+    void connect(ConnCallback handler);
 
     void jwtAuth(String token, JwtAuthCallback cb);
 

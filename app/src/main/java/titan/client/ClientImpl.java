@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 import neptulon.client.Conn;
-import neptulon.client.ConnHandler;
+import neptulon.client.callbacks.ConnCallback;
 import neptulon.client.ConnImpl;
 import neptulon.client.ResHandler;
 import neptulon.client.Response;
@@ -30,7 +30,7 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void connect(ConnHandler handler) {
+    public void connect(ConnCallback handler) {
         conn.connect(handler);
     }
 

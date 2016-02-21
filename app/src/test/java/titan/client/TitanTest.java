@@ -5,7 +5,7 @@ import org.junit.Test;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import neptulon.client.ConnHandler;
+import neptulon.client.callbacks.ConnCallback;
 import titan.client.callbacks.SendMessageCallback;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,7 +23,7 @@ public class TitanTest {
         Client client = new ClientImpl(URL);
         final CountDownLatch connCounter = new CountDownLatch(1);
         final CountDownLatch msgCounter = new CountDownLatch(2);
-        client.connect(new ConnHandler() {
+        client.connect(new ConnCallback() {
             @Override
             public void connected() {
                 connCounter.countDown();

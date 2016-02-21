@@ -1,5 +1,6 @@
 package neptulon.client;
 
+import neptulon.client.callbacks.ConnCallback;
 import neptulon.client.middleware.Echo;
 import neptulon.client.middleware.Logger;
 import neptulon.client.middleware.Router;
@@ -10,7 +11,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
 
 public class NeptulonTest {
     private static final String URL = "ws://127.0.0.1:3001";
@@ -29,7 +29,7 @@ public class NeptulonTest {
         final CountDownLatch connCounter = new CountDownLatch(1);
         final CountDownLatch msgCounter = new CountDownLatch(2);
 
-        conn.connect(new ConnHandler() {
+        conn.connect(new ConnCallback() {
             @Override
             public void connected() {
                 connCounter.countDown();

@@ -1,5 +1,7 @@
 package neptulon.client;
 
+import neptulon.client.callbacks.ConnCallback;
+
 /**
  * Neptulon connection interface: https://github.com/neptulon/neptulon
  */
@@ -30,7 +32,7 @@ public interface Conn {
      *
      * @param handler Handler for connection/disconnection events.
      */
-    void connect(ConnHandler handler);
+    void connect(ConnCallback handler);
 
     /**
      * Returns the remote network address.
