@@ -19,6 +19,7 @@ import titan.client.messages.Message;
  */
 public class ClientImpl implements Client {
     private static final Logger logger = Logger.getLogger(ClientImpl.class.getSimpleName());
+    private static final String ACK = "ACK";
     private final Conn conn;
 
     public ClientImpl(Conn conn) {
@@ -40,14 +41,19 @@ public class ClientImpl implements Client {
         conn.sendRequest("auth.jwt", new JwtAuth(token), new ResCallback() {
             @Override
             public void handleResponse(ResCtx ctx) {
-
+                String res = ctx.getResult(String.class);
+                if (!Objects.equals(res, ACK)) {
+                    cb.fail();
+                } else {
+                    cb.success();
+                }
             }
         });
     }
 
     @Override
     public void sendMessage(String to, String msg, final SendMessageCallback cb) {
-        conn.sendRequest("echo", new Message("", to, new Date(), msg), new ResCallback() {
+        conn.sendRequest("msg.send", new Message("", to, new Date(), msg), new ResCallback() {
             @Override
             public void handleResponse(ResCtx ctx) {
                 String res = ctx.getResult(String.class);
