@@ -2,12 +2,15 @@ package titan.client;
 
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import neptulon.client.callbacks.ConnCallback;
 import titan.client.callbacks.JwtAuthCallback;
 import titan.client.callbacks.SendMessageCallback;
+import titan.client.messages.Message;
 
 public class TitanTest {
     private static final String URL = "ws://127.0.0.1:3001";
@@ -56,7 +59,7 @@ public class TitanTest {
         authCounter.await(3, TimeUnit.SECONDS);
 
         final CountDownLatch msgCounter = new CountDownLatch(2);
-        client.sendMessage("2", "Hello from Titan client!", new SendMessageCallback() {
+        client.sendMessages(Collections.singletonList(new Message(null, "2", new Date(), "Hello from Titan client!")), new SendMessageCallback() {
             @Override
             public void sentToServer() {
                 System.out.println("Received 'send' response: message delivered to server.");

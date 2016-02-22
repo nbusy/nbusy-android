@@ -1,6 +1,7 @@
 package neptulon.client;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import okio.Buffer;
  */
 public class ConnImpl implements Conn, WebSocketListener {
     private static final Logger logger = Logger.getLogger(ConnImpl.class.getSimpleName());
-    private final Gson gson = new Gson();
+    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").create();
     private final OkHttpClient client;
     private final Request request;
     private final WebSocketCall wsCall;

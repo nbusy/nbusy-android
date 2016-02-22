@@ -1,6 +1,7 @@
 package titan.client;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -52,8 +53,8 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void sendMessage(String to, String msg, final SendMessageCallback cb) {
-        conn.sendRequest("msg.send", new Message("", to, new Date(), msg), new ResCallback() {
+    public void sendMessages(List<Message> messages, final SendMessageCallback cb) {
+        conn.sendRequest("msg.send", messages, new ResCallback() {
             @Override
             public void handleResponse(ResCtx ctx) {
                 String res = ctx.getResult(String.class);
