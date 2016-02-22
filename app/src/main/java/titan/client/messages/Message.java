@@ -1,4 +1,4 @@
-package titan.client;
+package titan.client.messages;
 
 import java.util.Date;
 

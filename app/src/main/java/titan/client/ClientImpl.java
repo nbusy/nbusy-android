@@ -11,6 +11,8 @@ import neptulon.client.ConnImpl;
 import neptulon.client.callbacks.ResCallback;
 import titan.client.callbacks.JwtAuthCallback;
 import titan.client.callbacks.SendMessageCallback;
+import titan.client.messages.JwtAuth;
+import titan.client.messages.Message;
 
 /**
  * Titan client implementation: https://github.com/titan-x/titan
@@ -35,7 +37,12 @@ public class ClientImpl implements Client {
 
     @Override
     public void jwtAuth(String token, final JwtAuthCallback cb) {
+        conn.sendRequest("auth.jwt", new JwtAuth(token), new ResCallback() {
+            @Override
+            public void handleResponse(ResCtx ctx) {
 
+            }
+        });
     }
 
     @Override
