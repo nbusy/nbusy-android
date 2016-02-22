@@ -13,9 +13,11 @@ import java.util.concurrent.TimeUnit;
 
 public class NeptulonTest {
     private static final String URL = "ws://127.0.0.1:3001";
+
     private boolean isTravis() {
         return System.getenv().containsKey("TRAVIS");
     }
+
     private class EchoMessage {
         final String message;
 
@@ -38,9 +40,8 @@ public class NeptulonTest {
         Router router = new Router();
         router.request("echo", new Echo());
         conn.middleware(router);
-        final CountDownLatch connCounter = new CountDownLatch(1);
-        final CountDownLatch msgCounter = new CountDownLatch(2);
 
+        final CountDownLatch connCounter = new CountDownLatch(1);
         conn.connect(new ConnCallback() {
             @Override
             public void connected() {
@@ -51,8 +52,9 @@ public class NeptulonTest {
             public void disconnected(String reason) {
             }
         });
-        connCounter.await(1, TimeUnit.SECONDS);
+        connCounter.await(3, TimeUnit.SECONDS);
 
+        final CountDownLatch msgCounter = new CountDownLatch(2);
         conn.sendRequest("echo", new EchoMessage("Hello from Java client!"), new ResCallback() {
             @Override
             public void handleResponse(ResCtx ctx) {
@@ -61,7 +63,6 @@ public class NeptulonTest {
                 msgCounter.countDown();
             }
         });
-
         conn.sendRequest("close", new EchoMessage("Bye from Java client!"), new ResCallback() {
             @Override
             public void handleResponse(ResCtx ctx) {
@@ -70,8 +71,8 @@ public class NeptulonTest {
                 msgCounter.countDown();
             }
         });
+        msgCounter.await(3, TimeUnit.SECONDS);
 
-        msgCounter.await();
         conn.close();
     }
 }
