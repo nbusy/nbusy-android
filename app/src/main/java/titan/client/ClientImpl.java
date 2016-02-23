@@ -11,7 +11,8 @@ import neptulon.client.callbacks.ConnCallback;
 import neptulon.client.callbacks.ResCallback;
 import neptulon.client.middleware.Router;
 import titan.client.callbacks.JwtAuthCallback;
-import titan.client.callbacks.SendMessageCallback;
+import titan.client.callbacks.RecvMsgCallback;
+import titan.client.callbacks.SendMsgCallback;
 import titan.client.messages.JwtAuth;
 import titan.client.messages.Message;
 
@@ -24,15 +25,15 @@ public class ClientImpl implements Client {
     private final Router router = new Router();
     private final Conn conn;
 
-    public ClientImpl(Conn conn) {
+    public ClientImpl(Conn conn, RecvMsgCallback cb) {
         conn.middleware(new neptulon.client.middleware.Logger());
-//        router.
+        router.request("msg.recv", new RecvMsgMiddleware(cb));
         conn.middleware(router);
         this.conn = conn;
     }
 
-    public ClientImpl(String url) {
-        this(new ConnImpl(url));
+    public ClientImpl(String url, RecvMsgCallback cb) {
+        this(new ConnImpl(url), cb);
     }
 
     @Override
@@ -59,7 +60,7 @@ public class ClientImpl implements Client {
     // todo2: we should set from,date fields for each message ourselves or expect an OutMessage class instead (bonus, variadic!)
 
     @Override
-    public void sendMessages(List<Message> messages, final SendMessageCallback cb) {
+    public void sendMessages(List<Message> messages, final SendMsgCallback cb) {
         conn.sendRequest("msg.send", messages, new ResCallback() {
             @Override
             public void handleResponse(ResCtx ctx) {

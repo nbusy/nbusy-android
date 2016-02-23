@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import neptulon.client.callbacks.ConnCallback;
 import titan.client.callbacks.JwtAuthCallback;
-import titan.client.callbacks.SendMessageCallback;
+import titan.client.callbacks.SendMsgCallback;
 import titan.client.messages.Message;
 
 public class TitanTest {
@@ -59,7 +59,7 @@ public class TitanTest {
         authCounter.await(3, TimeUnit.SECONDS);
 
         final CountDownLatch msgCounter = new CountDownLatch(2);
-        client.sendMessages(Collections.singletonList(new Message(null, "2", new Date(), "Hello from Titan client!")), new SendMessageCallback() {
+        client.sendMessages(Collections.singletonList(new Message(null, "2", new Date(), "Hello from Titan client!")), new SendMsgCallback() {
             @Override
             public void sentToServer() {
                 System.out.println("Received 'send' response: message delivered to server.");

@@ -7,6 +7,7 @@ import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
 import neptulon.client.callbacks.ConnCallback;
+import titan.client.callbacks.RecvMsgCallback;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -34,7 +35,7 @@ public class Worker {
     }
 
     public Worker() {
-        this(new ClientImpl("ws://10.0.0.2:3001"), new EventBus(TAG));
+        this(new ClientImpl("ws://10.0.0.2:3001", new RecvMsgCallback()), new EventBus(TAG));
     }
 
     public EventBus getEventBus() {
