@@ -1,16 +1,17 @@
 package com.nbusy.sdk;
 
+import neptulon.client.Conn;
+
 /**
  * NBusy client implementation: https://github.com/nbusy/nbusy
  */
-public class ClientImpl implements Client {
-    @Override
-    public boolean connect() {
-        return false;
+public class ClientImpl extends titan.client.ClientImpl implements Client {
+
+    public ClientImpl(Conn conn) {
+        super(conn);
     }
 
-    @Override
-    public boolean close() {
-        return false;
+    public ClientImpl(String url) {
+        super(url);
     }
 }

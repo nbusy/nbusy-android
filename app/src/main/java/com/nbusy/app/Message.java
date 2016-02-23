@@ -4,6 +4,9 @@ package com.nbusy.app;
  * A message within a chat.
  */
 class Message {
+
+    // todo: make this class immutable to make change tracking easier
+
     final String id; // unique message ID
     final String from; // sender of this message
     final String body; // message text

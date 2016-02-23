@@ -1,67 +1,78 @@
 package neptulon.client;
 
+import neptulon.client.callbacks.ConnCallback;
+import neptulon.client.callbacks.ResCallback;
+import neptulon.client.middleware.Echo;
+import neptulon.client.middleware.Logger;
+import neptulon.client.middleware.Router;
+
 import org.junit.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class NeptulonTest {
-    public static final String URL = "ws://127.0.0.1:3000";
+    private static final String URL = "ws://127.0.0.1:3001";
 
-    @Test
-    public void emailValidator_CorrectEmailSimple_ReturnsTrue() {
-        assertThat("hazelnuts", 3, equalTo(3));
+    private boolean isTravis() {
+        return System.getenv().containsKey("TRAVIS");
     }
 
+    private class EchoMessage {
+        final String message;
+
+        EchoMessage(String message) {
+            this.message = message;
+        }
+    }
+
+    /**
+     * External client test case in line with the Neptulon external client test case specs and event flow.
+     */
     @Test
-    public void connect() {
+    public void testExternalClient() throws InterruptedException {
         if (isTravis()) {
             return;
         }
 
-        class Test {
-            final String message;
-
-            Test(String message) {
-                this.message = message;
-            }
-        }
-
         Conn conn = new ConnImpl(URL);
-        conn.connect();
+        conn.middleware(new Logger());
+        Router router = new Router();
+        router.request("echo", new Echo());
+        conn.middleware(router);
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        assertThat("Connection was not established in time.", conn.isConnected());
-
-        // todo: add middleware to log the incoming message here and replace logger inside response handler with verifier
-        // and release v0.1 corresponding to Neptulon v0.1
-
-        conn.middleware(new Middleware() {
+        final CountDownLatch connCounter = new CountDownLatch(1);
+        conn.connect(new ConnCallback() {
             @Override
-            public void handler(ReqCtx req) {
+            public void connected() {
+                connCounter.countDown();
+            }
 
+            @Override
+            public void disconnected(String reason) {
             }
         });
+        connCounter.await(3, TimeUnit.SECONDS);
 
-        conn.sendRequest("test", new Test("wow"), new ResHandler<String>() {
+        final CountDownLatch msgCounter = new CountDownLatch(2);
+        conn.sendRequest("echo", new EchoMessage("Hello from Java client!"), new ResCallback() {
             @Override
-            public Class<String> getType() {
-                return String.class;
-            }
-
-            @Override
-            public void handler(Response<String> res) {
-                System.out.println("Received response: " + res.result);
+            public void handleResponse(ResCtx ctx) {
+                Object res = ctx.getResult(Object.class);
+                System.out.println("Received 'echo' response: " + res);
+                msgCounter.countDown();
             }
         });
-    }
+        conn.sendRequest("close", new EchoMessage("Bye from Java client!"), new ResCallback() {
+            @Override
+            public void handleResponse(ResCtx ctx) {
+                Object res = ctx.getResult(Object.class);
+                System.out.println("Received 'close' response: " + res);
+                msgCounter.countDown();
+            }
+        });
+        msgCounter.await(3, TimeUnit.SECONDS);
 
-    private boolean isTravis() {
-        return System.getenv().containsKey("TRAVIS");
+        conn.close();
     }
 }

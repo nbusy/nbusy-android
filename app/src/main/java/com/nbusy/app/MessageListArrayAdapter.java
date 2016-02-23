@@ -57,6 +57,8 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
             viewHolder.check.setVisibility(View.GONE);
         } else if (message.sentToServer && !message.delivered) {
             viewHolder.check.setText("✓");
+        } else {
+            viewHolder.check.setText("✓✓");
         }
 
         if (message.owner) {

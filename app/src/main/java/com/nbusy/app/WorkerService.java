@@ -42,7 +42,10 @@ public class WorkerService extends Service {
         WorkerSingleton.destroyWorker();
     }
 
-    /* Local service binding */
+    /*************************
+     * Local service binding *
+     *************************/
+
     private final IBinder binder = new WorkerServiceBinder();
 
     /**
@@ -59,5 +62,4 @@ public class WorkerService extends Service {
         // allow binding to this local service directly so anyone can call public functions on this service directly
         return binder;
     }
-    /* Local service binding */
 }

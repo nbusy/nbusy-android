@@ -1,14 +1,12 @@
 package com.nbusy.app;
 
-import android.util.Log;
+import android.os.AsyncTask;
 
 import com.google.common.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
-import neptulon.client.ConnImpl;
-import neptulon.client.ResHandler;
-import neptulon.client.Response;
+import neptulon.client.callbacks.ConnCallback;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -22,75 +20,66 @@ public class Worker {
     public Worker(Client client, EventBus eventBus) {
         this.client = client;
         this.eventBus = eventBus;
+        client.connect(new ConnCallback() {
+            @Override
+            public void connected() {
+
+            }
+
+            @Override
+            public void disconnected(String reason) {
+
+            }
+        });
     }
 
     public Worker() {
-        this(new ClientImpl(), new EventBus(TAG));
+        this(new ClientImpl("ws://10.0.0.2:3001"), new EventBus(TAG));
     }
 
     public EventBus getEventBus() {
         return eventBus;
     }
 
-    public void sendMessage(Message msg) {
-        eventBus.post(new MessageSavedEvent(msg.id, msg.from, msg.body, msg.sent, msg.owner));
-        eventBus.post(new MessageSentEvent(msg.id, msg.from, msg.body, msg.sent, msg.owner));
-    }
-
-    private void init() {
-        // TODO: remove this test code
-        ConnImpl conn = new ConnImpl();
-        conn.connect();
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        class Test {
-            final String message;
-
-            Test(String message) {
-                this.message = message;
-            }
-        }
-
-        conn.sendRequest("test", new Test("wow"), new ResHandler<String>() {
+    public void sendMessage(final Message msg) {
+        //client.send(msg, callback)
+        class SimulateClient extends AsyncTask<Object, Object, Object> {
             @Override
-            public Class<String> getType() {
-                return String.class;
+            protected Object doInBackground(Object[] params) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
             }
 
             @Override
-            public void handler(Response<String> res) {
-                Log.i(TAG, "Received response: " + res.result);
+            protected void onPostExecute(Object o) {
+                eventBus.post(new MessageSentEvent(msg.id));
             }
-        });
+        }
+
+        new SimulateClient().execute(null, null, null);
     }
 
     /*****************
      * Event Objects *
      *****************/
 
-    public class MessageSavedEvent extends Message {
-        MessageSavedEvent(String id, String from, String body, String sent, boolean owner) {
-            super(id, from, body, sent, owner);
+    public class MessageSentEvent {
+        final String id;
+
+        public MessageSentEvent(String id) {
+            this.id = id;
         }
     }
 
-    public class MessageSentEvent extends Message {
-        MessageSentEvent(String id, String from, String body, String sent, boolean owner) {
-            super(id, from, body, sent, owner);
-            sentToServer = true;
-        }
-    }
+    public class MessageDeliveredEvent {
+        final String id;
 
-    public class MessageDeliveredEvent extends Message {
-        MessageDeliveredEvent(String id, String from, String body, String sent, boolean owner) {
-            super(id, from, body, sent, owner);
-            sentToServer = true;
-            delivered = true;
+        public MessageDeliveredEvent(String id) {
+            this.id = id;
         }
     }
 }
