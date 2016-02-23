@@ -4,5 +4,10 @@ package neptulon.client;
  * Middleware interface definition.
  */
 public interface Middleware {
-    void handler(ReqCtx ctx);
+
+    /**
+     * Middleware interface signature.
+     * @param ctx Request context.
+     */
+    void middleware(ReqCtx ctx);
 }

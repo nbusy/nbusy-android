@@ -1,15 +1,15 @@
 package titan.client;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
 import neptulon.client.Conn;
+import neptulon.client.ConnImpl;
 import neptulon.client.ResCtx;
 import neptulon.client.callbacks.ConnCallback;
-import neptulon.client.ConnImpl;
 import neptulon.client.callbacks.ResCallback;
+import neptulon.client.middleware.Router;
 import titan.client.callbacks.JwtAuthCallback;
 import titan.client.callbacks.SendMessageCallback;
 import titan.client.messages.JwtAuth;
@@ -21,10 +21,13 @@ import titan.client.messages.Message;
 public class ClientImpl implements Client {
     private static final Logger logger = Logger.getLogger(ClientImpl.class.getSimpleName());
     private static final String ACK = "ACK";
+    private final Router router = new Router();
     private final Conn conn;
 
     public ClientImpl(Conn conn) {
         conn.middleware(new neptulon.client.middleware.Logger());
+//        router.
+        conn.middleware(router);
         this.conn = conn;
     }
 
@@ -51,6 +54,9 @@ public class ClientImpl implements Client {
             }
         });
     }
+
+    // todo: send message for singular?
+    // todo2: we should set from,date fields for each message ourselves or expect an OutMessage class instead (bonus, variadic!)
 
     @Override
     public void sendMessages(List<Message> messages, final SendMessageCallback cb) {
