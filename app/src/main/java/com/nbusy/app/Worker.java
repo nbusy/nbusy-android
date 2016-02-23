@@ -8,6 +8,7 @@ import com.nbusy.sdk.ClientImpl;
 
 import neptulon.client.callbacks.ConnCallback;
 import titan.client.callbacks.RecvMsgsCallback;
+import titan.client.callbacks.SendMsgCallback;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -67,7 +68,17 @@ public class Worker {
     }
 
     public void sendMessages(Message[] msgs) {
-//        client.sendMessages();
+//        client.sendMessages(msgs, new SendMsgCallback() {
+//            @Override
+//            public void sentToServer() {
+//
+//            }
+//
+//            @Override
+//            public void delivered() {
+//
+//            }
+//        });
     }
 
     public void echo() {
