@@ -1,7 +1,5 @@
 package titan.client;
 
-import java.util.List;
-
 import neptulon.client.callbacks.ConnCallback;
 import titan.client.callbacks.JwtAuthCallback;
 import titan.client.callbacks.SendMsgCallback;
@@ -20,7 +18,7 @@ public interface Client {
 
     void jwtAuth(String token, JwtAuthCallback cb);
 
-    void sendMessages(List<Message> messages, SendMsgCallback cb);
+    void sendMessages(Message[] msgs, SendMsgCallback cb);
 
     void close();
 }

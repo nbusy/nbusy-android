@@ -19,5 +19,6 @@ public class RecvMsgsMiddleware implements Middleware {
     public void middleware(ReqCtx ctx) {
         Message[] msgs = ctx.getParams(Message[].class);
         ctx.next();
+        cb.callback(msgs);
     }
 }

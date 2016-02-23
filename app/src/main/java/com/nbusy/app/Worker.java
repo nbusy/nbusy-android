@@ -66,6 +66,10 @@ public class Worker {
         new SimulateClient().execute(null, null, null);
     }
 
+    public void sendMessages(Message[] msgs) {
+//        client.sendMessages();
+    }
+
     public void echo() {
 
     }
