@@ -11,7 +11,7 @@ public class Logger implements Middleware {
 
     @Override
     public void middleware(ReqCtx ctx) {
-        logger.info(ctx.getParams(Object.class).toString());
         ctx.next();
+        logger.info("Request: \"" + ctx.getParams(Object.class).toString() + "\", Response: \"" + ctx.response + "\"");
     }
 }

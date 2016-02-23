@@ -11,7 +11,7 @@ import neptulon.client.callbacks.ConnCallback;
 import neptulon.client.callbacks.ResCallback;
 import neptulon.client.middleware.Router;
 import titan.client.callbacks.JwtAuthCallback;
-import titan.client.callbacks.RecvMsgCallback;
+import titan.client.callbacks.RecvMsgsCallback;
 import titan.client.callbacks.SendMsgCallback;
 import titan.client.messages.JwtAuth;
 import titan.client.messages.Message;
@@ -25,14 +25,14 @@ public class ClientImpl implements Client {
     private final Router router = new Router();
     private final Conn conn;
 
-    public ClientImpl(Conn conn, RecvMsgCallback cb) {
+    public ClientImpl(Conn conn, RecvMsgsCallback cb) {
         conn.middleware(new neptulon.client.middleware.Logger());
-        router.request("msg.recv", new RecvMsgMiddleware(cb));
+        router.request("msg.recv", new RecvMsgsMiddleware(cb));
         conn.middleware(router);
         this.conn = conn;
     }
 
-    public ClientImpl(String url, RecvMsgCallback cb) {
+    public ClientImpl(String url, RecvMsgsCallback cb) {
         this(new ConnImpl(url), cb);
     }
 

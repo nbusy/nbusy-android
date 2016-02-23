@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import neptulon.client.callbacks.ConnCallback;
 import titan.client.callbacks.JwtAuthCallback;
+import titan.client.callbacks.RecvMsgsCallback;
 import titan.client.callbacks.SendMsgCallback;
 import titan.client.messages.Message;
 
@@ -29,7 +30,11 @@ public class TitanTest {
             return;
         }
 
-        Client client = new ClientImpl(URL);
+        Client client = new ClientImpl(URL, new RecvMsgsCallback() {
+            @Override
+            public void callback(Message[] msgs) {
+            }
+        });
 
         final CountDownLatch connCounter = new CountDownLatch(1);
         client.connect(new ConnCallback() {

@@ -27,6 +27,7 @@ public class Router implements Middleware {
         Middleware mw = routes.get(ctx.getMethod());
         if (mw != null) {
             mw.middleware(ctx);
+            return;
         }
 
         ctx.next();
