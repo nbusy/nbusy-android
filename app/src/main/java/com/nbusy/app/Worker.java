@@ -79,7 +79,7 @@ public class Worker {
         client.sendMessages(tmsgs, new SendMsgCallback() {
             @Override
             public void sentToServer() {
-
+//                eventBus.post(new MessageSentEvent(msg.id));
             }
             @Override
             public void delivered() {
