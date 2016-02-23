@@ -24,12 +24,10 @@ public class Worker {
         client.connect(new ConnCallback() {
             @Override
             public void connected() {
-
             }
 
             @Override
             public void disconnected(String reason) {
-
             }
         });
     }
@@ -68,6 +66,10 @@ public class Worker {
         new SimulateClient().execute(null, null, null);
     }
 
+    public void echo() {
+
+    }
+
     /*****************
      * Event Objects *
      *****************/
@@ -85,6 +87,14 @@ public class Worker {
 
         public MessageDeliveredEvent(String id) {
             this.id = id;
+        }
+    }
+
+    public class EchoResponse {
+        public final String message;
+
+        public EchoResponse(String message) {
+            this.message = message;
         }
     }
 }
