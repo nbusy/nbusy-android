@@ -6,11 +6,10 @@ import java.util.logging.Logger;
 import neptulon.client.Conn;
 import neptulon.client.ConnImpl;
 import neptulon.client.ResCtx;
-import neptulon.client.callbacks.ConnCallback;
 import neptulon.client.callbacks.ResCallback;
 import neptulon.client.middleware.Router;
+import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.JwtAuthCallback;
-import titan.client.callbacks.RecvMsgsCallback;
 import titan.client.callbacks.SendMsgCallback;
 import titan.client.messages.JwtAuth;
 import titan.client.messages.Message;
@@ -23,21 +22,22 @@ public class ClientImpl implements Client {
     private static final String ACK = "ACK";
     private final Router router = new Router();
     private final Conn conn;
+    private ConnCallbacks cbs;
 
-    public ClientImpl(Conn conn, RecvMsgsCallback cb) {
+    public ClientImpl(Conn conn) {
         conn.middleware(new neptulon.client.middleware.Logger());
-        router.request("msg.recv", new RecvMsgsMiddleware(cb));
+        router.request("msg.recv", new RecvMsgsMiddleware(cbs));
         conn.middleware(router);
         this.conn = conn;
     }
 
-    public ClientImpl(String url, RecvMsgsCallback cb) {
-        this(new ConnImpl(url), cb);
+    public ClientImpl(String url) {
+        this(new ConnImpl(url));
     }
 
     @Override
-    public void connect(ConnCallback cb) {
-        conn.connect(cb);
+    public void connect(ConnCallbacks cbs) {
+        conn.connect(cbs);
     }
 
     @Override

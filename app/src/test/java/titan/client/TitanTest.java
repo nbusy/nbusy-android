@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 import neptulon.client.callbacks.ConnCallback;
+import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.JwtAuthCallback;
-import titan.client.callbacks.RecvMsgsCallback;
 import titan.client.callbacks.SendMsgCallback;
 import titan.client.messages.Message;
 
@@ -26,19 +26,17 @@ public class TitanTest {
             return;
         }
 
-        Client client = new ClientImpl(WS_URL, new RecvMsgsCallback() {
-            @Override
-            public void callback(Message[] msgs) {
-            }
-        });
+        Client client = new ClientImpl(WS_URL);
 
         final CountDownLatch connCounter = new CountDownLatch(1);
-        client.connect(new ConnCallback() {
+        client.connect(new ConnCallbacks() {
+            @Override
+            public void messagesReceived(Message[] msgs) {
+            }
             @Override
             public void connected() {
                 connCounter.countDown();
             }
-
             @Override
             public void disconnected(String reason) {
             }

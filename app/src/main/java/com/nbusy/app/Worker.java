@@ -9,8 +9,7 @@ import com.nbusy.sdk.ClientImpl;
 
 import java.util.Date;
 
-import neptulon.client.callbacks.ConnCallback;
-import titan.client.callbacks.RecvMsgsCallback;
+import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.SendMsgCallback;
 
 /**
@@ -22,15 +21,14 @@ public class Worker {
     private final Client client;
     private final EventBus eventBus;
 
-    public Worker() {
-        this.client = new ClientImpl("ws://10.0.0.2:3001", new RecvMsgsCallback() {
+    public Worker(Client client, EventBus eventBus) {
+        this.client = client;
+        this.eventBus = eventBus;
+        client.connect(new ConnCallbacks() {
             @Override
-            public void callback(titan.client.messages.Message[] msgs) {
-                // todo: eventBus.post(new MessagesReceivedEvent())
+            public void messagesReceived(titan.client.messages.Message[] msgs) {
             }
-        });
-        this.eventBus = new EventBus(TAG);
-        client.connect(new ConnCallback() {
+
             @Override
             public void connected() {
                 Log.i(TAG, "Worker connected to NBusy server.");
@@ -41,6 +39,10 @@ public class Worker {
                 Log.w(TAG, "Worker failed to connect to NBusy server.");
             }
         });
+    }
+
+    public Worker() {
+        this(new ClientImpl("ws://10.0.0.2:3001"), new EventBus(TAG));
     }
 
     public EventBus getEventBus() {
