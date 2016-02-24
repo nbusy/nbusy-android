@@ -62,7 +62,7 @@ public class Worker {
 
             @Override
             protected void onPostExecute(Object o) {
-                eventBus.post(new MessagesSentEvent(msg.id));
+                eventBus.post(new MessagesSentEvent(new String[]{msg.id}));
             }
         }
 
@@ -97,18 +97,18 @@ public class Worker {
      *****************/
 
     public class MessagesSentEvent {
-        final String id;
+        final String[] ids;
 
-        public MessagesSentEvent(String id) {
-            this.id = id;
+        public MessagesSentEvent(String[] ids) {
+            this.ids = ids;
         }
     }
 
     public class MessagesDeliveredEvent {
-        final String id;
+        final String[] ids;
 
-        public MessagesDeliveredEvent(String id) {
-            this.id = id;
+        public MessagesDeliveredEvent(String[] ids) {
+            this.ids = ids;
         }
     }
 
