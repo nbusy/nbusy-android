@@ -39,6 +39,7 @@ public class Worker {
         this(new ClientImpl("ws://10.0.0.2:3001", new RecvMsgsCallback() {
             @Override
             public void callback(titan.client.messages.Message[] msgs) {
+                // todo: eventBus.post(new MessagesReceivedEvent())
             }
         }), new EventBus(TAG));
     }
@@ -79,7 +80,7 @@ public class Worker {
         client.sendMessages(tmsgs, new SendMsgCallback() {
             @Override
             public void sentToServer() {
-//                eventBus.post(new MessagesSentEvent(msg.id));
+                // todo: eventBus.post(new MessagesSentEvent(msg.id));
             }
         });
     }
@@ -92,8 +93,16 @@ public class Worker {
      * Event Objects *
      *****************/
 
+    public class MessagesReceivedEvent {
+        public final Message[] msgs;
+
+        public MessagesReceivedEvent(Message[] msgs) {
+            this.msgs = msgs;
+        }
+    }
+
     public class MessagesSentEvent {
-        final String[] ids;
+        public final String[] ids;
 
         public MessagesSentEvent(String[] ids) {
             this.ids = ids;
@@ -101,7 +110,7 @@ public class Worker {
     }
 
     public class MessagesDeliveredEvent {
-        final String[] ids;
+        public final String[] ids;
 
         public MessagesDeliveredEvent(String[] ids) {
             this.ids = ids;
