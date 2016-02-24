@@ -37,8 +37,8 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void connect(ConnCallback handler) {
-        conn.connect(handler);
+    public void connect(ConnCallback cb) {
+        conn.connect(cb);
     }
 
     @Override

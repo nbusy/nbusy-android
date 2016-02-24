@@ -9,12 +9,7 @@ import titan.client.messages.Message;
  * Titan client interface: https://github.com/titan-x/titan
  */
 public interface Client {
-    /**
-     * Connects to the given Titan server.
-     *
-     * @param handler Handler for connection/disconnection events.
-     */
-    void connect(ConnCallback handler);
+    void connect(ConnCallback cb);
 
     void jwtAuth(String token, JwtAuthCallback cb);
 
