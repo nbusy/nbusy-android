@@ -25,7 +25,7 @@ public class TitanTest {
      * External client test case in line with the Titan external client test case specs and event flow.
      */
     @Test
-    public void testExternalClient() throws InterruptedException {
+    public void testExternalClient() throws Exception {
         if (isTravis()) {
             return;
         }
@@ -63,17 +63,11 @@ public class TitanTest {
         });
         authCounter.await(3, TimeUnit.SECONDS);
 
-        final CountDownLatch msgCounter = new CountDownLatch(2);
+        final CountDownLatch msgCounter = new CountDownLatch(1);
         client.sendMessages(new Message[]{new Message(null, "2", new Date(), "Hello from Titan client!")}, new SendMsgCallback() {
             @Override
             public void sentToServer() {
                 System.out.println("Received 'send' response: message delivered to server.");
-                msgCounter.countDown();
-            }
-
-            @Override
-            public void delivered() {
-                System.out.println("Received 'send' response: message delivered to user.");
                 msgCounter.countDown();
             }
         });

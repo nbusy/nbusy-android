@@ -81,10 +81,6 @@ public class Worker {
             public void sentToServer() {
 //                eventBus.post(new MessagesSentEvent(msg.id));
             }
-            @Override
-            public void delivered() {
-
-            }
         });
     }
 

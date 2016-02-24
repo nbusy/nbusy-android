@@ -71,10 +71,6 @@ public class ClientImpl implements Client {
                     cb.sentToServer();
                     return;
                 }
-                if (Objects.equals(res, "delivered")) {
-                    cb.delivered();
-                    return;
-                }
 
                 logger.info("Received unknown response to sendMessage request: " + res);
                 close();
