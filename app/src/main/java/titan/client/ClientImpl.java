@@ -45,7 +45,7 @@ public class ClientImpl implements Client {
     public void jwtAuth(String token, final JwtAuthCallback cb) {
         conn.sendRequest("auth.jwt", new JwtAuth(token), new ResCallback() {
             @Override
-            public void handleResponse(ResCtx ctx) {
+            public void callback(ResCtx ctx) {
                 String res = ctx.getResult(String.class);
                 if (!Objects.equals(res, ACK)) {
                     cb.fail();
@@ -63,7 +63,7 @@ public class ClientImpl implements Client {
     public void sendMessages(Message[] msgs, final SendMsgCallback cb) {
         conn.sendRequest("msg.send", msgs, new ResCallback() {
             @Override
-            public void handleResponse(ResCtx ctx) {
+            public void callback(ResCtx ctx) {
                 String res = ctx.getResult(String.class);
 
                 logger.info("Received response to sendMessage request: " + res);

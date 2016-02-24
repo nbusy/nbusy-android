@@ -6,6 +6,6 @@ import neptulon.client.ResCtx;
  * Callback for responses.
  */
 public interface ResCallback {
-    void handleResponse(ResCtx ctx);
+    void callback(ResCtx ctx);
 }
 

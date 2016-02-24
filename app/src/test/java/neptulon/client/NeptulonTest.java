@@ -48,7 +48,7 @@ public class NeptulonTest {
         final CountDownLatch msgCounter = new CountDownLatch(2);
         conn.sendRequest("echo", new EchoMessage("Hello from Java client!"), new ResCallback() {
             @Override
-            public void handleResponse(ResCtx ctx) {
+            public void callback(ResCtx ctx) {
                 Object res = ctx.getResult(Object.class);
                 System.out.println("Received 'echo' response: " + res);
                 msgCounter.countDown();
@@ -56,7 +56,7 @@ public class NeptulonTest {
         });
         conn.sendRequest("close", new EchoMessage("Bye from Java client!"), new ResCallback() {
             @Override
-            public void handleResponse(ResCtx ctx) {
+            public void callback(ResCtx ctx) {
                 Object res = ctx.getResult(Object.class);
                 System.out.println("Received 'close' response: " + res);
                 msgCounter.countDown();

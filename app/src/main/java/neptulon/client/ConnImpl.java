@@ -100,9 +100,9 @@ public class ConnImpl implements Conn, WebSocketListener {
     // handleRequest(method, .....) { if isClientConn... else exception } // same goes for go-client
 
     @Override
-    public void connect(ConnCallback handler) {
+    public void connect(ConnCallback cb) {
         // enqueue this listener implementation to initiate the WebSocket connection
-        connCallback = handler;
+        connCallback = cb;
         wsCall.enqueue(this);
     }
 
@@ -171,7 +171,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         Message msg = gson.fromJson(msgStr, Message.class);
         if (msg.method == null || msg.method.isEmpty()) {
             // handle response message
-            resCallbacks.get(msg.id).handleResponse(new ResCtx(msg.id, msg.result, msg.error, gson));
+            resCallbacks.get(msg.id).callback(new ResCtx(msg.id, msg.result, msg.error, gson));
             return;
         }
 
