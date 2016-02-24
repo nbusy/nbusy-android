@@ -1,6 +1,7 @@
 package com.nbusy.app;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.common.eventbus.EventBus;
 import com.nbusy.sdk.Client;
@@ -27,10 +28,12 @@ public class Worker {
         client.connect(new ConnCallback() {
             @Override
             public void connected() {
+                Log.i(TAG, "Worker connected to NBusy server.");
             }
 
             @Override
             public void disconnected(String reason) {
+                Log.w(TAG, "Worker failed to connect to NBusy server.");
             }
         });
     }
