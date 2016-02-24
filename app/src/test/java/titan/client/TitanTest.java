@@ -2,10 +2,8 @@ package titan.client;
 
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import neptulon.client.callbacks.ConnCallback;
 import titan.client.callbacks.JwtAuthCallback;
@@ -13,14 +11,12 @@ import titan.client.callbacks.RecvMsgsCallback;
 import titan.client.callbacks.SendMsgCallback;
 import titan.client.messages.Message;
 
+import static neptulon.client.Utils.JWT_TOKEN;
+import static neptulon.client.Utils.WS_URL;
+import static neptulon.client.Utils.awaitThrows;
+import static neptulon.client.Utils.isTravis;
+
 public class TitanTest {
-    private static final String URL = "ws://127.0.0.1:3001";
-    private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA";
-
-    private boolean isTravis() {
-        return System.getenv().containsKey("TRAVIS");
-    }
-
     /**
      * External client test case in line with the Titan external client test case specs and event flow.
      */
@@ -30,7 +26,7 @@ public class TitanTest {
             return;
         }
 
-        Client client = new ClientImpl(URL, new RecvMsgsCallback() {
+        Client client = new ClientImpl(WS_URL, new RecvMsgsCallback() {
             @Override
             public void callback(Message[] msgs) {
             }
@@ -47,7 +43,7 @@ public class TitanTest {
             public void disconnected(String reason) {
             }
         });
-        connCounter.await(3, TimeUnit.SECONDS);
+        awaitThrows(connCounter);
 
         final CountDownLatch authCounter = new CountDownLatch(1);
         client.jwtAuth(JWT_TOKEN, new JwtAuthCallback() {
@@ -61,7 +57,7 @@ public class TitanTest {
                 org.junit.Assert.fail("JWT auth failed");
             }
         });
-        authCounter.await(3, TimeUnit.SECONDS);
+        awaitThrows(authCounter);
 
         final CountDownLatch msgCounter = new CountDownLatch(1);
         client.sendMessages(new Message[]{new Message(null, "2", new Date(), "Hello from Titan client!")}, new SendMsgCallback() {
@@ -71,7 +67,7 @@ public class TitanTest {
                 msgCounter.countDown();
             }
         });
-        msgCounter.await(3, TimeUnit.SECONDS);
+        awaitThrows(msgCounter);
 
         client.close();
     }
