@@ -29,7 +29,7 @@ import okio.Buffer;
  */
 public class ConnImpl implements Conn, WebSocketListener {
     private static final Logger logger = Logger.getLogger(ConnImpl.class.getSimpleName());
-    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").create();
+    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
     private final OkHttpClient client;
     private final Request request;
     private final WebSocketCall wsCall;
@@ -108,11 +108,17 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void remoteAddr() {
-
+        if (!connected) {
+            throw new IllegalStateException("Not connected.");
+        }
     }
 
     @Override
     public <T> void sendRequest(String method, T params, ResCallback cb) {
+        if (!connected) {
+            throw new IllegalStateException("Not connected.");
+        }
+
         String id = UUID.randomUUID().toString();
         neptulon.client.Request r = new neptulon.client.Request<>(id, method, params);
         send(r);
@@ -126,6 +132,10 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void close() {
+        if (!connected) {
+            return;
+        }
+
         connected = false;
         try {
             ws.close(0, "");
