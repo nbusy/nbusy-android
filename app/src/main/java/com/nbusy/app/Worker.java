@@ -62,7 +62,7 @@ public class Worker {
 
             @Override
             protected void onPostExecute(Object o) {
-                eventBus.post(new MessageSentEvent(msg.id));
+                eventBus.post(new MessagesSentEvent(msg.id));
             }
         }
 
@@ -79,7 +79,7 @@ public class Worker {
         client.sendMessages(tmsgs, new SendMsgCallback() {
             @Override
             public void sentToServer() {
-//                eventBus.post(new MessageSentEvent(msg.id));
+//                eventBus.post(new MessagesSentEvent(msg.id));
             }
             @Override
             public void delivered() {
@@ -87,8 +87,6 @@ public class Worker {
             }
         });
     }
-
-
 
     public void echo() {
 
@@ -98,26 +96,26 @@ public class Worker {
      * Event Objects *
      *****************/
 
-    public class MessageSentEvent {
+    public class MessagesSentEvent {
         final String id;
 
-        public MessageSentEvent(String id) {
+        public MessagesSentEvent(String id) {
             this.id = id;
         }
     }
 
-    public class MessageDeliveredEvent {
+    public class MessagesDeliveredEvent {
         final String id;
 
-        public MessageDeliveredEvent(String id) {
+        public MessagesDeliveredEvent(String id) {
             this.id = id;
         }
     }
 
-    public class EchoResponse {
+    public class EchoReceivedEvent {
         public final String message;
 
-        public EchoResponse(String message) {
+        public EchoReceivedEvent(String message) {
             this.message = message;
         }
     }

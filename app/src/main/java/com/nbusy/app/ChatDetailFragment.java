@@ -150,12 +150,12 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      ******************************/
 
     @Subscribe
-    public void addCheckMarkToMessage(Worker.MessageSentEvent e) {
+    public void addCheckMarkToMessage(Worker.MessagesSentEvent e) {
         addCheckMarkToMessage(e.id, false);
     }
 
     @Subscribe
-    public void addDoubleCheckMarkToMessage(Worker.MessageDeliveredEvent e) {
+    public void addDoubleCheckMarkToMessage(Worker.MessagesDeliveredEvent e) {
         addCheckMarkToMessage(e.id, true);
     }
 }
