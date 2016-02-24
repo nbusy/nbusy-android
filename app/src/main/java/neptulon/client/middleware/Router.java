@@ -13,17 +13,21 @@ public class Router implements Middleware {
     private final Map<String, Middleware> routes = new HashMap<>();
 
     /**
-     * Adds a new request route registry.
+     * Add a new request route registry.
      */
     public void request(String route, Middleware mw) {
         routes.put(route, mw);
     }
 
+    /**
+     * Neptulon {Middleware} interface implementation.
+     */
     @Override
-    public void handler(ReqCtx ctx) {
+    public void middleware(ReqCtx ctx) {
         Middleware mw = routes.get(ctx.getMethod());
         if (mw != null) {
-            mw.handler(ctx);
+            mw.middleware(ctx);
+            return;
         }
 
         ctx.next();

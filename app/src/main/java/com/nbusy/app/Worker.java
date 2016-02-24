@@ -6,7 +6,11 @@ import com.google.common.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
+import java.util.Date;
+
 import neptulon.client.callbacks.ConnCallback;
+import titan.client.callbacks.RecvMsgsCallback;
+import titan.client.callbacks.SendMsgCallback;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -23,18 +27,20 @@ public class Worker {
         client.connect(new ConnCallback() {
             @Override
             public void connected() {
-
             }
 
             @Override
             public void disconnected(String reason) {
-
             }
         });
     }
 
     public Worker() {
-        this(new ClientImpl("ws://10.0.0.2:3001"), new EventBus(TAG));
+        this(new ClientImpl("ws://10.0.0.2:3001", new RecvMsgsCallback() {
+            @Override
+            public void callback(titan.client.messages.Message[] msgs) {
+            }
+        }), new EventBus(TAG));
     }
 
     public EventBus getEventBus() {
@@ -56,30 +62,57 @@ public class Worker {
 
             @Override
             protected void onPostExecute(Object o) {
-                eventBus.post(new MessageSentEvent(msg.id));
+                eventBus.post(new MessagesSentEvent(new String[]{msg.id}));
             }
         }
 
         new SimulateClient().execute(null, null, null);
     }
 
+    public void sendMessages(Message[] msgs) {
+        titan.client.messages.Message[] tmsgs = new titan.client.messages.Message[msgs.length];
+        Date now = new Date();
+        for (int i = 0; i < msgs.length; i++) {
+            tmsgs[i] = new titan.client.messages.Message(null, msgs[i].to, now, msgs[i].body);
+        }
+
+        client.sendMessages(tmsgs, new SendMsgCallback() {
+            @Override
+            public void sentToServer() {
+//                eventBus.post(new MessagesSentEvent(msg.id));
+            }
+        });
+    }
+
+    public void echo() {
+
+    }
+
     /*****************
      * Event Objects *
      *****************/
 
-    public class MessageSentEvent {
-        final String id;
+    public class MessagesSentEvent {
+        final String[] ids;
 
-        public MessageSentEvent(String id) {
-            this.id = id;
+        public MessagesSentEvent(String[] ids) {
+            this.ids = ids;
         }
     }
 
-    public class MessageDeliveredEvent {
-        final String id;
+    public class MessagesDeliveredEvent {
+        final String[] ids;
 
-        public MessageDeliveredEvent(String id) {
-            this.id = id;
+        public MessagesDeliveredEvent(String[] ids) {
+            this.ids = ids;
+        }
+    }
+
+    public class EchoReceivedEvent {
+        public final String message;
+
+        public EchoReceivedEvent(String message) {
+            this.message = message;
         }
     }
 }

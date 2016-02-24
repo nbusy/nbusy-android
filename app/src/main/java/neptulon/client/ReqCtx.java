@@ -46,7 +46,7 @@ public class ReqCtx {
         mwIndex++;
 
         if (mwIndex <= middleware.size()) {
-            middleware.get(mwIndex - 1).handler(this);
+            middleware.get(mwIndex - 1).middleware(this);
             return;
         }
 
