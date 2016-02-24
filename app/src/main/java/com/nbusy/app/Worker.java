@@ -22,9 +22,14 @@ public class Worker {
     private final Client client;
     private final EventBus eventBus;
 
-    public Worker(Client client, EventBus eventBus) {
-        this.client = client;
-        this.eventBus = eventBus;
+    public Worker() {
+        this.client = new ClientImpl("ws://10.0.0.2:3001", new RecvMsgsCallback() {
+            @Override
+            public void callback(titan.client.messages.Message[] msgs) {
+                // todo: eventBus.post(new MessagesReceivedEvent())
+            }
+        });
+        this.eventBus = new EventBus(TAG);
         client.connect(new ConnCallback() {
             @Override
             public void connected() {
@@ -36,15 +41,6 @@ public class Worker {
                 Log.w(TAG, "Worker failed to connect to NBusy server.");
             }
         });
-    }
-
-    public Worker() {
-        this(new ClientImpl("ws://10.0.0.2:3001", new RecvMsgsCallback() {
-            @Override
-            public void callback(titan.client.messages.Message[] msgs) {
-                // todo: eventBus.post(new MessagesReceivedEvent())
-            }
-        }), new EventBus(TAG));
     }
 
     public EventBus getEventBus() {
