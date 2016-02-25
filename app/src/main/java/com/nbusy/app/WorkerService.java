@@ -32,7 +32,7 @@ public class WorkerService extends Service {
         // by device boot event and application is not actively running
         String startedBy = intent.getStringExtra(STARTED_BY);
         terminateAfterDone = (startedBy != null && Objects.equals(startedBy, DeviceBootBroadcastReceiver.class.getSimpleName()));
-        Log.i(TAG, "Worker service started by: " + startedBy);
+        Log.i(TAG, "WorkerService started by: " + startedBy);
 
         // we want this service to continue running until it is explicitly stopped, so return sticky
         return Service.START_STICKY;
@@ -40,7 +40,7 @@ public class WorkerService extends Service {
 
     @Override
     public void onDestroy() {
-
+        Log.i(TAG, "WorkerService destroyed");
         super.onDestroy();
         WorkerSingleton.destroyWorker();
     }
