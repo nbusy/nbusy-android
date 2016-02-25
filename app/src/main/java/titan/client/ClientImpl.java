@@ -18,7 +18,7 @@ import titan.client.messages.Message;
  * Titan client implementation: https://github.com/titan-x/titan
  */
 public class ClientImpl implements Client {
-    private static final Logger logger = Logger.getLogger(ClientImpl.class.getSimpleName());
+    private static final Logger logger = Logger.getLogger("Titan: " + ClientImpl.class.getSimpleName());
     private static final String ACK = "ACK";
     private final Router router = new Router();
     private final Conn conn;

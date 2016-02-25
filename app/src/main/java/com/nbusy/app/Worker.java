@@ -24,7 +24,7 @@ public class Worker {
     private final EventBus eventBus;
 
     public Worker(final Client client, EventBus eventBus) {
-        Log.i(TAG, "Worker instance created.");
+        Log.i(TAG, "Instance created.");
         this.client = client;
         this.eventBus = eventBus;
         client.connect(new ConnCallbacks() {
@@ -34,23 +34,23 @@ public class Worker {
 
             @Override
             public void connected() {
-                Log.i(TAG, "Worker connected to NBusy server.");
+                Log.i(TAG, "Connected to NBusy server.");
                 client.jwtAuth(JWT_TOKEN, new JwtAuthCallback() {
                     @Override
                     public void success() {
-                        Log.i(TAG, "Worker authenticated with NBusy server.");
+                        Log.i(TAG, "Authenticated with NBusy server.");
                     }
 
                     @Override
                     public void fail() {
-                        Log.i(TAG, "Worker authentication failed with NBusy server.");
+                        Log.i(TAG, "Authentication failed with NBusy server.");
                     }
                 });
             }
 
             @Override
             public void disconnected(String reason) {
-                Log.w(TAG, "Worker failed to connect to NBusy server.");
+                Log.w(TAG, "Failed to connect to NBusy server.");
             }
         });
     }
@@ -99,7 +99,7 @@ public class Worker {
     }
 
     public void destroy() {
-        Log.i(TAG, "Worker instance destroyed.");
+        Log.i(TAG, "Instance destroyed.");
         client.close();
     }
 
