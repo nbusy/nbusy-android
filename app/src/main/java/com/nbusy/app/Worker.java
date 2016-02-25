@@ -72,13 +72,13 @@ public class Worker {
     }
 
     public void sendMessages(Message[] msgs) {
-        titan.client.messages.Message[] tmsgs = new titan.client.messages.Message[msgs.length];
+        titan.client.messages.Message[] titanMsgs = new titan.client.messages.Message[msgs.length];
         Date now = new Date();
         for (int i = 0; i < msgs.length; i++) {
-            tmsgs[i] = new titan.client.messages.Message(null, msgs[i].to, now, msgs[i].body);
+            titanMsgs[i] = new titan.client.messages.Message(null, msgs[i].to, now, msgs[i].body);
         }
 
-        client.sendMessages(tmsgs, new SendMsgCallback() {
+        client.sendMessages(titanMsgs, new SendMsgCallback() {
             @Override
             public void sentToServer() {
                 // todo: eventBus.post(new MessagesSentEvent(msg.id));
