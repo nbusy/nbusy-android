@@ -53,7 +53,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         messageBox.setText("");
 
         // send the message to the server
-        worker.sendMessage(msg);
+        worker.sendMessagesSimulate(new Message[]{msg});
     }
 
     private void addCheckMarkToMessage(String msgID, boolean doubleCheck) {

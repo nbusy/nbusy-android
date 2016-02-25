@@ -49,13 +49,13 @@ public class Worker {
         return eventBus;
     }
 
-    public void sendMessage(final Message msg) {
+    public void sendMessagesSimulate(final Message[] msgs) {
         //client.send(msg, callback)
         class SimulateClient extends AsyncTask<Object, Object, Object> {
             @Override
             protected Object doInBackground(Object[] params) {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -64,19 +64,19 @@ public class Worker {
 
             @Override
             protected void onPostExecute(Object o) {
-                eventBus.post(new MessagesSentEvent(new String[]{msg.id}));
+                eventBus.post(new MessagesSentEvent(collectMessageIds(msgs)));
             }
         }
 
         new SimulateClient().execute(null, null, null);
     }
 
-    public void sendMessages(Message[] msgs) {
+    public void sendMessages(final Message[] msgs) {
         titan.client.messages.Message[] titanMsgs = getTitanMessages(msgs);
         client.sendMessages(titanMsgs, new SendMsgCallback() {
             @Override
             public void sentToServer() {
-                // todo: eventBus.post(new MessagesSentEvent(msg.id));
+                 eventBus.post(new MessagesSentEvent(collectMessageIds(msgs)));
             }
         });
     }
@@ -92,6 +92,14 @@ public class Worker {
             titanMsgs[i] = new titan.client.messages.Message(null, msgs[i].to, now, msgs[i].body);
         }
         return titanMsgs;
+    }
+
+    private String[] collectMessageIds(Message[] msgs) {
+        String[] ids = new String[msgs.length];
+        for (int i = 0; i < msgs.length; i++) {
+            ids[i] = msgs[i].id;
+        }
+        return ids;
     }
 
     /*****************
