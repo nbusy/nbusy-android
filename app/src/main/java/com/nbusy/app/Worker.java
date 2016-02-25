@@ -22,6 +22,7 @@ public class Worker {
     private final EventBus eventBus;
 
     public Worker(Client client, EventBus eventBus) {
+        Log.i(TAG, "Worker instance created.");
         this.client = client;
         this.eventBus = eventBus;
         client.connect(new ConnCallbacks() {
@@ -50,7 +51,6 @@ public class Worker {
     }
 
     public void sendMessagesSimulate(final Message[] msgs) {
-        //client.send(msg, callback)
         class SimulateClient extends AsyncTask<Object, Object, Object> {
             @Override
             protected Object doInBackground(Object[] params) {
@@ -76,13 +76,18 @@ public class Worker {
         client.sendMessages(titanMsgs, new SendMsgCallback() {
             @Override
             public void sentToServer() {
-                 eventBus.post(new MessagesSentEvent(collectMessageIds(msgs)));
+                eventBus.post(new MessagesSentEvent(collectMessageIds(msgs)));
             }
         });
     }
 
     public void echo() {
 
+    }
+
+    public void destroy() {
+        Log.i(TAG, "Worker instance destroyed.");
+        client.close();
     }
 
     private titan.client.messages.Message[] getTitanMessages(Message[] msgs) {

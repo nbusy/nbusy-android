@@ -15,6 +15,7 @@ public class WorkerSingleton {
     }
 
     public static void destroyWorker() {
+        worker.destroy();
         worker = null;
     }
 }
