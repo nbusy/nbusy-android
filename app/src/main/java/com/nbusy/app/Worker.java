@@ -72,12 +72,7 @@ public class Worker {
     }
 
     public void sendMessages(Message[] msgs) {
-        titan.client.messages.Message[] titanMsgs = new titan.client.messages.Message[msgs.length];
-        Date now = new Date();
-        for (int i = 0; i < msgs.length; i++) {
-            titanMsgs[i] = new titan.client.messages.Message(null, msgs[i].to, now, msgs[i].body);
-        }
-
+        titan.client.messages.Message[] titanMsgs = getTitanMessages(msgs);
         client.sendMessages(titanMsgs, new SendMsgCallback() {
             @Override
             public void sentToServer() {
@@ -88,6 +83,15 @@ public class Worker {
 
     public void echo() {
 
+    }
+
+    private titan.client.messages.Message[] getTitanMessages(Message[] msgs) {
+        titan.client.messages.Message[] titanMsgs = new titan.client.messages.Message[msgs.length];
+        Date now = new Date();
+        for (int i = 0; i < msgs.length; i++) {
+            titanMsgs[i] = new titan.client.messages.Message(null, msgs[i].to, now, msgs[i].body);
+        }
+        return titanMsgs;
     }
 
     /*****************
