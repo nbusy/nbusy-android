@@ -19,7 +19,7 @@ public class WorkerService extends Service {
     private static final String TAG = WorkerService.class.getSimpleName();
     public static final String STARTED_BY = "StartedBy";
     private final Worker worker = WorkerSingleton.getWorker();
-    private boolean terminateAfterDone; // whether to terminate after task queue is done, or keep running
+    private boolean terminateAfterDone; // whether to terminate service after task queue is done, or keep running till explicitly destroyed
 
     @Override
     public void onCreate() {
@@ -40,8 +40,8 @@ public class WorkerService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "Destroyed.");
         super.onDestroy();
+        Log.i(TAG, "Destroyed.");
         WorkerSingleton.destroyWorker();
     }
 
