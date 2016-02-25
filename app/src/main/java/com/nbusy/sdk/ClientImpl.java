@@ -14,4 +14,8 @@ public class ClientImpl extends titan.client.ClientImpl implements Client {
     public ClientImpl(String url) {
         super(url);
     }
+
+    public ClientImpl() {
+        super();
+    }
 }

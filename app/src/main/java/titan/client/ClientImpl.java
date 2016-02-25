@@ -35,6 +35,10 @@ public class ClientImpl implements Client {
         this(new ConnImpl(url));
     }
 
+    public ClientImpl() {
+        this(new ConnImpl());
+    }
+
     @Override
     public void connect(ConnCallbacks cbs) {
         conn.connect(cbs);
