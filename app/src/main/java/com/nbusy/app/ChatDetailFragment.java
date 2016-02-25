@@ -53,7 +53,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         messageBox.setText("");
 
         // send the message to the server
-        worker.sendMessage(msg);
+        worker.sendMessages(new Message[]{msg});
     }
 
     private void addCheckMarkToMessage(String msgID, boolean doubleCheck) {
@@ -94,9 +94,9 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             messages = new ArrayList<>();
             messageIDtoIndex = new HashMap<>();
 
-            Message m1 = new Message(UUID.randomUUID().toString(), "Teoman Soygul", "Lorem ip sum my message...", null, "8:50", true);
+            Message m1 = new Message(UUID.randomUUID().toString(), "Teoman Soygul", null, "Lorem ip sum my message...", "8:50", true);
             m1.sentToServer = m1.delivered = true;
-            Message m2 = new Message(UUID.randomUUID().toString(), "User ID: " + chatId, "Test test.", "Just now", null, false);
+            Message m2 = new Message(UUID.randomUUID().toString(), "User ID: " + chatId, null, "Test test.", "Just now", false);
             m2.sentToServer = m2.delivered = true;
             messageIDtoIndex.put(m1.id, messages.size());
             messages.add(m1);

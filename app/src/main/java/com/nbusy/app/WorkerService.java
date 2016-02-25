@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.util.Objects;
 
@@ -18,7 +19,7 @@ public class WorkerService extends Service {
     private static final String TAG = WorkerService.class.getSimpleName();
     public static final String STARTED_BY = "StartedBy";
     private final Worker worker = WorkerSingleton.getWorker();
-    private boolean terminateAfterDone; // whether to terminate after task queue is done, or keep running
+    private boolean terminateAfterDone; // whether to terminate service after task queue is done, or keep running till explicitly destroyed
 
     @Override
     public void onCreate() {
@@ -31,6 +32,7 @@ public class WorkerService extends Service {
         // by device boot event and application is not actively running
         String startedBy = intent.getStringExtra(STARTED_BY);
         terminateAfterDone = (startedBy != null && Objects.equals(startedBy, DeviceBootBroadcastReceiver.class.getSimpleName()));
+        Log.i(TAG, "Started by: " + startedBy);
 
         // we want this service to continue running until it is explicitly stopped, so return sticky
         return Service.START_STICKY;
@@ -39,6 +41,7 @@ public class WorkerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.i(TAG, "Destroyed.");
         WorkerSingleton.destroyWorker();
     }
 
@@ -59,6 +62,9 @@ public class WorkerService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        String startedBy = intent.getStringExtra(STARTED_BY);
+        Log.i(TAG, "Was bound to by: " + startedBy);
+
         // allow binding to this local service directly so anyone can call public functions on this service directly
         return binder;
     }

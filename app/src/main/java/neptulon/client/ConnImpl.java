@@ -28,13 +28,14 @@ import okio.Buffer;
  * Neptulon connection implementation: https://github.com/neptulon/neptulon
  */
 public class ConnImpl implements Conn, WebSocketListener {
-    private static final Logger logger = Logger.getLogger(ConnImpl.class.getSimpleName());
-    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX").create();
+    private static final Logger logger = Logger.getLogger("Neptulon: " + ConnImpl.class.getSimpleName());
+    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").create();
     private final OkHttpClient client;
     private final Request request;
     private final WebSocketCall wsCall;
     private final List<Middleware> middleware = new ArrayList<>();
     private final Map<String, ResCallback> resCallbacks = new HashMap<>();
+    private String ws_url;
     private WebSocket ws;
     private boolean connected;
     private ConnCallback connCallback;
@@ -43,6 +44,7 @@ public class ConnImpl implements Conn, WebSocketListener {
      * Initializes a new connection with given server URL.
      */
     public ConnImpl(String url) {
+        ws_url = url;
         client = new OkHttpClient.Builder()
                 .connectTimeout(45, TimeUnit.SECONDS)
                 .writeTimeout(300, TimeUnit.SECONDS)
@@ -65,7 +67,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     }
 
     void send(Object src) {
-        String m =  gson.toJson(src);
+        String m = gson.toJson(src);
         logger.info("Outgoing message: " + m);
         try {
             ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
@@ -100,19 +102,25 @@ public class ConnImpl implements Conn, WebSocketListener {
     // handleRequest(method, .....) { if isClientConn... else exception } // same goes for go-client
 
     @Override
-    public void connect(ConnCallback handler) {
+    public void connect(ConnCallback cb) {
         // enqueue this listener implementation to initiate the WebSocket connection
-        connCallback = handler;
+        connCallback = cb;
         wsCall.enqueue(this);
     }
 
     @Override
     public void remoteAddr() {
-
+        if (!connected) {
+            throw new IllegalStateException("Not connected.");
+        }
     }
 
     @Override
     public <T> void sendRequest(String method, T params, ResCallback cb) {
+        if (!connected) {
+            throw new IllegalStateException("Not connected.");
+        }
+
         String id = UUID.randomUUID().toString();
         neptulon.client.Request r = new neptulon.client.Request<>(id, method, params);
         send(r);
@@ -126,6 +134,10 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void close() {
+        if (!connected) {
+            return;
+        }
+
         connected = false;
         try {
             ws.close(0, "");
@@ -142,7 +154,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     public void onOpen(WebSocket webSocket, Response response) {
         ws = webSocket;
         connected = true;
-        logger.info("WebSocket connected.");
+        logger.info("Connected to server: " + ws_url);
         connCallback.connected();
     }
 
@@ -150,7 +162,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     public void onFailure(IOException e, Response response) {
         connected = false;
         String reason = e.getMessage();
-        logger.warning("WebSocket connection closed with error: " + reason);
+        logger.warning("Connection closed with error: " + reason);
         connCallback.disconnected(reason);
     }
 
@@ -161,7 +173,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         Message msg = gson.fromJson(msgStr, Message.class);
         if (msg.method == null || msg.method.isEmpty()) {
             // handle response message
-            resCallbacks.get(msg.id).handleResponse(new ResCtx(msg.id, msg.result, msg.error, gson));
+            resCallbacks.get(msg.id).callback(new ResCtx(msg.id, msg.result, msg.error, gson));
             return;
         }
 
@@ -171,12 +183,12 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void onPong(Buffer payload) {
-        logger.info("WebSocket pong received.");
+        logger.info("WebSocket pong received from server: " + ws_url);
     }
 
     @Override
     public void onClose(int code, String reason) {
         connected = false;
-        logger.info("WebSocket closed.");
+        logger.info("Connection closed to server: " + ws_url);
     }
 }

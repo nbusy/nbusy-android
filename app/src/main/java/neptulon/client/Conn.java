@@ -31,9 +31,9 @@ public interface Conn {
     /**
      * Connects to the given Neptulon server.
      *
-     * @param handler Handler for connection/disconnection events.
+     * @param cb Callback for connection/disconnection events.
      */
-    void connect(ConnCallback handler);
+    void connect(ConnCallback cb);
 
     /**
      * Returns the remote network address.
