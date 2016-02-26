@@ -8,6 +8,7 @@ class Message {
     // todo: make this class immutable to make change tracking easier
 
     final String id; // unique message ID
+    final String chatId; // ID of chat this message belongs to
     final String from; // sender of this message
     final String to; // receiver of this message
     final String body; // message text
@@ -16,8 +17,9 @@ class Message {
     boolean sentToServer;
     boolean delivered;
 
-    Message(String id, String from, String to, String body, String sent, boolean owner) {
+    Message(String id, String chatId, String from, String to, String body, String sent, boolean owner) {
         this.id = id;
+        this.chatId = chatId;
         this.from = from;
         this.to = to;
         this.body = body;
