@@ -63,7 +63,7 @@ public class Worker {
         return eventBus;
     }
 
-    public void sendMessagesSimulate(final Message[] msgs) {
+    public void simulateSendMessages(final Message[] msgs) {
         class SimulateClient extends AsyncTask<Object, Object, Object> {
             @Override
             protected Object doInBackground(Object[] params) {
