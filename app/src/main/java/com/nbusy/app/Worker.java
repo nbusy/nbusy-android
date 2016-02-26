@@ -63,6 +63,16 @@ public class Worker {
         return eventBus;
     }
 
+    public void sendMessages(final Message[] msgs) {
+        titan.client.messages.Message[] titanMsgs = getTitanMessages(msgs);
+        client.sendMessages(titanMsgs, new SendMsgCallback() {
+            @Override
+            public void sentToServer() {
+                eventBus.post(new MessagesSentEvent(collectMessageIds(msgs)));
+            }
+        });
+    }
+
     public void simulateSendMessages(final Message[] msgs) {
         class SimulateClient extends AsyncTask<Object, Object, Object> {
             @Override
@@ -82,16 +92,6 @@ public class Worker {
         }
 
         new SimulateClient().execute(null, null, null);
-    }
-
-    public void sendMessages(final Message[] msgs) {
-        titan.client.messages.Message[] titanMsgs = getTitanMessages(msgs);
-        client.sendMessages(titanMsgs, new SendMsgCallback() {
-            @Override
-            public void sentToServer() {
-                eventBus.post(new MessagesSentEvent(collectMessageIds(msgs)));
-            }
-        });
     }
 
     public void echo() {
