@@ -1,13 +1,17 @@
 package com.nbusy.app;
 
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
+import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
 import java.util.Date;
+import java.util.concurrent.Executor;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.JwtAuthCallback;
@@ -56,7 +60,7 @@ public class Worker {
     }
 
     public Worker() {
-        this(new ClientImpl(), new EventBus(TAG));
+        this(new ClientImpl(), new AsyncEventBus(TAG, new UiThreadExecutor()));
     }
 
     public EventBus getEventBus() {

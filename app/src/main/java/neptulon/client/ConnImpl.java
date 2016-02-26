@@ -5,10 +5,10 @@ import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -34,7 +34,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final Request request;
     private final WebSocketCall wsCall;
     private final List<Middleware> middleware = new ArrayList<>();
-    private final Map<String, ResCallback> resCallbacks = new HashMap<>();
+    private final ConcurrentMap<String, ResCallback> resCallbacks = new ConcurrentHashMap<>();
     private String ws_url;
     private WebSocket ws;
     private boolean connected;
@@ -123,8 +123,8 @@ public class ConnImpl implements Conn, WebSocketListener {
 
         String id = UUID.randomUUID().toString();
         neptulon.client.Request r = new neptulon.client.Request<>(id, method, params);
-        send(r);
         resCallbacks.put(id, cb);
+        send(r);
     }
 
     @Override
@@ -174,6 +174,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         if (msg.method == null || msg.method.isEmpty()) {
             // handle response message
             resCallbacks.get(msg.id).callback(new ResCtx(msg.id, msg.result, msg.error, gson));
+            resCallbacks.remove(msg.id);
             return;
         }
 
