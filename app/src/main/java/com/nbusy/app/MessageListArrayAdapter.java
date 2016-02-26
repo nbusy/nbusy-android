@@ -57,15 +57,15 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
         viewHolder.body.setText(message.body);
         String sent = new SimpleDateFormat("HH:mm").format(message.sent);
         viewHolder.sent.setText(sent);
-        if (!message.sentToServer && !message.delivered) {
+        if (message.status == Message.Status.New) {
             viewHolder.check.setVisibility(View.GONE);
-        } else if (message.sentToServer && !message.delivered) {
+        } else if (message.status == Message.Status.SentToServer) {
             viewHolder.check.setText("✓");
         } else {
             viewHolder.check.setText("✓✓");
         }
 
-        if (Objects.equals(message.from, "")) {
+        if (message.from == null || message.from.isEmpty()) {
             viewHolder.body.setGravity(Gravity.END);
             viewHolder.metadata.setGravity(Gravity.END);
         }

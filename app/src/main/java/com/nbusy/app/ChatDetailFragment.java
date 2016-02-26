@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -45,7 +46,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // add message to the UI, and clear message box
-        Message msg = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, messageBody, new Date(), Message.Status.New);
+        Message msg = new Message(UUID.randomUUID().toString(), chatId, null, null, messageBody, new Date(), Message.Status.New);
         messageIDtoIndex.put(msg.id, messages.size());
         messageAdapter.add(msg);
         messageBox.setText("");
@@ -54,24 +55,25 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         worker.sendMessages(new Message[]{msg});
     }
 
-    private void addCheckMarkToMessage(String msgID, boolean doubleCheck) {
-        // only update if message belongs to this chat
-        int location = messageIDtoIndex.get(msgID);
-        if (location == 0) {
-            return;
-        }
-
-        Message msg = messages.get(location);
-        messages.set(location, msg);
-
-        // update the check mark on the updated item only as per:
-        //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
-        View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
-        if (v != null) {
-            if (!doubleCheck) {
-                ((TextView)v.findViewById(R.id.check)).setText("✓");
+    private void setMessagesState(Message[] msgs) {
+        for (Message msg : msgs) {
+            // only update if message belongs to this chat
+            int location = messageIDtoIndex.get(msg.id);
+            if (location == 0 || !Objects.equals(msg.chatId, chatId)) {
+                return;
             }
-            v.findViewById(R.id.check).setVisibility(View.VISIBLE);
+
+            messages.set(location, msg);
+
+            // update the check mark on the updated item only as per:
+            //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
+            View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
+            if (v != null) {
+                if (msg.status == Message.Status.SentToServer) {
+                    ((TextView)v.findViewById(R.id.check)).setText("✓");
+                }
+                v.findViewById(R.id.check).setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -91,10 +93,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             messages = new ArrayList<>();
             messageIDtoIndex = new HashMap<>();
 
-            Message m1 = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, "Lorem ip sum my message...", new Date(), true);
-            m1.sentToServer = m1.delivered = true;
-            Message m2 = new Message(UUID.randomUUID().toString(), chatId, "User ID: " + chatId, null, "Test test.", new Date(), false);
-            m2.sentToServer = m2.delivered = true;
+            Message m1 = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, "Lorem ip sum my message...", new Date(), Message.Status.DeliveredToUser);
+            Message m2 = new Message(UUID.randomUUID().toString(), chatId, null, "User ID: " + chatId, "Test test.", new Date(), Message.Status.DeliveredToUser);
             messageIDtoIndex.put(m1.id, messages.size());
             messages.add(m1);
             messageIDtoIndex.put(m2.id, messages.size());
@@ -147,7 +147,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      ******************************/
 
     @Subscribe
-    public void addCheckMarkToMessage(Worker.MessagesSentEvent e) {
-        addCheckMarkToMessage(e.ids[0], false);
+    public void setMessagesState(Worker.MessagesStatusChangedEvent e) {
+        setMessagesState(e.msgs);
     }
 }

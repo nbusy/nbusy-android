@@ -1,8 +1,6 @@
 package com.nbusy.app;
 
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import com.google.common.eventbus.AsyncEventBus;
@@ -11,7 +9,6 @@ import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
 import java.util.Date;
-import java.util.concurrent.Executor;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.JwtAuthCallback;
@@ -72,7 +69,10 @@ public class Worker {
         client.sendMessages(titanMsgs, new SendMsgCallback() {
             @Override
             public void sentToServer() {
-                eventBus.post(new MessagesSentEvent(collectMessageIds(msgs)));
+                for (int i = 0; i < msgs.length; i++) {
+                    msgs[i] = msgs[i].setStatus(Message.Status.SentToServer);
+                }
+                eventBus.post(new MessagesStatusChangedEvent(msgs));
             }
         });
     }
@@ -91,7 +91,10 @@ public class Worker {
 
             @Override
             protected void onPostExecute(Object o) {
-                eventBus.post(new MessagesSentEvent(collectMessageIds(msgs)));
+                for (int i = 0; i < msgs.length; i++) {
+                    msgs[i] = msgs[i].setStatus(Message.Status.SentToServer);
+                }
+                eventBus.post(new MessagesStatusChangedEvent(msgs));
             }
         }
 
@@ -116,14 +119,6 @@ public class Worker {
         return titanMsgs;
     }
 
-    private String[] collectMessageIds(Message[] msgs) {
-        String[] ids = new String[msgs.length];
-        for (int i = 0; i < msgs.length; i++) {
-            ids[i] = msgs[i].id;
-        }
-        return ids;
-    }
-
     /*****************
      * Event Objects *
      *****************/
@@ -136,19 +131,11 @@ public class Worker {
         }
     }
 
-    public class MessagesSentEvent {
-        public final String[] ids;
+    public class MessagesStatusChangedEvent {
+        public final Message[] msgs;
 
-        public MessagesSentEvent(String[] ids) {
-            this.ids = ids;
-        }
-    }
-
-    public class MessagesDeliveredEvent {
-        public final String[] ids;
-
-        public MessagesDeliveredEvent(String[] ids) {
-            this.ids = ids;
+        public MessagesStatusChangedEvent(Message[] msgs) {
+            this.msgs = msgs;
         }
     }
 
