@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Adapter for listing all messages of a chat, in a list view.
@@ -64,7 +65,7 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
             viewHolder.check.setText("✓✓");
         }
 
-        if (message.owner) {
+        if (Objects.equals(message.from, "")) {
             viewHolder.body.setGravity(Gravity.END);
             viewHolder.metadata.setGravity(Gravity.END);
         }

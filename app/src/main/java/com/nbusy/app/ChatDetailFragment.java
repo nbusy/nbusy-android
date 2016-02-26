@@ -45,7 +45,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // add message to the UI, and clear message box
-        Message msg = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, messageBody, new Date(), true);
+        Message msg = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, messageBody, new Date(), Message.Status.New);
         messageIDtoIndex.put(msg.id, messages.size());
         messageAdapter.add(msg);
         messageBox.setText("");
@@ -62,8 +62,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         Message msg = messages.get(location);
-        msg.sentToServer = true;
-        msg.delivered = doubleCheck;
+        messages.set(location, msg);
 
         // update the check mark on the updated item only as per:
         //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
@@ -150,10 +149,5 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     @Subscribe
     public void addCheckMarkToMessage(Worker.MessagesSentEvent e) {
         addCheckMarkToMessage(e.ids[0], false);
-    }
-
-    @Subscribe
-    public void addDoubleCheckMarkToMessage(Worker.MessagesDeliveredEvent e) {
-        addCheckMarkToMessage(e.ids[0], true);
     }
 }

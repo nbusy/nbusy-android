@@ -5,27 +5,32 @@ import java.util.Date;
 /**
  * A message within a chat.
  */
-class Message {
-    final String id; // unique message ID
-    final String chatId; // ID of chat this message belongs to
-    final String from; // sender of this message
-    final String to; // receiver of this message
-    final String body; // message text
-    final Date sent; // message sent date/time
-    final boolean owner; // message by current user
+public class Message {
+    public final String id; // unique message ID
+    public final String chatId; // ID of chat this message belongs to
+    public final String from; // sender of this message
+    public final String to; // receiver of this message
+    public final String body; // message text
+    public final Date sent; // message sent date/time
+    public final Status status; // delivery status
 
-    // todo: make this class immutable (basically below two) to make change tracking easier
-
-    boolean sentToServer;
-    boolean delivered;
-
-    Message(String id, String chatId, String from, String to, String body, Date sent, boolean owner) {
+    Message(String id, String chatId, String from, String to, String body, Date sent, Status status) {
         this.id = id;
         this.chatId = chatId;
         this.from = from;
         this.to = to;
         this.body = body;
         this.sent = sent;
-        this.owner = owner;
+        this.status = status;
+    }
+
+    public Message setStatus(Status status) {
+        return new Message(id, chatId, from, to, body, sent, status);
+    }
+
+    public enum Status {
+        New,
+        SentToServer,
+        DeliveredToUser
     }
 }
