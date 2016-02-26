@@ -46,8 +46,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // add message to the UI, and clear message box
-        String date = new SimpleDateFormat("HH:mm").format(new Date());
-        Message msg = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, messageBody, date, true);
+        Message msg = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, messageBody, new Date(), true);
         messageIDtoIndex.put(msg.id, messages.size());
         messageAdapter.add(msg);
         messageBox.setText("");
@@ -94,14 +93,14 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             messages = new ArrayList<>();
             messageIDtoIndex = new HashMap<>();
 
-            Message m1 = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, "Lorem ip sum my message...", "8:50", true);
-            m1.sentToServer = m1.delivered = true;
-            Message m2 = new Message(UUID.randomUUID().toString(), chatId, "User ID: " + chatId, null, "Test test.", "Just now", false);
-            m2.sentToServer = m2.delivered = true;
-            messageIDtoIndex.put(m1.id, messages.size());
-            messages.add(m1);
-            messageIDtoIndex.put(m2.id, messages.size());
-            messages.add(m2);
+//            Message m1 = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, "Lorem ip sum my message...", "8:50", true);
+//            m1.sentToServer = m1.delivered = true;
+//            Message m2 = new Message(UUID.randomUUID().toString(), chatId, "User ID: " + chatId, null, "Test test.", "Just now", false);
+//            m2.sentToServer = m2.delivered = true;
+//            messageIDtoIndex.put(m1.id, messages.size());
+//            messages.add(m1);
+//            messageIDtoIndex.put(m2.id, messages.size());
+//            messages.add(m2);
 
             messageAdapter = new MessageListArrayAdapter(getActivity(), messages);
             setListAdapter(messageAdapter);

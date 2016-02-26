@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,7 +54,8 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
         }
 
         viewHolder.body.setText(message.body);
-        viewHolder.sent.setText(message.sent);
+        String sent = new SimpleDateFormat("HH:mm").format(message.sent);
+        viewHolder.sent.setText(sent);
         if (!message.sentToServer && !message.delivered) {
             viewHolder.check.setVisibility(View.GONE);
         } else if (message.sentToServer && !message.delivered) {
