@@ -1,7 +1,7 @@
 package com.nbusy.capacitor;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Container for an immutable state object.
@@ -12,7 +12,7 @@ public abstract class Container<T> {
 
     public Container(T state) {
         this.state = state;
-        subscribers = new ArrayList<>();
+        subscribers = new CopyOnWriteArrayList<>();
     }
 
     public void setState(T state) {
@@ -28,5 +28,9 @@ public abstract class Container<T> {
 
     public void subscribe(Subscriber<T> s) {
         subscribers.add(s);
+    }
+
+    public void unsubscribe(Subscriber<T> s) {
+        subscribers.remove(s);
     }
 }
