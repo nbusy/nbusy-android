@@ -65,7 +65,7 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
             viewHolder.check.setText("✓✓");
         }
 
-        if (message.from == null || message.from.isEmpty()) {
+        if (message.owner) {
             viewHolder.body.setGravity(Gravity.END);
             viewHolder.metadata.setGravity(Gravity.END);
         }

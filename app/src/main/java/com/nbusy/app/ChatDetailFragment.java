@@ -46,7 +46,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // add message to the UI, and clear message box
-        Message msg = new Message(UUID.randomUUID().toString(), chatId, null, null, messageBody, new Date(), Message.Status.New);
+        Message msg = new Message(UUID.randomUUID().toString(), chatId, "Me", null, true, messageBody, new Date(), Message.Status.New);
         messageIDtoIndex.put(msg.id, messages.size());
         messageAdapter.add(msg);
         messageBox.setText("");
@@ -93,8 +93,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             messages = new ArrayList<>();
             messageIDtoIndex = new HashMap<>();
 
-            Message m1 = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, "Lorem ip sum my message...", new Date(), Message.Status.DeliveredToUser);
-            Message m2 = new Message(UUID.randomUUID().toString(), chatId, null, "User ID: " + chatId, "Test test.", new Date(), Message.Status.DeliveredToUser);
+            Message m1 = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, true, "Lorem ip sum my message...", new Date(), Message.Status.DeliveredToUser);
+            Message m2 = new Message(UUID.randomUUID().toString(), chatId, "User ID: " + chatId, null, false, "Test test.", new Date(), Message.Status.DeliveredToUser);
             messageIDtoIndex.put(m1.id, messages.size());
             messages.add(m1);
             messageIDtoIndex.put(m2.id, messages.size());
