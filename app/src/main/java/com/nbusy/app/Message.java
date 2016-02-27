@@ -1,27 +1,38 @@
 package com.nbusy.app;
 
+import java.util.Date;
+
 /**
  * A message within a chat.
  */
-class Message {
+public class Message {
+    public final String id; // unique message ID
+    public final String chatId; // ID of chat this message belongs to
+    public final String from; // sender of this message
+    public final String to; // receiver of this message
+    public final boolean owner; // if sender is also the owner of the message
+    public final String body; // message text
+    public final Date sent; // message sent date/time
+    public final Status status; // delivery status
 
-    // todo: make this class immutable to make change tracking easier
-
-    final String id; // unique message ID
-    final String from; // sender of this message
-    final String to; // receiver of this message
-    final String body; // message text
-    final String sent; // message sent date/time
-    final boolean owner; // message by current user
-    boolean sentToServer;
-    boolean delivered;
-
-    Message(String id, String from, String to, String body, String sent, boolean owner) {
+    Message(String id, String chatId, String from, String to, boolean owner, String body, Date sent, Status status) {
         this.id = id;
+        this.chatId = chatId;
         this.from = from;
         this.to = to;
+        this.owner = owner;
         this.body = body;
         this.sent = sent;
-        this.owner = owner;
+        this.status = status;
+    }
+
+    public Message setStatus(Status status) {
+        return new Message(id, chatId, from, to, owner, body, sent, status);
+    }
+
+    public enum Status {
+        New,
+        SentToServer,
+        DeliveredToUser
     }
 }

@@ -12,14 +12,6 @@ import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 /**
  * A fragment representing a single Chat detail screen, along with the messages in the chat.
  * This fragment is either contained in a {@link ChatListActivity}
@@ -30,9 +22,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     private static final String TAG = ChatDetailFragment.class.getSimpleName();
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
-    private String chatId;
-    private List<Message> messages; // chat messages that this fragment is presenting
-    private Map<String, Integer> messageIDtoIndex; // message ID -> messages[index]
+    private Chat chat;
     private MessageListArrayAdapter messageAdapter;
     private ListView messageListView;
     private EditText messageBox;
@@ -46,35 +36,31 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // add message to the UI, and clear message box
-        String date = new SimpleDateFormat("HH:mm").format(new Date());
-        Message msg = new Message(UUID.randomUUID().toString(), "Teoman Soygul", null, messageBody, date, true);
-        messageIDtoIndex.put(msg.id, messages.size());
-        messageAdapter.add(msg);
+        Message msg = chat.addMessage(messageBody);
+        messageAdapter.notifyDataSetChanged();
         messageBox.setText("");
 
         // send the message to the server
         worker.sendMessages(new Message[]{msg});
     }
 
-    private void addCheckMarkToMessage(String msgID, boolean doubleCheck) {
-        // only update if message belongs to this chat
-        int location = messageIDtoIndex.get(msgID);
-        if (location == 0) {
-            return;
-        }
-
-        Message msg = messages.get(location);
-        msg.sentToServer = true;
-        msg.delivered = doubleCheck;
-
-        // update the check mark on the updated item only as per:
-        //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
-        View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
-        if (v != null) {
-            if (doubleCheck) {
-                ((TextView)v.findViewById(R.id.check)).setText("✓✓");
+    private void setMessagesState(Message[] msgs) {
+        for (Message msg : msgs) {
+            // only update if message belongs to this chat
+            int location = chat.updateMessage(msg);
+            if (location == 0) {
+                return;
             }
-            v.findViewById(R.id.check).setVisibility(View.VISIBLE);
+
+            // update the check mark on the updated item only as per:
+            //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
+            View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
+            if (v != null) {
+                if (msg.status == Message.Status.SentToServer) {
+                    ((TextView)v.findViewById(R.id.check)).setText("✓");
+                }
+                v.findViewById(R.id.check).setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -88,22 +74,9 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
-            chatId = (String) arguments.get(ARG_ITEM_ID);
-
-            // load the content specified by the fragment arguments
-            messages = new ArrayList<>();
-            messageIDtoIndex = new HashMap<>();
-
-            Message m1 = new Message(UUID.randomUUID().toString(), "Teoman Soygul", null, "Lorem ip sum my message...", "8:50", true);
-            m1.sentToServer = m1.delivered = true;
-            Message m2 = new Message(UUID.randomUUID().toString(), "User ID: " + chatId, null, "Test test.", "Just now", false);
-            m2.sentToServer = m2.delivered = true;
-            messageIDtoIndex.put(m1.id, messages.size());
-            messages.add(m1);
-            messageIDtoIndex.put(m2.id, messages.size());
-            messages.add(m2);
-
-            messageAdapter = new MessageListArrayAdapter(getActivity(), messages);
+            String chatId = (String) arguments.get(ARG_ITEM_ID);
+            chat = Chats.ITEM_MAP.get(chatId);
+            messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
             setListAdapter(messageAdapter);
         }
     }
@@ -150,12 +123,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      ******************************/
 
     @Subscribe
-    public void addCheckMarkToMessage(Worker.MessagesSentEvent e) {
-        addCheckMarkToMessage(e.ids[0], false);
-    }
-
-    @Subscribe
-    public void addDoubleCheckMarkToMessage(Worker.MessagesDeliveredEvent e) {
-        addCheckMarkToMessage(e.ids[0], true);
+    public void setMessagesState(Worker.MessagesStatusChangedEvent e) {
+        setMessagesState(e.msgs);
     }
 }

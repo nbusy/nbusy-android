@@ -123,8 +123,8 @@ public class ConnImpl implements Conn, WebSocketListener {
 
         String id = UUID.randomUUID().toString();
         neptulon.client.Request r = new neptulon.client.Request<>(id, method, params);
-        send(r);
         resCallbacks.put(id, cb);
+        send(r);
     }
 
     @Override
@@ -174,6 +174,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         if (msg.method == null || msg.method.isEmpty()) {
             // handle response message
             resCallbacks.get(msg.id).callback(new ResCtx(msg.id, msg.result, msg.error, gson));
+            resCallbacks.remove(msg.id);
             return;
         }
 

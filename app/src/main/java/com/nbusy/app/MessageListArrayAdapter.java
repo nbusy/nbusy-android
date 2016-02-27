@@ -9,7 +9,10 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Adapter for listing all messages of a chat, in a list view.
@@ -52,10 +55,11 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
         }
 
         viewHolder.body.setText(message.body);
-        viewHolder.sent.setText(message.sent);
-        if (!message.sentToServer && !message.delivered) {
+        String sent = new SimpleDateFormat("HH:mm").format(message.sent);
+        viewHolder.sent.setText(sent);
+        if (message.status == Message.Status.New) {
             viewHolder.check.setVisibility(View.GONE);
-        } else if (message.sentToServer && !message.delivered) {
+        } else if (message.status == Message.Status.SentToServer) {
             viewHolder.check.setText("✓");
         } else {
             viewHolder.check.setText("✓✓");

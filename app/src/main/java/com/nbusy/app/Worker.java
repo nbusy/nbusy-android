@@ -3,6 +3,7 @@ package com.nbusy.app;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
@@ -22,6 +23,7 @@ public class Worker {
     private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA";
     private final Client client;
     private final EventBus eventBus;
+    public final Chats chats = new Chats();
 
     public Worker(final Client client, EventBus eventBus) {
         Log.i(TAG, "Instance created.");
@@ -56,14 +58,27 @@ public class Worker {
     }
 
     public Worker() {
-        this(new ClientImpl(), new EventBus(TAG));
+        this(new ClientImpl(), new AsyncEventBus(TAG, new UiThreadExecutor()));
     }
 
     public EventBus getEventBus() {
         return eventBus;
     }
 
-    public void sendMessagesSimulate(final Message[] msgs) {
+    public void sendMessages(final Message[] msgs) {
+        titan.client.messages.Message[] titanMsgs = getTitanMessages(msgs);
+        client.sendMessages(titanMsgs, new SendMsgCallback() {
+            @Override
+            public void sentToServer() {
+                for (int i = 0; i < msgs.length; i++) {
+                    msgs[i] = msgs[i].setStatus(Message.Status.SentToServer);
+                }
+                eventBus.post(new MessagesStatusChangedEvent(msgs));
+            }
+        });
+    }
+
+    public void simulateSendMessages(final Message[] msgs) {
         class SimulateClient extends AsyncTask<Object, Object, Object> {
             @Override
             protected Object doInBackground(Object[] params) {
@@ -77,21 +92,14 @@ public class Worker {
 
             @Override
             protected void onPostExecute(Object o) {
-                eventBus.post(new MessagesSentEvent(collectMessageIds(msgs)));
+                for (int i = 0; i < msgs.length; i++) {
+                    msgs[i] = msgs[i].setStatus(Message.Status.SentToServer);
+                }
+                eventBus.post(new MessagesStatusChangedEvent(msgs));
             }
         }
 
         new SimulateClient().execute(null, null, null);
-    }
-
-    public void sendMessages(final Message[] msgs) {
-        titan.client.messages.Message[] titanMsgs = getTitanMessages(msgs);
-        client.sendMessages(titanMsgs, new SendMsgCallback() {
-            @Override
-            public void sentToServer() {
-                eventBus.post(new MessagesSentEvent(collectMessageIds(msgs)));
-            }
-        });
     }
 
     public void echo() {
@@ -112,14 +120,6 @@ public class Worker {
         return titanMsgs;
     }
 
-    private String[] collectMessageIds(Message[] msgs) {
-        String[] ids = new String[msgs.length];
-        for (int i = 0; i < msgs.length; i++) {
-            ids[i] = msgs[i].id;
-        }
-        return ids;
-    }
-
     /*****************
      * Event Objects *
      *****************/
@@ -132,19 +132,11 @@ public class Worker {
         }
     }
 
-    public class MessagesSentEvent {
-        public final String[] ids;
+    public class MessagesStatusChangedEvent {
+        public final Message[] msgs;
 
-        public MessagesSentEvent(String[] ids) {
-            this.ids = ids;
-        }
-    }
-
-    public class MessagesDeliveredEvent {
-        public final String[] ids;
-
-        public MessagesDeliveredEvent(String[] ids) {
-            this.ids = ids;
+        public MessagesStatusChangedEvent(Message[] msgs) {
+            this.msgs = msgs;
         }
     }
 
