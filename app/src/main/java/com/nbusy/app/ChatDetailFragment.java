@@ -15,8 +15,6 @@ import com.google.common.eventbus.Subscribe;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -30,9 +28,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     private static final String TAG = ChatDetailFragment.class.getSimpleName();
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
-    private String chatId;
-    private List<Message> messages; // chat messages that this fragment is presenting
-    private Map<String, Integer> messageIDtoIndex; // message ID -> messages[index]
+    private Chat chat;
     private MessageListArrayAdapter messageAdapter;
     private ListView messageListView;
     private EditText messageBox;
@@ -46,9 +42,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // add message to the UI, and clear message box
-        Message msg = new Message(UUID.randomUUID().toString(), chatId, "Me", null, true, messageBody, new Date(), Message.Status.New);
-        messageIDtoIndex.put(msg.id, messages.size());
-        messageAdapter.add(msg);
+        Message msg = chat.addMessage(messageBody);
+        messageAdapter.notifyDataSetChanged();
         messageBox.setText("");
 
         // send the message to the server
@@ -58,12 +53,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     private void setMessagesState(Message[] msgs) {
         for (Message msg : msgs) {
             // only update if message belongs to this chat
-            int location = messageIDtoIndex.get(msg.id);
-            if (location == 0 || !Objects.equals(msg.chatId, chatId)) {
+            int location = chat.updateMessage(msg);
+            if (location == 0) {
                 return;
             }
-
-            messages.set(location, msg);
 
             // update the check mark on the updated item only as per:
             //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
@@ -87,20 +80,13 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
-            chatId = (String) arguments.get(ARG_ITEM_ID);
+            String chatId = (String) arguments.get(ARG_ITEM_ID);
 
             // load the content specified by the fragment arguments
-            messages = new ArrayList<>();
-            messageIDtoIndex = new HashMap<>();
-
             Message m1 = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, true, "Lorem ip sum my message...", new Date(), Message.Status.DeliveredToUser);
             Message m2 = new Message(UUID.randomUUID().toString(), chatId, "User ID: " + chatId, null, false, "Test test.", new Date(), Message.Status.DeliveredToUser);
-            messageIDtoIndex.put(m1.id, messages.size());
-            messages.add(m1);
-            messageIDtoIndex.put(m2.id, messages.size());
-            messages.add(m2);
 
-            messageAdapter = new MessageListArrayAdapter(getActivity(), messages);
+            messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
             setListAdapter(messageAdapter);
         }
     }
