@@ -23,6 +23,7 @@ public class Worker {
     private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA";
     private final Client client;
     private final EventBus eventBus;
+    public final Chats chats = new Chats();
 
     public Worker(final Client client, EventBus eventBus) {
         Log.i(TAG, "Instance created.");

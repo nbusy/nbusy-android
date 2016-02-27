@@ -12,12 +12,6 @@ import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.UUID;
-
 /**
  * A fragment representing a single Chat detail screen, along with the messages in the chat.
  * This fragment is either contained in a {@link ChatListActivity}
@@ -81,9 +75,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
             String chatId = (String) arguments.get(ARG_ITEM_ID);
-
-            // todo: Worker.getChat(chatId);
-
+            chat = Chats.ITEM_MAP.get(chatId);
             messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
             setListAdapter(messageAdapter);
         }
