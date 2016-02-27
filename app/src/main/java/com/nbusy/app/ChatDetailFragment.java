@@ -82,9 +82,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         if (arguments.containsKey(ARG_ITEM_ID)) {
             String chatId = (String) arguments.get(ARG_ITEM_ID);
 
-            // load the content specified by the fragment arguments
-            Message m1 = new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, true, "Lorem ip sum my message...", new Date(), Message.Status.DeliveredToUser);
-            Message m2 = new Message(UUID.randomUUID().toString(), chatId, "User ID: " + chatId, null, false, "Test test.", new Date(), Message.Status.DeliveredToUser);
+            // todo: Worker.getChat(chatId);
 
             messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
             setListAdapter(messageAdapter);
