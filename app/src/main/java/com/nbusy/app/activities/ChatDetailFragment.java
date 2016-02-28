@@ -133,4 +133,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     public void setMessagesState(Worker.MessagesStatusChangedEvent e) {
         setMessagesState(e.msgs);
     }
+
+    // todo: chatMessagesRetrieved(id) {
+//    messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
+//    setListAdapter(messageAdapter);
 }
