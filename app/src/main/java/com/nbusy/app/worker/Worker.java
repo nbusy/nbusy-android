@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+import com.nbusy.app.data.Database;
+import com.nbusy.app.data.InMemoryDatabase;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
 import com.nbusy.sdk.Client;
@@ -25,12 +27,14 @@ public class Worker {
     private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA";
     private final Client client;
     private final EventBus eventBus;
-    private Profile profile;
+    private final Database db;
+    private Profile userProfile;
 
-    public Worker(final Client client, EventBus eventBus) {
+    public Worker(final Client client, final EventBus eventBus, Database db) {
         Log.i(TAG, "Instance created.");
         this.client = client;
         this.eventBus = eventBus;
+        this.db = db;
         client.connect(new ConnCallbacks() {
             @Override
             public void messagesReceived(titan.client.messages.Message[] msgs) {
@@ -57,10 +61,22 @@ public class Worker {
                 Log.w(TAG, "Failed to connect to NBusy server.");
             }
         });
+        db.getProfile(new Database.GetProfileCallback() {
+            @Override
+            public void profileRetrieved(Profile up) {
+                userProfile = up;
+                eventBus.post(new UserProfileAvailable());
+            }
+        });
     }
 
     public Worker() {
-        this(new ClientImpl(), new AsyncEventBus(TAG, new UiThreadExecutor()));
+        this(new ClientImpl(), new AsyncEventBus(TAG, new UiThreadExecutor()), new InMemoryDatabase());
+    }
+
+    public void destroy() {
+        Log.i(TAG, "Instance destroyed.");
+        client.close();
     }
 
     public EventBus getEventBus() {
@@ -79,6 +95,16 @@ public class Worker {
             }
         });
     }
+
+    /***********************
+     * Database Operations *
+     ***********************/
+
+
+
+    /************************
+     * Server Communication *
+     ************************/
 
     public void simulateSendMessages(final Message[] msgs) {
         class SimulateClient extends AsyncTask<Object, Object, Object> {
@@ -106,11 +132,6 @@ public class Worker {
 
     public void echo() {
 
-    }
-
-    public void destroy() {
-        Log.i(TAG, "Instance destroyed.");
-        client.close();
     }
 
     private titan.client.messages.Message[] getTitanMessages(Message[] msgs) {
@@ -148,5 +169,8 @@ public class Worker {
         public EchoReceivedEvent(String message) {
             this.message = message;
         }
+    }
+
+    public class UserProfileAvailable {
     }
 }

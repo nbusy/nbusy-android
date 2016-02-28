@@ -17,5 +17,8 @@ public class Profile {
     public Profile(String userId, List<Chat> chats) {
         this.userId = userId;
         this.chats = chats;
+        for (int i = 0; i < chats.size(); i++) {
+            chatIDtoIndex.put(chats.get(i).id, i);
+        }
     }
 }
