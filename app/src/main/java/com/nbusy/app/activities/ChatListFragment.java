@@ -99,7 +99,7 @@ public class ChatListFragment extends ListFragment {
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         if (callbacks != null) {
-            callbacks.onItemSelected(worker.userProfile.chats.get(position).peerName);
+            callbacks.onItemSelected(worker.userProfile.chats.get(position).id);
         }
     }
 
