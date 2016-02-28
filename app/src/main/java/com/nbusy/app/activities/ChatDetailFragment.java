@@ -1,4 +1,4 @@
-package com.nbusy.app;
+package com.nbusy.app.activities;
 
 import android.app.ListFragment;
 import android.os.Bundle;
@@ -11,6 +11,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
+import com.nbusy.app.R;
+import com.nbusy.app.data.Chat;
+import com.nbusy.app.data.Chats;
+import com.nbusy.app.data.Message;
+import com.nbusy.app.worker.Worker;
+import com.nbusy.app.worker.WorkerSingleton;
 
 /**
  * A fragment representing a single Chat detail screen, along with the messages in the chat.

@@ -3,7 +3,7 @@
     android:layout_height="match_parent" android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp" android:baselineAligned="false"
     android:divider="?android:attr/dividerHorizontal" android:orientation="horizontal"
-    android:showDividers="middle" tools:context=".ChatListActivity">
+    android:showDividers="middle" tools:context=".activities.ChatListActivity">
 
     <!--
     This layout is a two-pane layout for the Chats
@@ -11,7 +11,7 @@
     
     -->
 
-    <fragment android:id="@+id/chat_list" android:name="com.nbusy.app.ChatListFragment"
+    <fragment android:id="@+id/chat_list" android:name="com.nbusy.app.activities.ChatListFragment"
         android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
         tools:layout="@android:layout/list_content" />
 

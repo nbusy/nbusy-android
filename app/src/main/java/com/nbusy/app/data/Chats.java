@@ -1,4 +1,4 @@
-package com.nbusy.app;
+package com.nbusy.app.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;

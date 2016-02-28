@@ -1,4 +1,4 @@
-package com.nbusy.app;
+package com.nbusy.app.activities;
 
 import android.content.Context;
 import android.view.Gravity;
@@ -9,10 +9,11 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.nbusy.app.R;
+import com.nbusy.app.data.Message;
+
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Adapter for listing all messages of a chat, in a list view.

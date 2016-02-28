@@ -1,4 +1,4 @@
-package com.nbusy.app;
+package com.nbusy.app.services;
 
 import android.app.Activity;
 import android.content.ComponentName;

@@ -1,4 +1,4 @@
-package com.nbusy.app;
+package com.nbusy.app.worker;
 
 /**
  * {@link Worker} single instance provider.

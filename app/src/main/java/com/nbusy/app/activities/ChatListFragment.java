@@ -1,10 +1,12 @@
-package com.nbusy.app;
+package com.nbusy.app.activities;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
+
+import com.nbusy.app.data.Chats;
 
 /**
  * A list fragment representing a list of Chats. This fragment

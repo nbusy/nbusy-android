@@ -1,4 +1,6 @@
-package com.nbusy.app;
+package com.nbusy.app.data;
+
+import com.nbusy.app.activities.ChatDetailFragment;
 
 import java.util.ArrayList;
 import java.util.Date;

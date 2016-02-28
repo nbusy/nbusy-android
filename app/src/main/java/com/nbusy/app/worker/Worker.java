@@ -1,10 +1,12 @@
-package com.nbusy.app;
+package com.nbusy.app.worker;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+import com.nbusy.app.data.Chats;
+import com.nbusy.app.data.Message;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
