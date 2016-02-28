@@ -6,4 +6,6 @@ public interface Database {
     interface GetProfileCallback {
         void profileRetrieved(Profile userProfile);
     }
+
+    void getChatMessages();
 }
