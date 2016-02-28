@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+// todo: deprecate this in favor of Profile
+
 public class Chats {
 
     public static List<Chat> ITEMS = new ArrayList<>();
