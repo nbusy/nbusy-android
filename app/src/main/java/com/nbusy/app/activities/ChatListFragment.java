@@ -59,7 +59,9 @@ public class ChatListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setListAdapter(new ChatListArrayAdapter(getActivity(), worker.userProfile.chats));
+        if (worker.userProfile != null) {
+            setListAdapter(new ChatListArrayAdapter(getActivity(), worker.userProfile.chats));
+        }
     }
 
     @Override
