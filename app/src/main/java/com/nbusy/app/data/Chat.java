@@ -1,7 +1,5 @@
 package com.nbusy.app.data;
 
-import com.nbusy.app.activities.ChatDetailFragment;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,8 +12,8 @@ import java.util.UUID;
  * One-to-one chat.
  */
 public final class Chat {
-    private static final String TAG = ChatDetailFragment.class.getSimpleName();
-    private final Map<String, Integer> messageIDtoIndex; // message ID -> messages[index]
+    private static final String TAG = Chat.class.getSimpleName();
+    private final Map<String, Integer> messageIDtoIndex = new HashMap<>(); // message ID -> messages[index]
 
     public final String id; // unique chat id
     public final String peerName; // peer name
@@ -33,7 +31,6 @@ public final class Chat {
         this.lastMessage = lastMessage;
         this.sent = sent;
         this.messages = messages;
-        messageIDtoIndex = new HashMap<>();
     }
 
     public Message addMessage(String message) {
