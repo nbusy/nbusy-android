@@ -28,7 +28,7 @@ public class Worker {
     private final Client client;
     private final EventBus eventBus;
     private final Database db;
-    private Profile userProfile;
+    public Profile userProfile;
 
     public Worker(final Client client, final EventBus eventBus, Database db) {
         Log.i(TAG, "Instance created.");

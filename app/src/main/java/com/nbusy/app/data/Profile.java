@@ -21,4 +21,12 @@ public class Profile {
             chatIDtoIndex.put(chats.get(i).id, i);
         }
     }
+
+    public Chat getChat(String chatId) {
+        return chats.get(chatIDtoIndex.get(chatId));
+    }
+
+    public Chat getChat(int index) {
+        return chats.get(index);
+    }
 }

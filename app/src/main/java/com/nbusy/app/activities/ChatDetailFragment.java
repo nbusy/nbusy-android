@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.google.common.eventbus.Subscribe;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
-import com.nbusy.app.data.Chats;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
@@ -81,7 +80,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
             String chatId = (String) arguments.get(ARG_ITEM_ID);
-            chat = Chats.ITEM_MAP.get(chatId);
+            chat = worker.userProfile.getChat(chatId);
             messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
             setListAdapter(messageAdapter);
         }

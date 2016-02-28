@@ -6,7 +6,8 @@ import android.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
 
-import com.nbusy.app.data.Chats;
+import com.nbusy.app.worker.Worker;
+import com.nbusy.app.worker.WorkerSingleton;
 
 /**
  * A list fragment representing a list of Chats. This fragment
@@ -18,6 +19,8 @@ import com.nbusy.app.data.Chats;
  * interface.
  */
 public class ChatListFragment extends ListFragment {
+
+    private final Worker worker = WorkerSingleton.getWorker();
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -56,7 +59,7 @@ public class ChatListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setListAdapter(new ChatListArrayAdapter(getActivity(), Chats.ITEMS));
+        setListAdapter(new ChatListArrayAdapter(getActivity(), worker.userProfile.chats));
     }
 
     @Override
@@ -96,7 +99,7 @@ public class ChatListFragment extends ListFragment {
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         if (callbacks != null) {
-            callbacks.onItemSelected(Chats.ITEMS.get(position).peerName);
+            callbacks.onItemSelected(worker.userProfile.chats.get(position).peerName);
         }
     }
 
