@@ -6,6 +6,7 @@ import android.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
 
+import com.google.common.eventbus.Subscribe;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
 
@@ -62,6 +63,18 @@ public class ChatListFragment extends ListFragment {
         if (worker.userProfile != null) {
             setListAdapter(new ChatListArrayAdapter(getActivity(), worker.userProfile.chats));
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        worker.getEventBus().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        worker.getEventBus().unregister(this);
     }
 
     @Override
@@ -134,5 +147,14 @@ public class ChatListFragment extends ListFragment {
         }
 
         activatedPosition = position;
+    }
+
+    /******************************
+     * Worker Event Subscriptions *
+     ******************************/
+
+    @Subscribe
+    public void userProfileReady(Worker.UserProfileAvailable e) {
+        setListAdapter(new ChatListArrayAdapter(getActivity(), worker.userProfile.chats));
     }
 }
