@@ -38,6 +38,7 @@ public class InMemoryDatabase implements Database {
                                                 new Message(UUID.randomUUID().toString(), "2", "Teoman Soygul", null, true, "Lorem ip sum my message...", new Date(), Message.Status.DeliveredToUser),
                                                 new Message(UUID.randomUUID().toString(), "2", "User ID: " + "2", null, false, "Test test.", new Date(), Message.Status.DeliveredToUser))))));
 
+                // todo: run the callback on ui thread with runOnUiThread(...)
                 cb.profileRetrieved(new Profile("1", chats));
             }
         }
