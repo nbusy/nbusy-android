@@ -81,8 +81,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         if (arguments.containsKey(ARG_ITEM_ID)) {
             String chatId = (String) arguments.get(ARG_ITEM_ID);
             chat = worker.userProfile.getChat(chatId);
-            messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
-            setListAdapter(messageAdapter);
+            if (chat.messages != null) {
+                messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
+                setListAdapter(messageAdapter);
+            }
         }
     }
 
