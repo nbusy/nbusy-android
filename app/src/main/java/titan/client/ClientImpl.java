@@ -9,6 +9,7 @@ import neptulon.client.ResCtx;
 import neptulon.client.callbacks.ResCallback;
 import neptulon.client.middleware.Router;
 import titan.client.callbacks.ConnCallbacks;
+import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.JwtAuthCallback;
 import titan.client.callbacks.SendMsgCallback;
 import titan.client.messages.JwtAuth;
@@ -57,6 +58,11 @@ public class ClientImpl implements Client {
                 }
             }
         });
+    }
+
+    @Override
+    public void echo(Message msg, EchoCallback db) {
+
     }
 
     // todo: send message for singular?
