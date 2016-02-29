@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.UUID;
 
-public class InMemoryDatabase implements Database {
+public class InMemDB implements DB {
     @Override
     public void getProfile(final GetProfileCallback cb) {
         class SimulateDatabase extends AsyncTask<Object, Object, Object> {
@@ -44,5 +44,10 @@ public class InMemoryDatabase implements Database {
         }
 
         new SimulateDatabase().execute(null, null, null);
+    }
+
+    @Override
+    public void getChatMessages(String chatId, GetChatMessagesCallback cb) {
+
     }
 }

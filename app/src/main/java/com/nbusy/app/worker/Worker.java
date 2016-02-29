@@ -5,8 +5,8 @@ import android.util.Log;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
-import com.nbusy.app.data.Database;
-import com.nbusy.app.data.InMemoryDatabase;
+import com.nbusy.app.data.DB;
+import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
 import com.nbusy.sdk.Client;
@@ -27,10 +27,10 @@ public class Worker {
     private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA";
     private final Client client;
     private final EventBus eventBus;
-    private final Database db;
+    private final DB db;
     public Profile userProfile;
 
-    public Worker(final Client client, final EventBus eventBus, Database db) {
+    public Worker(final Client client, final EventBus eventBus, DB db) {
         Log.i(TAG, "Instance created.");
         this.client = client;
         this.eventBus = eventBus;
@@ -61,7 +61,7 @@ public class Worker {
                 Log.w(TAG, "Failed to connect to NBusy server.");
             }
         });
-        db.getProfile(new Database.GetProfileCallback() {
+        db.getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile up) {
                 userProfile = up;
@@ -71,7 +71,7 @@ public class Worker {
     }
 
     public Worker() {
-        this(new ClientImpl(), new AsyncEventBus(TAG, new UiThreadExecutor()), new InMemoryDatabase());
+        this(new ClientImpl(), new AsyncEventBus(TAG, new UiThreadExecutor()), new InMemDB());
     }
 
     public void destroy() {
