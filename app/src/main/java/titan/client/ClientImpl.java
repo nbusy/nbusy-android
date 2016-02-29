@@ -12,6 +12,7 @@ import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.JwtAuthCallback;
 import titan.client.callbacks.SendMsgCallback;
+import titan.client.messages.EchoMessage;
 import titan.client.messages.JwtAuth;
 import titan.client.messages.Message;
 
@@ -61,8 +62,14 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void echo(Object obj, EchoCallback db) {
-
+    public void echo(String msg, final EchoCallback cb) {
+        conn.sendRequest("echo", new EchoMessage(msg), new ResCallback() {
+            @Override
+            public void callback(ResCtx ctx) {
+                EchoMessage em = ctx.getResult(EchoMessage.class);
+                cb.echoResponse(em.message);
+            }
+        });
     }
 
     // todo: send message for singular?

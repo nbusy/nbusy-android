@@ -14,7 +14,7 @@ public interface Client {
 
     void jwtAuth(String token, JwtAuthCallback cb);
 
-    void echo(Object obj, EchoCallback db);
+    void echo(String msg, EchoCallback cb);
 
     void sendMessages(Message[] msgs, SendMsgCallback cb);
 
