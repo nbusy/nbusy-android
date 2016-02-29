@@ -35,6 +35,10 @@ public final class Chat {
         return msg;
     }
 
+    public void addMessages(List<Message> msgs) {
+        messages.addAll(msgs);
+    }
+
     public int updateMessage(Message msg) {
         // only update if message belongs to this chat
         if (!Objects.equals(msg.chatId, id)) {

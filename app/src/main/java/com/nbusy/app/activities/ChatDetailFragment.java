@@ -69,6 +69,11 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
     }
 
+    private void setMessageAdapter() {
+        messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
+        setListAdapter(messageAdapter);
+    }
+
     /**************************
      * ListFragment Overrides *
      **************************/
@@ -81,9 +86,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         if (arguments.containsKey(ARG_ITEM_ID)) {
             String chatId = (String) arguments.get(ARG_ITEM_ID);
             chat = worker.userProfile.getChat(chatId);
-            if (chat.messages != null) {
-                messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
-                setListAdapter(messageAdapter);
+            if (chat.messages.size() == 0) {
+                worker.getChatMessages(chatId);
+            } else {
+                setMessageAdapter();
             }
         }
     }
@@ -134,7 +140,8 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         setMessagesState(e.msgs);
     }
 
-    // todo: chatMessagesRetrieved(id) {
-//    messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
-//    setListAdapter(messageAdapter);
+    @Subscribe
+    public void chatMessagesRetrieved(Worker.ChatMessagesAvailable e) {
+        setMessageAdapter();
+    }
 }

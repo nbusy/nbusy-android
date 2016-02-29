@@ -13,6 +13,7 @@ import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
 import java.util.Date;
+import java.util.List;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.JwtAuthCallback;
@@ -100,7 +101,15 @@ public class Worker {
      * Database Operations *
      ***********************/
 
-
+    public void getChatMessages(final String chatId) {
+        db.getChatMessages(chatId, new DB.GetChatMessagesCallback() {
+            @Override
+            public void chatMessagesRetrieved(List<Message> msgs) {
+                userProfile.getChat(chatId).addMessages(msgs);
+                eventBus.post(new ChatMessagesAvailable(chatId));
+            }
+        });
+    }
 
     /************************
      * Server Communication *
@@ -172,5 +181,13 @@ public class Worker {
     }
 
     public class UserProfileAvailable {
+    }
+
+    public class ChatMessagesAvailable {
+        public final String chatId;
+
+        public ChatMessagesAvailable(String chatId) {
+            this.chatId = chatId;
+        }
     }
 }
