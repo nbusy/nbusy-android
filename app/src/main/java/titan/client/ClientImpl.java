@@ -61,7 +61,7 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void echo(Message msg, EchoCallback db) {
+    public void echo(Object obj, EchoCallback db) {
 
     }
 
