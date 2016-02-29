@@ -1,8 +1,10 @@
-package com.nbusy.app;
+package com.nbusy.app.services;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
+import com.nbusy.app.worker.WorkerService;
 
 public class DeviceBootBroadcastReceiver extends BroadcastReceiver {
     @Override

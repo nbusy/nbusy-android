@@ -1,4 +1,4 @@
-package com.nbusy.app;
+package com.nbusy.app.activities;
 
 import android.app.ListFragment;
 import android.os.Bundle;
@@ -11,6 +11,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
+import com.nbusy.app.R;
+import com.nbusy.app.data.Chat;
+import com.nbusy.app.data.Message;
+import com.nbusy.app.worker.Worker;
+import com.nbusy.app.worker.WorkerSingleton;
 
 /**
  * A fragment representing a single Chat detail screen, along with the messages in the chat.
@@ -64,6 +69,11 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
     }
 
+    private void setMessageAdapter() {
+        messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
+        setListAdapter(messageAdapter);
+    }
+
     /**************************
      * ListFragment Overrides *
      **************************/
@@ -75,9 +85,12 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
             String chatId = (String) arguments.get(ARG_ITEM_ID);
-            chat = Chats.ITEM_MAP.get(chatId);
-            messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
-            setListAdapter(messageAdapter);
+            chat = worker.userProfile.getChat(chatId);
+            if (chat.messages.size() == 0) {
+                worker.getChatMessages(chatId);
+            } else {
+                setMessageAdapter();
+            }
         }
     }
 
@@ -125,5 +138,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     @Subscribe
     public void setMessagesState(Worker.MessagesStatusChangedEvent e) {
         setMessagesState(e.msgs);
+    }
+
+    @Subscribe
+    public void chatMessagesRetrieved(Worker.ChatMessagesAvailable e) {
+        setMessageAdapter();
     }
 }

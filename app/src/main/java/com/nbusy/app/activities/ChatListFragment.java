@@ -1,10 +1,14 @@
-package com.nbusy.app;
+package com.nbusy.app.activities;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
+
+import com.google.common.eventbus.Subscribe;
+import com.nbusy.app.worker.Worker;
+import com.nbusy.app.worker.WorkerSingleton;
 
 /**
  * A list fragment representing a list of Chats. This fragment
@@ -16,6 +20,8 @@ import android.widget.ListView;
  * interface.
  */
 public class ChatListFragment extends ListFragment {
+
+    private final Worker worker = WorkerSingleton.getWorker();
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -54,7 +60,21 @@ public class ChatListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setListAdapter(new ChatListArrayAdapter(getActivity(), Chats.ITEMS));
+        if (worker.userProfile != null) {
+            setListAdapter(new ChatListArrayAdapter(getActivity(), worker.userProfile.chats));
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        worker.getEventBus().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        worker.getEventBus().unregister(this);
     }
 
     @Override
@@ -94,7 +114,7 @@ public class ChatListFragment extends ListFragment {
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         if (callbacks != null) {
-            callbacks.onItemSelected(Chats.ITEMS.get(position).peerName);
+            callbacks.onItemSelected(worker.userProfile.chats.get(position).id);
         }
     }
 
@@ -127,5 +147,14 @@ public class ChatListFragment extends ListFragment {
         }
 
         activatedPosition = position;
+    }
+
+    /******************************
+     * Worker Event Subscriptions *
+     ******************************/
+
+    @Subscribe
+    public void userProfileReady(Worker.UserProfileAvailable e) {
+        setListAdapter(new ChatListArrayAdapter(getActivity(), worker.userProfile.chats));
     }
 }

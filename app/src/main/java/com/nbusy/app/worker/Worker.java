@@ -1,14 +1,19 @@
-package com.nbusy.app;
+package com.nbusy.app.worker;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+import com.nbusy.app.data.DB;
+import com.nbusy.app.data.InMemDB;
+import com.nbusy.app.data.Message;
+import com.nbusy.app.data.Profile;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
 import java.util.Date;
+import java.util.List;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.JwtAuthCallback;
@@ -23,12 +28,14 @@ public class Worker {
     private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA";
     private final Client client;
     private final EventBus eventBus;
-    public final Chats chats = new Chats();
+    private final DB db;
+    public Profile userProfile;
 
-    public Worker(final Client client, EventBus eventBus) {
+    public Worker(final Client client, final EventBus eventBus, DB db) {
         Log.i(TAG, "Instance created.");
         this.client = client;
         this.eventBus = eventBus;
+        this.db = db;
         client.connect(new ConnCallbacks() {
             @Override
             public void messagesReceived(titan.client.messages.Message[] msgs) {
@@ -55,10 +62,22 @@ public class Worker {
                 Log.w(TAG, "Failed to connect to NBusy server.");
             }
         });
+        db.getProfile(new DB.GetProfileCallback() {
+            @Override
+            public void profileRetrieved(Profile up) {
+                userProfile = up;
+                eventBus.post(new UserProfileAvailable());
+            }
+        });
     }
 
     public Worker() {
-        this(new ClientImpl(), new AsyncEventBus(TAG, new UiThreadExecutor()));
+        this(new ClientImpl(), new AsyncEventBus(TAG, new UiThreadExecutor()), new InMemDB());
+    }
+
+    public void destroy() {
+        Log.i(TAG, "Instance destroyed.");
+        client.close();
     }
 
     public EventBus getEventBus() {
@@ -77,6 +96,24 @@ public class Worker {
             }
         });
     }
+
+    /***********************
+     * Database Operations *
+     ***********************/
+
+    public void getChatMessages(final String chatId) {
+        db.getChatMessages(chatId, new DB.GetChatMessagesCallback() {
+            @Override
+            public void chatMessagesRetrieved(List<Message> msgs) {
+                userProfile.getChat(chatId).addMessages(msgs);
+                eventBus.post(new ChatMessagesAvailable(chatId));
+            }
+        });
+    }
+
+    /************************
+     * Server Communication *
+     ************************/
 
     public void simulateSendMessages(final Message[] msgs) {
         class SimulateClient extends AsyncTask<Object, Object, Object> {
@@ -104,11 +141,6 @@ public class Worker {
 
     public void echo() {
 
-    }
-
-    public void destroy() {
-        Log.i(TAG, "Instance destroyed.");
-        client.close();
     }
 
     private titan.client.messages.Message[] getTitanMessages(Message[] msgs) {
@@ -145,6 +177,17 @@ public class Worker {
 
         public EchoReceivedEvent(String message) {
             this.message = message;
+        }
+    }
+
+    public class UserProfileAvailable {
+    }
+
+    public class ChatMessagesAvailable {
+        public final String chatId;
+
+        public ChatMessagesAvailable(String chatId) {
+            this.chatId = chatId;
         }
     }
 }

@@ -1,10 +1,14 @@
-package com.nbusy.app;
+package com.nbusy.app.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+
+import com.nbusy.app.R;
+import com.nbusy.app.worker.Worker;
+import com.nbusy.app.worker.WorkerSingleton;
 
 /**
  * An activity representing a single Chat detail screen. This
@@ -17,33 +21,7 @@ import android.view.MenuItem;
  */
 public class ChatDetailActivity extends Activity {
 
-    /* get an instance of WorkerService */
-//    private WorkerService workerService;
-//
-//    private ServiceConnection workerServiceConnection = new ServiceConnection() {
-//        public void onServiceConnected(ComponentName className, IBinder binder) {
-//            WorkerService.WorkerServiceBinder workerServiceBinder = (WorkerService.WorkerServiceBinder) binder;
-//            workerService = workerServiceBinder.getService();
-//        }
-//
-//        public void onServiceDisconnected(ComponentName className) {
-//            workerService = null;
-//        }
-//    };
-//
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        Intent intent = new Intent(this, WorkerService.class);
-//        bindService(intent, workerServiceConnection, Context.BIND_AUTO_CREATE);
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        unbindService(workerServiceConnection);
-//    }
-    /* get an instance of WorkerService */
+    private final Worker worker = WorkerSingleton.getWorker();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +43,7 @@ public class ChatDetailActivity extends Activity {
 
         // Set activity title
         String chatId = getIntent().getStringExtra(ChatDetailFragment.ARG_ITEM_ID);
-        setTitle(chatId);
+        setTitle(worker.userProfile.getChat(chatId).peerName);
 
         // create the detail fragment and add it to the activity using a fragment transaction.
         Bundle arguments = new Bundle();

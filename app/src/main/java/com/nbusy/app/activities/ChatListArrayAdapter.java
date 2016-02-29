@@ -1,4 +1,4 @@
-package com.nbusy.app;
+package com.nbusy.app.activities;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.nbusy.app.R;
+import com.nbusy.app.data.Chat;
 
 import java.util.List;
 

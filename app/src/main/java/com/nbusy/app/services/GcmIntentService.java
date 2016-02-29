@@ -1,4 +1,4 @@
-package com.nbusy.app;
+package com.nbusy.app.services;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -10,6 +10,8 @@ import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.nbusy.app.activities.ChatListActivity;
+import com.nbusy.app.R;
 
 /**
  * This {@code IntentService} does the actual handling of the GCM message. {@code GcmBroadcastReceiver} (a {@code WakefulBroadcastReceiver})

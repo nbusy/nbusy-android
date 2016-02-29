@@ -1,4 +1,4 @@
-package com.nbusy.app;
+package com.nbusy.app.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,6 +10,10 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.nbusy.app.R;
+import com.nbusy.app.worker.Worker;
+import com.nbusy.app.worker.WorkerService;
+import com.nbusy.app.worker.WorkerSingleton;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
