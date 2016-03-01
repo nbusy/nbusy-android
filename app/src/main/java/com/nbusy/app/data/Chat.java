@@ -17,10 +17,10 @@ public final class Chat {
     public final String id; // unique chat id
     public final String peerName; // peer name
     public final String lastMessage; // last message in conversation
-    public final String sent; // last message sent date/time
+    public final Date sent; // last message sent time
     public final List<Message> messages = new ArrayList<>(); // list of messages in this chat
 
-    public Chat(String id, String peerName, String lastMessage, String sent) {
+    public Chat(String id, String peerName, String lastMessage, Date sent) {
         this.id = id;
         this.peerName = peerName;
         this.lastMessage = lastMessage;
