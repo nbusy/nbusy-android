@@ -29,7 +29,7 @@ public final class Chat {
     }
 
     public Message addMessage(String message) {
-        Message msg = new Message(UUID.randomUUID().toString(), id, "Me", null, true, message, new Date(), Message.Status.New);
+        Message msg = new Message(UUID.randomUUID().toString(), id, "Me", null, true, message, new Date(), Message.Status.NEW);
         messageIDtoIndex.put(msg.id, messages.size());
         messages.add(msg);
         return msg;

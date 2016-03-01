@@ -61,7 +61,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
             View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
             if (v != null) {
-                if (msg.status == Message.Status.SentToServer) {
+                if (msg.status == Message.Status.SENT_TO_SERVER) {
                     ((TextView)v.findViewById(R.id.check)).setText("✓");
                 }
                 v.findViewById(R.id.check).setVisibility(View.VISIBLE);

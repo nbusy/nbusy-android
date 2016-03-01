@@ -90,7 +90,7 @@ public class Worker {
             @Override
             public void sentToServer() {
                 for (int i = 0; i < msgs.length; i++) {
-                    msgs[i] = msgs[i].setStatus(Message.Status.SentToServer);
+                    msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
                 }
                 eventBus.post(new MessagesStatusChangedEvent(msgs));
             }
@@ -130,7 +130,7 @@ public class Worker {
             @Override
             protected void onPostExecute(Object o) {
                 for (int i = 0; i < msgs.length; i++) {
-                    msgs[i] = msgs[i].setStatus(Message.Status.SentToServer);
+                    msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
                 }
                 eventBus.post(new MessagesStatusChangedEvent(msgs));
             }

@@ -31,8 +31,8 @@ public class Message {
     }
 
     public enum Status {
-        New,
-        SentToServer,
-        DeliveredToUser
+        NEW,
+        SENT_TO_SERVER,
+        DELIVERED_TO_USER
     }
 }

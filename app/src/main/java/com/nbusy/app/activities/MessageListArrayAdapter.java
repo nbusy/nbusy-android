@@ -58,9 +58,9 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
         viewHolder.body.setText(message.body);
         String sent = new SimpleDateFormat("HH:mm").format(message.sent);
         viewHolder.sent.setText(sent);
-        if (message.status == Message.Status.New) {
+        if (message.status == Message.Status.NEW) {
             viewHolder.check.setVisibility(View.GONE);
-        } else if (message.status == Message.Status.SentToServer) {
+        } else if (message.status == Message.Status.SENT_TO_SERVER) {
             viewHolder.check.setText("✓");
         } else {
             viewHolder.check.setText("✓✓");
