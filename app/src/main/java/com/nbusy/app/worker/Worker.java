@@ -94,6 +94,7 @@ public class Worker {
     private void receiveMessages(titan.client.messages.Message[] msgs) {
     // todo: add messages to designated chats here and not in fragment (which might not be visible)
         // todo: raise msg received event in case any view is listening
+        // database callback will do this for us?
     }
 
     public void sendMessages(final Message[] msgs) {
@@ -104,7 +105,7 @@ public class Worker {
                 public void echoResponse(String msg) {
                     msgs[0] = msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
                     eventBus.post(new MessagesStatusChangedEvent(msgs));
-//                    receiveMessages(new titan.client.messages.Message[] {new titan.client.messages.Message()});
+                    // todo: receiveMessages(new titan.client.messages.Message[] {new titan.client.messages.Message()});
                 }
             });
             return;
@@ -118,6 +119,7 @@ public class Worker {
                     msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
                 }
                 // todo: update messages to designated chats here and not in fragment (which might not be visible)
+                // database callback will do this for us?
                 eventBus.post(new MessagesStatusChangedEvent(msgs));
             }
         });
