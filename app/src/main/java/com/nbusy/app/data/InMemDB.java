@@ -16,10 +16,10 @@ public class InMemDB implements DB {
             @Override
             public void execute() {
                 ArrayList<Chat> chats = new ArrayList<>();
-                chats.add(new Chat("1", "Teoman Soygul", "My last message", "123456"));
-                chats.add((new Chat("2", "Chuck Norris", "This is my last-first message!", "9876543")));
+                chats.add(new Chat(UUID.randomUUID().toString(), "Teoman Soygul", "My last message", "123456"));
+                chats.add((new Chat(UUID.randomUUID().toString(), "Chuck Norris", "This is my last-first message!", "9876543")));
 
-                cb.profileRetrieved(new Profile("1", chats));
+                cb.profileRetrieved(new Profile(UUID.randomUUID().toString(), chats));
             }
         });
     }
@@ -29,23 +29,10 @@ public class InMemDB implements DB {
         simulateDelay(new Function() {
             @Override
             public void execute() {
-                LinkedList<Message> msgs;
-
-                if (Objects.equals(chatId, "1")) {
-                    msgs = new LinkedList<>(
-                            Arrays.asList(
-                                    new Message(UUID.randomUUID().toString(), "1", "Teoman Soygul", null, true, "Lorem ip sum my message...", new Date(), Message.Status.DELIVERED_TO_USER),
-                                    new Message(UUID.randomUUID().toString(), "1", "User ID: " + "1", null, false, "Test test.", new Date(), Message.Status.DELIVERED_TO_USER)));
-
-                } else {
-                    msgs = new LinkedList<>(
-                            Arrays.asList(
-                                    new Message(UUID.randomUUID().toString(), "2", "Teoman Soygul", null, true, "Lorem ip sum my message...", new Date(), Message.Status.DELIVERED_TO_USER),
-                                    new Message(UUID.randomUUID().toString(), "2", "User ID: " + "2", null, false, "Test test.", new Date(), Message.Status.DELIVERED_TO_USER)));
-
-                }
-
-                cb.chatMessagesRetrieved(msgs);
+                cb.chatMessagesRetrieved(new LinkedList<>(
+                        Arrays.asList(
+                                new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, true, "Lorem ip sum my message...", new Date(), Message.Status.DELIVERED_TO_USER),
+                                new Message(UUID.randomUUID().toString(), chatId, "User ID: " + chatId, null, false, "Test test.", new Date(), Message.Status.DELIVERED_TO_USER))));
             }
         });
     }
