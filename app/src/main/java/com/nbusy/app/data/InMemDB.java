@@ -16,6 +16,7 @@ public class InMemDB implements DB {
             @Override
             public void execute() {
                 ArrayList<Chat> chats = new ArrayList<>();
+                chats.add(new Chat("echo", "Echo", "Yo!", new Date()));
                 chats.add(new Chat(UUID.randomUUID().toString(), "Teoman Soygul", "My last message", new Date()));
                 chats.add((new Chat(UUID.randomUUID().toString(), "Chuck Norris", "This is my last-first message!", new Date())));
 

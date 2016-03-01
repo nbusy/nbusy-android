@@ -14,8 +14,10 @@ import com.nbusy.sdk.ClientImpl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import titan.client.callbacks.ConnCallbacks;
+import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.JwtAuthCallback;
 import titan.client.callbacks.SendMsgCallback;
 
@@ -84,7 +86,23 @@ public class Worker {
         return eventBus;
     }
 
+    /************************
+     * Server Communication *
+     ************************/
+
     public void sendMessages(final Message[] msgs) {
+        // handle echo messages separately
+        if (Objects.equals(msgs[0].chatId, "echo")) {
+            client.echo(msgs[0].body, new EchoCallback() {
+                @Override
+                public void echoResponse(String msg) {
+                    msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
+                    eventBus.post(new MessagesStatusChangedEvent(msgs));
+                }
+            });
+            return;
+        }
+
         titan.client.messages.Message[] titanMsgs = getTitanMessages(msgs);
         client.sendMessages(titanMsgs, new SendMsgCallback() {
             @Override
@@ -96,24 +114,6 @@ public class Worker {
             }
         });
     }
-
-    /***********************
-     * Database Operations *
-     ***********************/
-
-    public void getChatMessages(final String chatId) {
-        db.getChatMessages(chatId, new DB.GetChatMessagesCallback() {
-            @Override
-            public void chatMessagesRetrieved(List<Message> msgs) {
-                userProfile.getChat(chatId).addMessages(msgs);
-                eventBus.post(new ChatMessagesAvailable(chatId));
-            }
-        });
-    }
-
-    /************************
-     * Server Communication *
-     ************************/
 
     public void simulateSendMessages(final Message[] msgs) {
         class SimulateClient extends AsyncTask<Object, Object, Object> {
@@ -139,10 +139,6 @@ public class Worker {
         new SimulateClient().execute(null, null, null);
     }
 
-    public void echo() {
-
-    }
-
     private titan.client.messages.Message[] getTitanMessages(Message[] msgs) {
         titan.client.messages.Message[] titanMsgs = new titan.client.messages.Message[msgs.length];
         Date now = new Date();
@@ -150,6 +146,20 @@ public class Worker {
             titanMsgs[i] = new titan.client.messages.Message(null, msgs[i].to, now, msgs[i].body);
         }
         return titanMsgs;
+    }
+
+    /***********************
+     * Database Operations *
+     ***********************/
+
+    public void getChatMessages(final String chatId) {
+        db.getChatMessages(chatId, new DB.GetChatMessagesCallback() {
+            @Override
+            public void chatMessagesRetrieved(List<Message> msgs) {
+                userProfile.getChat(chatId).addMessages(msgs);
+                eventBus.post(new ChatMessagesAvailable(chatId));
+            }
+        });
     }
 
     /*****************
