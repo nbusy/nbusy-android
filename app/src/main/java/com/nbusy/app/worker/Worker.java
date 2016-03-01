@@ -41,6 +41,7 @@ public class Worker {
         client.connect(new ConnCallbacks() {
             @Override
             public void messagesReceived(titan.client.messages.Message[] msgs) {
+                receiveMessages(msgs);
             }
 
             @Override
@@ -91,7 +92,8 @@ public class Worker {
      ************************/
 
     private void receiveMessages(titan.client.messages.Message[] msgs) {
-
+    // todo: add messages to designated chats here and not in fragment (which might not be visible)
+        // todo: raise msg received event in case any view is listening
     }
 
     public void sendMessages(final Message[] msgs) {
@@ -100,7 +102,7 @@ public class Worker {
             client.echo(msgs[0].body, new EchoCallback() {
                 @Override
                 public void echoResponse(String msg) {
-                    msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
+                    msgs[0] = msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
                     eventBus.post(new MessagesStatusChangedEvent(msgs));
 //                    receiveMessages(new titan.client.messages.Message[] {new titan.client.messages.Message()});
                 }
@@ -115,6 +117,7 @@ public class Worker {
                 for (int i = 0; i < msgs.length; i++) {
                     msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
                 }
+                // todo: update messages to designated chats here and not in fragment (which might not be visible)
                 eventBus.post(new MessagesStatusChangedEvent(msgs));
             }
         });
