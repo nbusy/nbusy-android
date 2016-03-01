@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.UUID;
 
 public class InMemDB implements DB {
@@ -18,7 +17,7 @@ public class InMemDB implements DB {
                 ArrayList<Chat> chats = new ArrayList<>();
                 chats.add(new Chat("echo", "Echo", "Yo!", new Date()));
                 chats.add(new Chat(UUID.randomUUID().toString(), "Teoman Soygul", "My last message", new Date()));
-                chats.add((new Chat(UUID.randomUUID().toString(), "Chuck Norris", "This is my last-first message!", new Date())));
+                chats.add(new Chat(UUID.randomUUID().toString(), "Chuck Norris", "This is my last-first message!", new Date()));
 
                 cb.profileRetrieved(new Profile(UUID.randomUUID().toString(), chats));
             }

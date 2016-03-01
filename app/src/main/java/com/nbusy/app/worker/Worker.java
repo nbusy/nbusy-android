@@ -90,6 +90,10 @@ public class Worker {
      * Server Communication *
      ************************/
 
+    private void receiveMessages(titan.client.messages.Message[] msgs) {
+
+    }
+
     public void sendMessages(final Message[] msgs) {
         // handle echo messages separately
         if (Objects.equals(msgs[0].chatId, "echo")) {
@@ -98,6 +102,7 @@ public class Worker {
                 public void echoResponse(String msg) {
                     msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
                     eventBus.post(new MessagesStatusChangedEvent(msgs));
+//                    receiveMessages(new titan.client.messages.Message[] {new titan.client.messages.Message()});
                 }
             });
             return;
