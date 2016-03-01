@@ -24,7 +24,6 @@ import com.nbusy.app.worker.WorkerSingleton;
  */
 public class ChatDetailFragment extends ListFragment implements View.OnClickListener {
 
-    private static final String TAG = ChatDetailFragment.class.getSimpleName();
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
     private Chat chat;
@@ -61,7 +60,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
             View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
             if (v != null) {
-                if (msg.status == Message.Status.SentToServer) {
+                if (msg.status == Message.Status.SENT_TO_SERVER) {
                     ((TextView)v.findViewById(R.id.check)).setText("✓");
                 }
                 v.findViewById(R.id.check).setVisibility(View.VISIBLE);

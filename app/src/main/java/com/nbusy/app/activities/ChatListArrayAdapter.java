@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -52,7 +53,8 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chat> {
 
         viewHolder.contactName.setText(chat.peerName);
         viewHolder.lastMessage.setText(chat.lastMessage);
-        viewHolder.sent.setText(chat.sent);
+        String sent = new SimpleDateFormat("HH:mm").format(chat.sent);
+        viewHolder.sent.setText(sent);
 
         return convertView;
     }

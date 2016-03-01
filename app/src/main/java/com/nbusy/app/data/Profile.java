@@ -8,7 +8,6 @@ import java.util.Map;
  * User profile including user information and chats.
  */
 public class Profile {
-    private static final String TAG = Profile.class.getSimpleName();
     private final Map<String, Integer> chatIDtoIndex = new HashMap<>(); // chat ID -> chat[index]
 
     public final String userId;
@@ -24,9 +23,5 @@ public class Profile {
 
     public Chat getChat(String chatId) {
         return chats.get(chatIDtoIndex.get(chatId));
-    }
-
-    public Chat getChat(int index) {
-        return chats.get(index);
     }
 }
