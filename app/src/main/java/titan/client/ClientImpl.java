@@ -43,6 +43,7 @@ public class ClientImpl implements Client {
 
     @Override
     public void connect(ConnCallbacks cbs) {
+        this.cbs = cbs;
         conn.connect(cbs);
     }
 
