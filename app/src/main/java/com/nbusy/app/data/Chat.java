@@ -12,7 +12,6 @@ import java.util.UUID;
  * One-to-one chat.
  */
 public final class Chat {
-    private static final String TAG = Chat.class.getSimpleName();
     private final Map<String, Integer> messageIDtoIndex = new HashMap<>(); // message ID -> messages[index]
 
     public final String id; // unique chat id

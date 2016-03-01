@@ -24,7 +24,6 @@ import com.nbusy.app.worker.WorkerSingleton;
  */
 public class ChatDetailFragment extends ListFragment implements View.OnClickListener {
 
-    private static final String TAG = ChatDetailFragment.class.getSimpleName();
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
     private Chat chat;
