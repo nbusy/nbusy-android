@@ -1,5 +1,6 @@
 package com.nbusy.app.data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,14 +19,13 @@ public final class Chat {
     public final String peerName; // peer name
     public final String lastMessage; // last message in conversation
     public final String sent; // last message sent date/time
-    public final List<Message> messages; // list of messages in this chat
+    public final List<Message> messages = new ArrayList<>(); // list of messages in this chat
 
-    public Chat(String id, String peerName, String lastMessage, String sent, List<Message> messages) {
+    public Chat(String id, String peerName, String lastMessage, String sent) {
         this.id = id;
         this.peerName = peerName;
         this.lastMessage = lastMessage;
         this.sent = sent;
-        this.messages = messages;
     }
 
     public Message addMessage(String message) {
@@ -36,6 +36,9 @@ public final class Chat {
     }
 
     public void addMessages(List<Message> msgs) {
+        for (int i = 0; i < msgs.size(); i++) {
+            messageIDtoIndex.put(msgs.get(i).id, messages.size() + i);
+        }
         messages.addAll(msgs);
     }
 

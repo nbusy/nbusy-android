@@ -16,8 +16,8 @@ public class InMemDB implements DB {
             @Override
             public void execute() {
                 ArrayList<Chat> chats = new ArrayList<>();
-                chats.add(new Chat("1", "Teoman Soygul", "My last message", "123456", new ArrayList<Message>()));
-                chats.add((new Chat("2", "Chuck Norris", "This is my last-first message!", "9876543", new ArrayList<Message>())));
+                chats.add(new Chat("1", "Teoman Soygul", "My last message", "123456"));
+                chats.add((new Chat("2", "Chuck Norris", "This is my last-first message!", "9876543")));
 
                 cb.profileRetrieved(new Profile("1", chats));
             }
