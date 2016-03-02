@@ -13,7 +13,6 @@ import com.nbusy.app.data.Profile;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -112,7 +111,8 @@ public class Worker {
             return;
         }
 
-        // todo: store messages in message queue until they are ACKed
+        // store messages in message queue until they are ACKed
+//        todo: db.enqueueMessage(msgs[0], new );
 
         titan.client.messages.Message[] titanMsgs = DataMaps.getTitanMessages(msgs);
         client.sendMessages(titanMsgs, new SendMsgCallback() {

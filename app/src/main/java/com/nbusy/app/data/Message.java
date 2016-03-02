@@ -1,6 +1,7 @@
 package com.nbusy.app.data;
 
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * A message within a chat.
@@ -24,6 +25,10 @@ public class Message {
         this.body = body;
         this.sent = sent;
         this.status = status;
+    }
+
+    public static Message NewOutgoingMessage(String chatId, String to, String body) {
+        return new Message(UUID.randomUUID().toString(), chatId, null, to, true, body, new Date(), Status.NEW);
     }
 
     public Message setStatus(Status status) {

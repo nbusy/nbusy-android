@@ -28,7 +28,7 @@ public final class Chat {
     }
 
     public Message addMessage(String message) {
-        Message msg = new Message(UUID.randomUUID().toString(), id, "Me", null, true, message, new Date(), Message.Status.NEW);
+        Message msg = Message.NewOutgoingMessage(id, peerName, message);
         messageIDtoIndex.put(msg.id, messages.size());
         messages.add(msg);
         return msg;
