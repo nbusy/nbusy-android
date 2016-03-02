@@ -16,7 +16,7 @@ public interface Client {
 
     void echo(String msg, EchoCallback cb);
 
-    void sendMessages(Message[] msgs, SendMsgCallback cb);
+    void sendMessages(SendMsgCallback cb, Message... msgs);
 
     void close();
 }

@@ -77,7 +77,7 @@ public class ClientImpl implements Client {
     // todo2: we should set from,date fields for each message ourselves or expect an OutMessage class instead (bonus, variadic!)
 
     @Override
-    public void sendMessages(Message[] msgs, final SendMsgCallback cb) {
+    public void sendMessages(final SendMsgCallback cb, Message... msgs) {
         conn.sendRequest("msg.send", msgs, new ResCallback() {
             @Override
             public void callback(ResCtx ctx) {

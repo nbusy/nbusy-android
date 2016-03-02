@@ -91,7 +91,7 @@ public class Worker {
      * Server Communication *
      ************************/
 
-    private void receiveMessages(titan.client.messages.Message[] msgs) {
+    private void receiveMessages(titan.client.messages.Message... msgs) {
     // todo: add messages to designated chats here and not in fragment (which might not be visible)
         // todo: raise msg received event in case any view is listening
         // database callback will do this for us?
@@ -115,7 +115,7 @@ public class Worker {
 //        todo: db.enqueueMessage(msgs[0], new );
 
         titan.client.messages.Message[] titanMsgs = DataMaps.getTitanMessages(msgs);
-        client.sendMessages(titanMsgs, new SendMsgCallback() {
+        client.sendMessages(new SendMsgCallback() {
             @Override
             public void sentToServer() {
                 for (int i = 0; i < msgs.length; i++) {
@@ -126,7 +126,7 @@ public class Worker {
 
                 // todo: dequeue store messages as they are ACKed now
             }
-        });
+        }, titanMsgs);
     }
 
     public void simulateSendMessages(final Message[] msgs) {

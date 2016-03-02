@@ -50,13 +50,13 @@ public class TitanTest {
         awaitThrows(authCounter);
 
         final CountDownLatch msgCounter = new CountDownLatch(1);
-        client.sendMessages(new Message[]{new Message(null, "2", new Date(), "Hello from Titan client!")}, new SendMsgCallback() {
+        client.sendMessages(new SendMsgCallback() {
             @Override
             public void sentToServer() {
                 System.out.println("Received 'send' response: message delivered to server.");
                 msgCounter.countDown();
             }
-        });
+        }, new Message(null, "2", new Date(), "Hello from Titan client!"));
         awaitThrows(msgCounter);
 
         client.close();
