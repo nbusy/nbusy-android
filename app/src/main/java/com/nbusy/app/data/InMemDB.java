@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 public class InMemDB implements DB {
+    private final List<Message> msgQueue = new ArrayList<>();
+
     @Override
     public void getProfile(final GetProfileCallback cb) {
         simulateDelay(new Function() {
@@ -33,6 +36,28 @@ public class InMemDB implements DB {
                         Arrays.asList(
                                 new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, true, "Lorem ip sum my message...", new Date(), Message.Status.DELIVERED_TO_USER),
                                 new Message(UUID.randomUUID().toString(), chatId, "User ID: " + chatId, null, false, "Test test.", new Date(), Message.Status.DELIVERED_TO_USER))));
+            }
+        });
+    }
+
+    @Override
+    public void enqueueMessage(final Message msg, final EnqueueMessageCallback cb) {
+        simulateDelay(new Function() {
+            @Override
+            public void execute() {
+                msgQueue.add(msg);
+                cb.messageEnqueued(msg);
+            }
+        });
+    }
+
+    @Override
+    public void dequeueMessage(final Message msg, final DequeueMessageCallback cb) {
+        simulateDelay(new Function() {
+            @Override
+            public void execute() {
+                msgQueue.remove(msg);
+                cb.messageDequeued(msg);
             }
         });
     }
