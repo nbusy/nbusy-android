@@ -27,7 +27,7 @@ public class Message {
         this.status = status;
     }
 
-    public static Message NewOutgoingMessage(String chatId, String to, String body) {
+    public static Message newOutgoingMessage(String chatId, String to, String body) {
         return new Message(UUID.randomUUID().toString(), chatId, null, to, true, body, new Date(), Status.NEW);
     }
 

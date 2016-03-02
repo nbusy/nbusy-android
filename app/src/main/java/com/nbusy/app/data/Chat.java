@@ -28,7 +28,7 @@ public final class Chat {
     }
 
     public Message addMessage(String message) {
-        Message msg = Message.NewOutgoingMessage(id, peerName, message);
+        Message msg = Message.newOutgoingMessage(id, peerName, message);
         messageIDtoIndex.put(msg.id, messages.size());
         messages.add(msg);
         return msg;
