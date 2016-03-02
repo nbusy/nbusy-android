@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class InMemDB implements DB {
@@ -56,7 +57,17 @@ public class InMemDB implements DB {
         simulateDelay(new Function() {
             @Override
             public void execute() {
-                msgQueue.remove(msg);
+                boolean removed = false;
+                for (Message m : msgQueue) {
+                    // can not use .remove as message identity might have changed
+                    if (Objects.equals(m.id, msg.id)) {
+                        msgQueue.remove(m);
+                        removed = true;
+                    }
+                }
+                if (!removed) {
+                    throw new IllegalArgumentException("Given message was not in the queue: " + msg);
+                }
                 cb.messageDequeued(msg);
             }
         });
