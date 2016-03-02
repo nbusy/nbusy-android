@@ -111,6 +111,8 @@ public class Worker {
             return;
         }
 
+        // todo: store messages in message queue until they are ACKed
+
         titan.client.messages.Message[] titanMsgs = getTitanMessages(msgs);
         client.sendMessages(titanMsgs, new SendMsgCallback() {
             @Override
@@ -119,8 +121,9 @@ public class Worker {
                     msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
                 }
                 // todo: update messages to designated chats here and not in fragment (which might not be visible)
-                // database callback will do this for us?
                 eventBus.post(new MessagesStatusChangedEvent(msgs));
+
+                // todo: dequeue store messages as they are ACKed now
             }
         });
     }
