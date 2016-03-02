@@ -21,7 +21,7 @@ public class RecvMsgsMiddleware implements Middleware {
         Message[] msgs = ctx.getParams(Message[].class);
         try {
             cbs.messagesReceived(msgs);
-            //        todo: set ctx.response
+            ctx.setResponse("ACK");
         } catch (Exception e) {
             e.printStackTrace();
         }
