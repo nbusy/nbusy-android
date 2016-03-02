@@ -6,6 +6,7 @@ import android.util.Log;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.nbusy.app.data.DB;
+import com.nbusy.app.data.DataMaps;
 import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
@@ -113,7 +114,7 @@ public class Worker {
 
         // todo: store messages in message queue until they are ACKed
 
-        titan.client.messages.Message[] titanMsgs = getTitanMessages(msgs);
+        titan.client.messages.Message[] titanMsgs = DataMaps.getTitanMessages(msgs);
         client.sendMessages(titanMsgs, new SendMsgCallback() {
             @Override
             public void sentToServer() {
@@ -150,15 +151,6 @@ public class Worker {
         }
 
         new SimulateClient().execute(null, null, null);
-    }
-
-    private titan.client.messages.Message[] getTitanMessages(Message[] msgs) {
-        titan.client.messages.Message[] titanMsgs = new titan.client.messages.Message[msgs.length];
-        Date now = new Date();
-        for (int i = 0; i < msgs.length; i++) {
-            titanMsgs[i] = new titan.client.messages.Message(null, msgs[i].to, now, msgs[i].body);
-        }
-        return titanMsgs;
     }
 
     /***********************
