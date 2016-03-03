@@ -119,11 +119,14 @@ public class Worker {
                 client.sendMessages(new SendMsgsCallback() {
                     @Override
                     public void sentToServer() {
+                        // update in memory representation of messages
                         for (int i = 0; i < msgs.length; i++) {
                             msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
+                            userProfile.getChat(msgs[i].chatId).updateMessage(msgs[i]);
                         }
-                        // todo: update messages to designated chats here and not in fragment (which might not be visible)
                         eventBus.post(new MessagesStatusChangedEvent(msgs));
+
+                        // todo: store messages with Status = SENT_TO_SERVER
 
                         // todo: dequeue store messages as they are ACKed now
                     }
