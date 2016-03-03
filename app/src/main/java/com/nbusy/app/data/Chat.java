@@ -43,16 +43,20 @@ public final class Chat {
 
     public int updateMessage(Message msg) {
         // only update if message belongs to this chat
-        if (!Objects.equals(msg.chatId, id)) {
-            return 0;
-        }
-
-        int index = messageIDtoIndex.get(msg.id);
+        int index = getMessageLocation(msg);
         if (index == 0) {
             return 0;
         }
 
         messages.set(index, msg);
         return index;
+    }
+
+    public int getMessageLocation(Message msg) {
+        if (!Objects.equals(msg.chatId, id)) {
+            return 0;
+        }
+
+        return messageIDtoIndex.get(msg.id);
     }
 }

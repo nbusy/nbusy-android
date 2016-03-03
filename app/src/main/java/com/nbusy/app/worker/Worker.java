@@ -69,7 +69,7 @@ public class Worker {
             @Override
             public void profileRetrieved(Profile up) {
                 userProfile = up;
-                eventBus.post(new UserProfileAvailable());
+                eventBus.post(new UserProfileRetrievedEvent());
             }
         });
     }
@@ -92,9 +92,8 @@ public class Worker {
      ************************/
 
     private void receiveMessages(titan.client.messages.Message... msgs) {
-    // todo: add messages to designated chats here and not in fragment (which might not be visible)
-        // todo: raise msg received event in case any view is listening
-        // database callback will do this for us?
+        // todo: add messages to designated chats here and not in fragment (which might not be visible)
+        // todo: raise msg received event in case any view is listening: eventBus.post(new MessagesReceivedEvent(...));
     }
 
     public void sendMessages(final Message... msgs) {
@@ -104,6 +103,7 @@ public class Worker {
                 @Override
                 public void echoResponse(String msg) {
                     msgs[0] = msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
+                    userProfile.getChat(msgs[0].chatId).updateMessage(msgs[0]);
                     eventBus.post(new MessagesStatusChangedEvent(msgs));
                     // todo: receiveMessages(new titan.client.messages.Message[] {new titan.client.messages.Message()});
                 }
@@ -139,30 +139,6 @@ public class Worker {
         }, msgs);
     }
 
-    public void simulateSendMessages(final Message... msgs) {
-        class SimulateClient extends AsyncTask<Object, Object, Object> {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                for (int i = 0; i < msgs.length; i++) {
-                    msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
-                }
-                eventBus.post(new MessagesStatusChangedEvent(msgs));
-            }
-        }
-
-        new SimulateClient().execute(null, null, null);
-    }
-
     /***********************
      * Database Operations *
      ***********************/
@@ -172,7 +148,7 @@ public class Worker {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
                 userProfile.getChat(chatId).addMessages(msgs);
-                eventBus.post(new ChatMessagesAvailable(chatId));
+                eventBus.post(new ChatMessagesRetrievedEvent(chatId));
             }
         });
     }
@@ -197,21 +173,13 @@ public class Worker {
         }
     }
 
-    public class EchoReceivedEvent {
-        public final String message;
-
-        public EchoReceivedEvent(String message) {
-            this.message = message;
-        }
+    public class UserProfileRetrievedEvent {
     }
 
-    public class UserProfileAvailable {
-    }
-
-    public class ChatMessagesAvailable {
+    public class ChatMessagesRetrievedEvent {
         public final String chatId;
 
-        public ChatMessagesAvailable(String chatId) {
+        public ChatMessagesRetrievedEvent(String chatId) {
             this.chatId = chatId;
         }
     }
