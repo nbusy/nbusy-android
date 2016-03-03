@@ -1,6 +1,5 @@
 package com.nbusy.app.worker;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.common.eventbus.AsyncEventBus;
@@ -92,8 +91,14 @@ public class Worker {
      ************************/
 
     private void receiveMessages(titan.client.messages.Message... msgs) {
+        Message[] nbusyMsgs = DataMaps.getNBusyMessages(msgs);
+        // add messages to designated chats
+        for (Message msg : nbusyMsgs) {
+
+        }
         // todo: add messages to designated chats here and not in fragment (which might not be visible)
-        // todo: raise msg received event in case any view is listening: eventBus.post(new MessagesReceivedEvent(...));
+        // raise msg received event in case any view is listening
+        eventBus.post(new MessagesReceivedEvent(nbusyMsgs));
     }
 
     public void sendMessages(final Message... msgs) {
@@ -143,6 +148,9 @@ public class Worker {
      * Database Operations *
      ***********************/
 
+    /**
+     * Retrieve messages from database, update in memory representation, notify views about the new data.
+     */
     public void getChatMessages(final String chatId) {
         db.getChatMessages(chatId, new DB.GetChatMessagesCallback() {
             @Override

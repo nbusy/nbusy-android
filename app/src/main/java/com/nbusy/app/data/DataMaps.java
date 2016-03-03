@@ -2,7 +2,7 @@ package com.nbusy.app.data;
 
 public class DataMaps {
 
-    public static titan.client.messages.Message[] getTitanMessages(com.nbusy.app.data.Message[] msgs) {
+    public static titan.client.messages.Message[] getTitanMessages(com.nbusy.app.data.Message... msgs) {
         titan.client.messages.Message[] titanMsgs = new titan.client.messages.Message[msgs.length];
 
         for (int i = 0; i < msgs.length; i++) {
@@ -10,6 +10,16 @@ public class DataMaps {
         }
 
         return titanMsgs;
+    }
+
+    public static Message[] getNBusyMessages(titan.client.messages.Message... msgs) {
+        Message[] nbusyMsgs = new Message[msgs.length];
+
+        for (int i = 0; i < msgs.length; i++) {
+            nbusyMsgs[i] = Message.newIncomingMessage(msgs[i].from, msgs[i].from, msgs[i].time, msgs[i].message);
+        }
+
+        return nbusyMsgs;
     }
 
 }

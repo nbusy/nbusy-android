@@ -31,6 +31,10 @@ public class Message {
         return new Message(UUID.randomUUID().toString(), chatId, null, to, true, body, new Date(), Status.NEW);
     }
 
+    public static Message newIncomingMessage(String chatId, String from, Date sent, String body) {
+        return new Message(UUID.randomUUID().toString(), chatId, from, null, false, body, sent, Status.RECEIVED);
+    }
+
     public Message setStatus(Status status) {
         return new Message(id, chatId, from, to, owner, body, sent, status);
     }
@@ -38,6 +42,7 @@ public class Message {
     public enum Status {
         NEW,
         SENT_TO_SERVER,
-        DELIVERED_TO_USER
+        DELIVERED_TO_USER,
+        RECEIVED
     }
 }

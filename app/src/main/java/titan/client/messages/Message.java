@@ -6,10 +6,10 @@ import java.util.Date;
  * Single message in a chat.
  */
 public class Message {
-    private final String from;
-    private final String to;
-    private final Date time;
-    private final String message;
+    public final String from;
+    public final String to;
+    public final Date time;
+    public final String message;
 
     public Message(String from, String to, Date time, String message) {
         this.from = from;
