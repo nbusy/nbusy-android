@@ -3,7 +3,7 @@ package titan.client;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.JwtAuthCallback;
-import titan.client.callbacks.SendMsgCallback;
+import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.Message;
 
 /**
@@ -16,7 +16,7 @@ public interface Client {
 
     void echo(String msg, EchoCallback cb);
 
-    void sendMessages(SendMsgCallback cb, Message... msgs);
+    void sendMessages(SendMsgsCallback cb, Message... msgs);
 
     void close();
 }

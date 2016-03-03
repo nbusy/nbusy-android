@@ -19,7 +19,7 @@ import java.util.Objects;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.JwtAuthCallback;
-import titan.client.callbacks.SendMsgCallback;
+import titan.client.callbacks.SendMsgsCallback;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -40,7 +40,7 @@ public class Worker {
         this.db = db;
         client.connect(new ConnCallbacks() {
             @Override
-            public void messagesReceived(titan.client.messages.Message[] msgs) {
+            public void messagesReceived(titan.client.messages.Message... msgs) {
                 receiveMessages(msgs);
             }
 
@@ -97,7 +97,7 @@ public class Worker {
         // database callback will do this for us?
     }
 
-    public void sendMessages(final Message[] msgs) {
+    public void sendMessages(final Message... msgs) {
         // handle echo messages separately
         if (Objects.equals(msgs[0].chatId, "echo")) {
             client.echo(msgs[0].body, new EchoCallback() {
@@ -115,7 +115,7 @@ public class Worker {
 //        todo: db.enqueueMessage(msgs[0], new );
 
         titan.client.messages.Message[] titanMsgs = DataMaps.getTitanMessages(msgs);
-        client.sendMessages(new SendMsgCallback() {
+        client.sendMessages(new SendMsgsCallback() {
             @Override
             public void sentToServer() {
                 for (int i = 0; i < msgs.length; i++) {
@@ -129,7 +129,7 @@ public class Worker {
         }, titanMsgs);
     }
 
-    public void simulateSendMessages(final Message[] msgs) {
+    public void simulateSendMessages(final Message... msgs) {
         class SimulateClient extends AsyncTask<Object, Object, Object> {
             @Override
             protected Object doInBackground(Object[] params) {
@@ -174,7 +174,7 @@ public class Worker {
     public class MessagesReceivedEvent {
         public final Message[] msgs;
 
-        public MessagesReceivedEvent(Message[] msgs) {
+        public MessagesReceivedEvent(Message... msgs) {
             this.msgs = msgs;
         }
     }
@@ -182,7 +182,7 @@ public class Worker {
     public class MessagesStatusChangedEvent {
         public final Message[] msgs;
 
-        public MessagesStatusChangedEvent(Message[] msgs) {
+        public MessagesStatusChangedEvent(Message... msgs) {
             this.msgs = msgs;
         }
     }
