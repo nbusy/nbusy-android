@@ -42,33 +42,35 @@ public class InMemDB implements DB {
     }
 
     @Override
-    public void enqueueMessage(final Message msg, final EnqueueMessageCallback cb) {
+    public void enqueueMessages(final EnqueueMessagesCallback cb, final Message... msgs) {
         simulateDelay(new Function() {
             @Override
             public void execute() {
-                msgQueue.add(msg);
-                cb.messageEnqueued(msg);
+                msgQueue.addAll(Arrays.asList(msgs));
+                cb.messagesEnqueued(msgs);
             }
         });
     }
 
     @Override
-    public void dequeueMessage(final Message msg, final DequeueMessageCallback cb) {
+    public void dequeueMessages(final DequeueMessagesCallback cb, final Message... msgs) {
         simulateDelay(new Function() {
             @Override
             public void execute() {
-                boolean removed = false;
-                for (Message m : msgQueue) {
-                    // can not use .remove as message identity might have changed
-                    if (Objects.equals(m.id, msg.id)) {
-                        msgQueue.remove(m);
-                        removed = true;
+                for (Message msg : msgs) {
+                    boolean removed = false;
+                    for (Message m : msgQueue) {
+                        // can not use List<>.remove() as message identity might have changed
+                        if (Objects.equals(m.id, msg.id)) {
+                            msgQueue.remove(m);
+                            removed = true;
+                        }
+                    }
+                    if (!removed) {
+                        throw new IllegalArgumentException("Given message was not in the queue: " + msg);
                     }
                 }
-                if (!removed) {
-                    throw new IllegalArgumentException("Given message was not in the queue: " + msg);
-                }
-                cb.messageDequeued(msg);
+                cb.messagesDequeued(msgs);
             }
         });
     }

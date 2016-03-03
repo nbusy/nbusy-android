@@ -15,15 +15,15 @@ public interface DB {
         void chatMessagesRetrieved(List<Message> msgs);
     }
 
-    void enqueueMessage(Message msg, EnqueueMessageCallback cb);
+    void enqueueMessages(EnqueueMessagesCallback cb, Message... msgs);
 
-    interface EnqueueMessageCallback {
-        void messageEnqueued(Message msg);
+    interface EnqueueMessagesCallback {
+        void messagesEnqueued(Message... msgs);
     }
 
-    void dequeueMessage(Message msg, DequeueMessageCallback cb);
+    void dequeueMessages(DequeueMessagesCallback cb, Message... msgs);
 
-    interface DequeueMessageCallback {
-        void messageDequeued(Message msg);
+    interface DequeueMessagesCallback {
+        void messagesDequeued(Message... msg);
     }
 }
