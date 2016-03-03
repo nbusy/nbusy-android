@@ -35,6 +35,14 @@ public final class Chat {
     }
 
     public void addMessages(List<Message> msgs) {
+        // first remove dupes and messages that belong to other chats
+        for (Message msg : msgs) {
+            if (getMessageLocation(msg) != 0) {
+                msgs.remove(msg);
+            }
+        }
+
+        // now add unique messages to the list
         for (int i = 0; i < msgs.size(); i++) {
             messageIDtoIndex.put(msgs.get(i).id, messages.size() + i);
         }

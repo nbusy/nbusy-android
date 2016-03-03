@@ -12,6 +12,7 @@ import com.nbusy.app.data.Profile;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -91,14 +92,18 @@ public class Worker {
      ************************/
 
     private void receiveMessages(titan.client.messages.Message... msgs) {
-        Message[] nbusyMsgs = DataMaps.getNBusyMessages(msgs);
+        final Message[] nbusyMsgs = DataMaps.getNBusyMessages(msgs);
+        List<Message> ml = Arrays.asList(nbusyMsgs);
         // add messages to designated chats
         for (Message msg : nbusyMsgs) {
-
+            userProfile.getChat(msg.chatId).addMessages(ml);
         }
-        // todo: add messages to designated chats here and not in fragment (which might not be visible)
-        // raise msg received event in case any view is listening
-        eventBus.post(new MessagesReceivedEvent(nbusyMsgs));
+        db.updateMessages(new DB.UpdateMessagesCallback() {
+            @Override
+            public void messagesUpdated() {
+                eventBus.post(new MessagesReceivedEvent(nbusyMsgs));
+            }
+        }, nbusyMsgs);
     }
 
     public void sendMessages(final Message... msgs) {
@@ -110,7 +115,7 @@ public class Worker {
                     msgs[0] = msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
                     userProfile.getChat(msgs[0].chatId).updateMessage(msgs[0]);
                     eventBus.post(new MessagesStatusChangedEvent(msgs));
-                    // todo: receiveMessages(new titan.client.messages.Message[] {new titan.client.messages.Message()});
+                    receiveMessages(DataMaps.getTitanMessages(msgs));
                 }
             });
             return;
