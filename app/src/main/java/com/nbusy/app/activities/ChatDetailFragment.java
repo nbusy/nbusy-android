@@ -42,7 +42,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // add message to the UI, and clear message box
-        Message msg = chat.addMessage(messageBody);
+        Message msg = chat.addNewOutgoingMessage(messageBody);
         messageAdapter.notifyDataSetChanged();
         messageBox.setText("");
 

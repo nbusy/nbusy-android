@@ -3,6 +3,7 @@ package com.nbusy.app.data;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,7 +28,7 @@ public final class Chat {
         this.sent = sent;
     }
 
-    public Message addMessage(String message) {
+    public Message addNewOutgoingMessage(String message) {
         Message msg = Message.newOutgoingMessage(id, peerName, message);
         messageIDtoIndex.put(msg.id, messages.size());
         messages.add(msg);
@@ -35,18 +36,11 @@ public final class Chat {
     }
 
     public void addMessages(List<Message> msgs) {
-        // first remove dupes and messages that belong to other chats
+        // todo: don't add dupes
         for (Message msg : msgs) {
-            if (getMessageLocation(msg) != 0) {
-                msgs.remove(msg);
-            }
+            messageIDtoIndex.put(msg.id, messages.size());
+            messages.add(msg);
         }
-
-        // now add unique messages to the list
-        for (int i = 0; i < msgs.size(); i++) {
-            messageIDtoIndex.put(msgs.get(i).id, messages.size() + i);
-        }
-        messages.addAll(msgs);
     }
 
     public int updateMessage(Message msg) {
