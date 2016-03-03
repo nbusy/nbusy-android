@@ -1,13 +1,13 @@
 package com.nbusy.app.data;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * One-to-one chat.
@@ -35,15 +35,19 @@ public final class Chat {
         return msg;
     }
 
-    public void addMessages(List<Message> msgs) {
-        // todo: don't add dupes
+    public synchronized void addMessages(List<Message> msgs) {
         for (Message msg : msgs) {
+            // todo: don't re-add duplicates
+//            if (getMessageLocation(msg) != 0) {
+//                continue;
+//            }
+
             messageIDtoIndex.put(msg.id, messages.size());
             messages.add(msg);
         }
     }
 
-    public int updateMessage(Message msg) {
+    public synchronized int updateMessage(Message msg) {
         // only update if message belongs to this chat
         int index = getMessageLocation(msg);
         if (index == 0) {
@@ -54,7 +58,7 @@ public final class Chat {
         return index;
     }
 
-    public int getMessageLocation(Message msg) {
+    public synchronized int getMessageLocation(Message msg) {
         if (!Objects.equals(msg.chatId, id)) {
             return 0;
         }

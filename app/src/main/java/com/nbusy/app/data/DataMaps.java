@@ -6,7 +6,7 @@ public class DataMaps {
         titan.client.messages.Message[] titanMsgs = new titan.client.messages.Message[msgs.length];
 
         for (int i = 0; i < msgs.length; i++) {
-            titanMsgs[i] = new titan.client.messages.Message(null, msgs[i].to, msgs[i].sent, msgs[i].body);
+            titanMsgs[i] = new titan.client.messages.Message(msgs[i].chatId, null, msgs[i].to, msgs[i].sent, msgs[i].body);
         }
 
         return titanMsgs;
