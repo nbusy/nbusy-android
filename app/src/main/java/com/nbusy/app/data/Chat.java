@@ -1,12 +1,13 @@
 package com.nbusy.app.data;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * One-to-one chat.
@@ -27,32 +28,41 @@ public final class Chat {
         this.sent = sent;
     }
 
-    public Message addMessage(String message) {
-        Message msg = new Message(UUID.randomUUID().toString(), id, "Me", null, true, message, new Date(), Message.Status.NEW);
+    public Message addNewOutgoingMessage(String message) {
+        Message msg = Message.newOutgoingMessage(id, peerName, message);
         messageIDtoIndex.put(msg.id, messages.size());
         messages.add(msg);
         return msg;
     }
 
-    public void addMessages(List<Message> msgs) {
-        for (int i = 0; i < msgs.size(); i++) {
-            messageIDtoIndex.put(msgs.get(i).id, messages.size() + i);
+    public synchronized void addMessages(List<Message> msgs) {
+        for (Message msg : msgs) {
+            // todo: don't re-add duplicates
+//            if (getMessageLocation(msg) != 0) {
+//                continue;
+//            }
+
+            messageIDtoIndex.put(msg.id, messages.size());
+            messages.add(msg);
         }
-        messages.addAll(msgs);
     }
 
-    public int updateMessage(Message msg) {
+    public synchronized int updateMessage(Message msg) {
         // only update if message belongs to this chat
-        if (!Objects.equals(msg.chatId, id)) {
-            return 0;
-        }
-
-        int index = messageIDtoIndex.get(msg.id);
+        int index = getMessageLocation(msg);
         if (index == 0) {
             return 0;
         }
 
         messages.set(index, msg);
         return index;
+    }
+
+    public synchronized int getMessageLocation(Message msg) {
+        if (!Objects.equals(msg.chatId, id)) {
+            return 0;
+        }
+
+        return messageIDtoIndex.get(msg.id);
     }
 }

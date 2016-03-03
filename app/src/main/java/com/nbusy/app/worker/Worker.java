@@ -1,25 +1,25 @@
 package com.nbusy.app.worker;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.nbusy.app.data.DB;
+import com.nbusy.app.data.DataMaps;
 import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.JwtAuthCallback;
-import titan.client.callbacks.SendMsgCallback;
+import titan.client.callbacks.SendMsgsCallback;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -40,7 +40,7 @@ public class Worker {
         this.db = db;
         client.connect(new ConnCallbacks() {
             @Override
-            public void messagesReceived(titan.client.messages.Message[] msgs) {
+            public void messagesReceived(titan.client.messages.Message... msgs) {
                 receiveMessages(msgs);
             }
 
@@ -69,7 +69,7 @@ public class Worker {
             @Override
             public void profileRetrieved(Profile up) {
                 userProfile = up;
-                eventBus.post(new UserProfileAvailable());
+                eventBus.post(new UserProfileRetrievedEvent());
             }
         });
     }
@@ -91,83 +91,77 @@ public class Worker {
      * Server Communication *
      ************************/
 
-    private void receiveMessages(titan.client.messages.Message[] msgs) {
-    // todo: add messages to designated chats here and not in fragment (which might not be visible)
-        // todo: raise msg received event in case any view is listening
-        // database callback will do this for us?
+    private void receiveMessages(titan.client.messages.Message... msgs) {
+        final Message[] nbusyMsgs = DataMaps.getNBusyMessages(msgs);
+        List<Message> ml = Arrays.asList(nbusyMsgs);
+        // add messages to designated chats
+        for (Message msg : nbusyMsgs) {
+            userProfile.getChat(msg.chatId).addMessages(ml);
+        }
+        db.updateMessages(new DB.UpdateMessagesCallback() {
+            @Override
+            public void messagesUpdated() {
+                eventBus.post(new MessagesReceivedEvent(nbusyMsgs));
+            }
+        }, nbusyMsgs);
     }
 
-    public void sendMessages(final Message[] msgs) {
+    public void sendMessages(final Message... msgs) {
         // handle echo messages separately
         if (Objects.equals(msgs[0].chatId, "echo")) {
             client.echo(msgs[0].body, new EchoCallback() {
                 @Override
                 public void echoResponse(String msg) {
                     msgs[0] = msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
+                    userProfile.getChat(msgs[0].chatId).updateMessage(msgs[0]);
                     eventBus.post(new MessagesStatusChangedEvent(msgs));
-                    // todo: receiveMessages(new titan.client.messages.Message[] {new titan.client.messages.Message()});
+                    // todo: receiveMessages(DataMaps.getTitanMessages(msgs));
                 }
             });
             return;
         }
 
-        titan.client.messages.Message[] titanMsgs = getTitanMessages(msgs);
-        client.sendMessages(titanMsgs, new SendMsgCallback() {
+        // persist messages in the database with Status = NEW
+        db.saveMessages(new DB.SaveMessagesCallback() {
             @Override
-            public void sentToServer() {
-                for (int i = 0; i < msgs.length; i++) {
-                    msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
-                }
-                // todo: update messages to designated chats here and not in fragment (which might not be visible)
-                // database callback will do this for us?
-                eventBus.post(new MessagesStatusChangedEvent(msgs));
+            public void messagesSaved() {
+                titan.client.messages.Message[] titanMsgs = DataMaps.getTitanMessages(msgs);
+                client.sendMessages(new SendMsgsCallback() {
+                    @Override
+                    public void sentToServer() {
+                        // update in memory representation of messages
+                        for (int i = 0; i < msgs.length; i++) {
+                            msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
+                            userProfile.getChat(msgs[i].chatId).updateMessage(msgs[i]);
+                        }
+
+                        // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
+                        db.updateMessages(new DB.UpdateMessagesCallback() {
+                            @Override
+                            public void messagesUpdated() {
+                                // finally, notify all listening views about the changes
+                                eventBus.post(new MessagesStatusChangedEvent(msgs));
+                            }
+                        }, msgs);
+                    }
+                }, titanMsgs);
             }
-        });
-    }
-
-    public void simulateSendMessages(final Message[] msgs) {
-        class SimulateClient extends AsyncTask<Object, Object, Object> {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                for (int i = 0; i < msgs.length; i++) {
-                    msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
-                }
-                eventBus.post(new MessagesStatusChangedEvent(msgs));
-            }
-        }
-
-        new SimulateClient().execute(null, null, null);
-    }
-
-    private titan.client.messages.Message[] getTitanMessages(Message[] msgs) {
-        titan.client.messages.Message[] titanMsgs = new titan.client.messages.Message[msgs.length];
-        Date now = new Date();
-        for (int i = 0; i < msgs.length; i++) {
-            titanMsgs[i] = new titan.client.messages.Message(null, msgs[i].to, now, msgs[i].body);
-        }
-        return titanMsgs;
+        }, msgs);
     }
 
     /***********************
      * Database Operations *
      ***********************/
 
+    /**
+     * Retrieve messages from database, update in memory representation, notify views about the new data.
+     */
     public void getChatMessages(final String chatId) {
         db.getChatMessages(chatId, new DB.GetChatMessagesCallback() {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
                 userProfile.getChat(chatId).addMessages(msgs);
-                eventBus.post(new ChatMessagesAvailable(chatId));
+                eventBus.post(new ChatMessagesRetrievedEvent(chatId));
             }
         });
     }
@@ -179,7 +173,7 @@ public class Worker {
     public class MessagesReceivedEvent {
         public final Message[] msgs;
 
-        public MessagesReceivedEvent(Message[] msgs) {
+        public MessagesReceivedEvent(Message... msgs) {
             this.msgs = msgs;
         }
     }
@@ -187,26 +181,18 @@ public class Worker {
     public class MessagesStatusChangedEvent {
         public final Message[] msgs;
 
-        public MessagesStatusChangedEvent(Message[] msgs) {
+        public MessagesStatusChangedEvent(Message... msgs) {
             this.msgs = msgs;
         }
     }
 
-    public class EchoReceivedEvent {
-        public final String message;
-
-        public EchoReceivedEvent(String message) {
-            this.message = message;
-        }
+    public class UserProfileRetrievedEvent {
     }
 
-    public class UserProfileAvailable {
-    }
-
-    public class ChatMessagesAvailable {
+    public class ChatMessagesRetrievedEvent {
         public final String chatId;
 
-        public ChatMessagesAvailable(String chatId) {
+        public ChatMessagesRetrievedEvent(String chatId) {
             this.chatId = chatId;
         }
     }

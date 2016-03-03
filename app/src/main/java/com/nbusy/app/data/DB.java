@@ -14,4 +14,16 @@ public interface DB {
     interface GetChatMessagesCallback {
         void chatMessagesRetrieved(List<Message> msgs);
     }
+
+    void saveMessages(SaveMessagesCallback cb, Message... msgs);
+
+    interface SaveMessagesCallback {
+        void messagesSaved();
+    }
+
+    void updateMessages(UpdateMessagesCallback cb, Message... msgs);
+
+    interface UpdateMessagesCallback {
+        void messagesUpdated();
+    }
 }

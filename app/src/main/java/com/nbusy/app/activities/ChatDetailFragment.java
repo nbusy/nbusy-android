@@ -17,6 +17,8 @@ import com.nbusy.app.data.Message;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
 
+import java.util.Objects;
+
 /**
  * A fragment representing a single Chat detail screen, along with the messages in the chat.
  * This fragment is either contained in a {@link ChatListActivity}
@@ -40,18 +42,18 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // add message to the UI, and clear message box
-        Message msg = chat.addMessage(messageBody);
+        Message msg = chat.addNewOutgoingMessage(messageBody);
         messageAdapter.notifyDataSetChanged();
         messageBox.setText("");
 
         // send the message to the server
-        worker.sendMessages(new Message[]{msg});
+        worker.sendMessages(msg);
     }
 
     private void setMessagesState(Message[] msgs) {
         for (Message msg : msgs) {
             // only update if message belongs to this chat
-            int location = chat.updateMessage(msg);
+            int location = chat.getMessageLocation(msg);
             if (location == 0) {
                 return;
             }
@@ -140,7 +142,9 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     }
 
     @Subscribe
-    public void chatMessagesRetrieved(Worker.ChatMessagesAvailable e) {
-        setMessageAdapter();
+    public void chatMessagesRetrieved(Worker.ChatMessagesRetrievedEvent e) {
+        if (Objects.equals(e.chatId, chat.id)) {
+            setMessageAdapter();
+        }
     }
 }

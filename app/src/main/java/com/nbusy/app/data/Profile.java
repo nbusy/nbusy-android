@@ -21,7 +21,7 @@ public class Profile {
         }
     }
 
-    public Chat getChat(String chatId) {
+    public synchronized Chat getChat(String chatId) {
         return chats.get(chatIDtoIndex.get(chatId));
     }
 }

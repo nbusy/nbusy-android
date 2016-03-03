@@ -11,7 +11,7 @@ import neptulon.client.middleware.Router;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.JwtAuthCallback;
-import titan.client.callbacks.SendMsgCallback;
+import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.EchoMessage;
 import titan.client.messages.JwtAuth;
 import titan.client.messages.Message;
@@ -77,7 +77,7 @@ public class ClientImpl implements Client {
     // todo2: we should set from,date fields for each message ourselves or expect an OutMessage class instead (bonus, variadic!)
 
     @Override
-    public void sendMessages(Message[] msgs, final SendMsgCallback cb) {
+    public void sendMessages(final SendMsgsCallback cb, Message... msgs) {
         conn.sendRequest("msg.send", msgs, new ResCallback() {
             @Override
             public void callback(ResCtx ctx) {

@@ -18,8 +18,7 @@ public class ReqCtx {
     private final List<Middleware> middleware;
     private int mwIndex;
     private final Gson gson;
-
-    public Response response;
+    private Response response;
 
     public ReqCtx(ConnImpl conn, String id, String method, JsonElement params, List<Middleware> middleware, Gson gson) {
         this.conn = conn;
@@ -40,6 +39,24 @@ public class ReqCtx {
 
     public <T> T getParams(Class<T> classOfT) {
         return gson.fromJson(params, classOfT);
+    }
+
+    public Response getResponse() {
+        return response;
+    }
+
+    public <T> void setResponse(T result) {
+        if (response != null) {
+            throw new IllegalArgumentException("Response was previously set to: " + response);
+        }
+        response = new Response<>(id, result, null);
+    }
+
+    public void setResponseError(Response.ResError err) {
+        if (response != null) {
+            throw new IllegalArgumentException("Response was previously set to: " + response);
+        }
+        response = new Response<>(id, null, err);
     }
 
     public void next() {

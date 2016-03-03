@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 public class InMemDB implements DB {
+    private final List<Message> msgQueue = new ArrayList<>();
+
     @Override
     public void getProfile(final GetProfileCallback cb) {
         simulateDelay(new Function() {
@@ -37,12 +40,32 @@ public class InMemDB implements DB {
         });
     }
 
+    @Override
+    public void saveMessages(final SaveMessagesCallback cb, final Message... msgs) {
+        simulateDelay(new Function() {
+            @Override
+            public void execute() {
+                cb.messagesSaved();
+            }
+        });
+    }
+
+    @Override
+    public void updateMessages(final UpdateMessagesCallback cb, final Message... msgs) {
+        simulateDelay(new Function() {
+            @Override
+            public void execute() {
+                cb.messagesUpdated();
+            }
+        });
+    }
+
     private void simulateDelay(final Function fn) {
         class SimulateDatabase extends AsyncTask<Object, Object, Object> {
             @Override
             protected Object doInBackground(Object[] params) {
                 try {
-                    Thread.sleep(300);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

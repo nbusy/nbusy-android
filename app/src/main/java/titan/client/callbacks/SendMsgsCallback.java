@@ -1,5 +1,5 @@
 package titan.client.callbacks;
 
-public interface SendMsgCallback {
+public interface SendMsgsCallback {
     void sentToServer();
 }
