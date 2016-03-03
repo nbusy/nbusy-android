@@ -112,21 +112,24 @@ public class Worker {
         }
 
         // store messages in message queue until they are ACKed
-//        todo: db.enqueueMessage(msgs[0], new );
-
-        titan.client.messages.Message[] titanMsgs = DataMaps.getTitanMessages(msgs);
-        client.sendMessages(new SendMsgsCallback() {
+        db.enqueueMessages(new DB.EnqueueMessagesCallback() {
             @Override
-            public void sentToServer() {
-                for (int i = 0; i < msgs.length; i++) {
-                    msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
-                }
-                // todo: update messages to designated chats here and not in fragment (which might not be visible)
-                eventBus.post(new MessagesStatusChangedEvent(msgs));
+            public void messagesEnqueued(final Message... msgs) {
+                titan.client.messages.Message[] titanMsgs = DataMaps.getTitanMessages(msgs);
+                client.sendMessages(new SendMsgsCallback() {
+                    @Override
+                    public void sentToServer() {
+                        for (int i = 0; i < msgs.length; i++) {
+                            msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
+                        }
+                        // todo: update messages to designated chats here and not in fragment (which might not be visible)
+                        eventBus.post(new MessagesStatusChangedEvent(msgs));
 
-                // todo: dequeue store messages as they are ACKed now
+                        // todo: dequeue store messages as they are ACKed now
+                    }
+                }, titanMsgs);
             }
-        }, titanMsgs);
+        }, msgs);
     }
 
     public void simulateSendMessages(final Message... msgs) {

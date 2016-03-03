@@ -80,7 +80,7 @@ public class InMemDB implements DB {
             @Override
             protected Object doInBackground(Object[] params) {
                 try {
-                    Thread.sleep(300);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
