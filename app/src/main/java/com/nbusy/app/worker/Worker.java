@@ -111,10 +111,10 @@ public class Worker {
             return;
         }
 
-        // store messages in message queue until they are ACKed
-        db.enqueueMessages(new DB.EnqueueMessagesCallback() {
+        // persist messages in the database with Status = NEW
+        db.saveMessages(new DB.SaveMessagesCallback() {
             @Override
-            public void messagesEnqueued(final Message... msgs) {
+            public void messagesSaved() {
                 titan.client.messages.Message[] titanMsgs = DataMaps.getTitanMessages(msgs);
                 client.sendMessages(new SendMsgsCallback() {
                     @Override
@@ -124,11 +124,15 @@ public class Worker {
                             msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
                             userProfile.getChat(msgs[i].chatId).updateMessage(msgs[i]);
                         }
-                        eventBus.post(new MessagesStatusChangedEvent(msgs));
 
-                        // todo: store messages with Status = SENT_TO_SERVER
-
-                        // todo: dequeue store messages as they are ACKed now
+                        // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
+                        db.updateMessages(new DB.UpdateMessagesCallback() {
+                            @Override
+                            public void messagesUpdated() {
+                                // finally, notify all listening views about the changes
+                                eventBus.post(new MessagesStatusChangedEvent(msgs));
+                            }
+                        }, msgs);
                     }
                 }, titanMsgs);
             }

@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class InMemDB implements DB {
@@ -42,35 +41,21 @@ public class InMemDB implements DB {
     }
 
     @Override
-    public void enqueueMessages(final EnqueueMessagesCallback cb, final Message... msgs) {
+    public void saveMessages(final SaveMessagesCallback cb, final Message... msgs) {
         simulateDelay(new Function() {
             @Override
             public void execute() {
-                msgQueue.addAll(Arrays.asList(msgs));
-                cb.messagesEnqueued(msgs);
+                cb.messagesSaved();
             }
         });
     }
 
     @Override
-    public void dequeueMessages(final DequeueMessagesCallback cb, final Message... msgs) {
+    public void updateMessages(final UpdateMessagesCallback cb, final Message... msgs) {
         simulateDelay(new Function() {
             @Override
             public void execute() {
-                for (Message msg : msgs) {
-                    boolean removed = false;
-                    for (Message m : msgQueue) {
-                        // can not use List<>.remove() as message identity might have changed
-                        if (Objects.equals(m.id, msg.id)) {
-                            msgQueue.remove(m);
-                            removed = true;
-                        }
-                    }
-                    if (!removed) {
-                        throw new IllegalArgumentException("Given message was not in the queue: " + msg);
-                    }
-                }
-                cb.messagesDequeued(msgs);
+                cb.messagesUpdated();
             }
         });
     }
