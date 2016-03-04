@@ -44,6 +44,10 @@ public class ConnImpl implements Conn, WebSocketListener {
      * Initializes a new connection with given server URL.
      */
     public ConnImpl(String url) {
+        if (url == null || url.isEmpty()) {
+            throw new IllegalArgumentException("url cannot be null or empty");
+        }
+
         ws_url = url;
         client = new OkHttpClient.Builder()
                 .connectTimeout(45, TimeUnit.SECONDS)
