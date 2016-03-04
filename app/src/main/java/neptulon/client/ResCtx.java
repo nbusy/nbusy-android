@@ -13,6 +13,13 @@ public class ResCtx {
     private final Gson gson;
 
     public ResCtx(String id, JsonElement result, Message.ResError error, Gson gson) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("id cannot be null or empty");
+        }
+        if (gson == null) {
+            throw new IllegalArgumentException("gson cannot be null");
+        }
+
         this.id = id;
         this.result = result;
         this.error = error;
@@ -22,7 +29,6 @@ public class ResCtx {
     public String getID() {
         return id;
     }
-
 
     public <T> T getResult(Class<T> classOfT) {
         return gson.fromJson(result, classOfT);

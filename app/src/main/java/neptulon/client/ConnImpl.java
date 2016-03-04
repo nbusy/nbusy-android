@@ -139,9 +139,6 @@ public class ConnImpl implements Conn, WebSocketListener {
         if (method == null || method.isEmpty()) {
             throw new IllegalArgumentException("method cannot be null or empty");
         }
-        if (params == null) {
-            throw new IllegalArgumentException("params cannot be null");
-        }
         if (cb == null) {
             throw new IllegalArgumentException("callback cannot be null");
         }

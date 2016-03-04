@@ -21,6 +21,22 @@ public class ReqCtx {
     private Response response;
 
     public ReqCtx(ConnImpl conn, String id, String method, JsonElement params, List<Middleware> middleware, Gson gson) {
+        if (conn == null) {
+            throw new IllegalArgumentException("conn cannot be null");
+        }
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("id cannot be null or empty");
+        }
+        if (method == null || method.isEmpty()) {
+            throw new IllegalArgumentException("method cannot be null or empty");
+        }
+        if (middleware == null) {
+            throw new IllegalArgumentException("middleware cannot be null");
+        }
+        if (gson == null) {
+            throw new IllegalArgumentException("gson cannot be null");
+        }
+
         this.conn = conn;
         this.id = id;
         this.method = method;
@@ -48,6 +64,9 @@ public class ReqCtx {
     public <T> void setResponse(T result) {
         if (response != null) {
             throw new IllegalArgumentException("Response was previously set to: " + response);
+        }
+        if (result == null) {
+            throw new IllegalArgumentException("result cannot be null");
         }
         response = new Response<>(id, result, null);
     }

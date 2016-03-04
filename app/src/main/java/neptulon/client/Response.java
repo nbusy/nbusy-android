@@ -9,6 +9,10 @@ public class Response<T> {
     public final ResError error;
 
     public Response(String id, T result, ResError error) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("id cannot be null or empty");
+        }
+
         this.id = id;
         this.result = result;
         this.error = error;
