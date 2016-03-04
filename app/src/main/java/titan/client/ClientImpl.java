@@ -80,7 +80,7 @@ public class ClientImpl implements Client {
     @Override
     public void echo(String msg, final EchoCallback cb) {
         if (msg == null || msg.isEmpty()) {
-            throw new IllegalArgumentException("token cannot be null or empty");
+            throw new IllegalArgumentException("message cannot be null or empty");
         }
         if (cb == null) {
             throw new IllegalArgumentException("callback cannot be null");
@@ -104,7 +104,7 @@ public class ClientImpl implements Client {
             throw new IllegalArgumentException("callback cannot be null");
         }
         if (msgs == null || msgs.length == 0) {
-            throw new IllegalArgumentException("msgs cannot be null or empty");
+            throw new IllegalArgumentException("at least one message must be provided for delivery");
         }
 
         conn.sendRequest("msg.send", msgs, new ResCallback() {

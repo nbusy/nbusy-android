@@ -70,8 +70,12 @@ public class ConnImpl implements Conn, WebSocketListener {
         this("ws://10.0.2.2:3000");
     }
 
-    void send(Object src) {
-        String m = gson.toJson(src);
+    void send(Object obj) {
+        if (obj == null) {
+            throw new IllegalArgumentException("obj cannot be null");
+        }
+
+        String m = gson.toJson(obj);
         logger.info("Outgoing message: " + m);
         try {
             ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
@@ -99,6 +103,10 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void middleware(Middleware mw) {
+        if (mw == null) {
+            throw new IllegalArgumentException("mw cannot be null");
+        }
+
         middleware.add(mw);
     }
 
@@ -107,6 +115,10 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void connect(ConnCallback cb) {
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+
         // enqueue this listener implementation to initiate the WebSocket connection
         connCallback = cb;
         wsCall.enqueue(this);
@@ -124,6 +136,15 @@ public class ConnImpl implements Conn, WebSocketListener {
         if (!connected) {
             throw new IllegalStateException("Not connected.");
         }
+        if (method == null || method.isEmpty()) {
+            throw new IllegalArgumentException("method cannot be null or empty");
+        }
+        if (params == null) {
+            throw new IllegalArgumentException("params cannot be null");
+        }
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
 
         String id = UUID.randomUUID().toString();
         neptulon.client.Request r = new neptulon.client.Request<>(id, method, params);
@@ -133,7 +154,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void sendRequestArr(String method, ResCallback cb, Object... params) {
-
+        sendRequest(method, params, cb);
     }
 
     @Override
