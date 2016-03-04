@@ -4,12 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 import neptulon.client.callbacks.ConnCallback;
@@ -33,11 +34,11 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final OkHttpClient client;
     private final Request request;
     private final WebSocketCall wsCall;
-    private final List<Middleware> middleware = new ArrayList<>();
-    private final Map<String, ResCallback> resCallbacks = new HashMap<>();
+    private final List<Middleware> middleware = new CopyOnWriteArrayList<>();
+    private final ConcurrentMap<String, ResCallback> resCallbacks = new ConcurrentHashMap<>();
     private String ws_url;
     private WebSocket ws;
-    private boolean connected;
+    private AtomicBoolean connected;
     private ConnCallback connCallback;
 
     /**
@@ -90,19 +91,19 @@ public class ConnImpl implements Conn, WebSocketListener {
      ***********************/
 
     @Override
-    public void useTLS(byte[] ca, byte[] clientCert, byte[] clientCertKey) {
+    public synchronized void useTLS(byte[] ca, byte[] clientCert, byte[] clientCertKey) {
         // todo: https://github.com/square/okhttp/wiki/HTTPS
         // * pin and use a single trusted custom server cert
         // * limit ciphers and TLS version
     }
 
     @Override
-    public void setDeadline(int seconds) {
+    public synchronized void setDeadline(int seconds) {
 
     }
 
     @Override
-    public void middleware(Middleware mw) {
+    public synchronized void middleware(Middleware mw) {
         if (mw == null) {
             throw new IllegalArgumentException("mw cannot be null");
         }
@@ -114,7 +115,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     // handleRequest(method, .....) { if isClientConn... else exception } // same goes for go-client
 
     @Override
-    public void connect(ConnCallback cb) {
+    public synchronized void connect(ConnCallback cb) {
         if (cb == null) {
             throw new IllegalArgumentException("callback cannot be null");
         }
@@ -125,15 +126,20 @@ public class ConnImpl implements Conn, WebSocketListener {
     }
 
     @Override
-    public void remoteAddr() {
-        if (!connected) {
+    public synchronized boolean isConnected() {
+        return connected.get();
+    }
+
+    @Override
+    public synchronized void remoteAddr() {
+        if (!connected.get()) {
             throw new IllegalStateException("Not connected.");
         }
     }
 
     @Override
     public <T> void sendRequest(String method, T params, ResCallback cb) {
-        if (!connected) {
+        if (!connected.get()) {
             throw new IllegalStateException("Not connected.");
         }
         if (method == null || method.isEmpty()) {
@@ -156,11 +162,10 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void close() {
-        if (!connected) {
+        if (!connected.getAndSet(false)) {
             return;
         }
 
-        connected = false;
         try {
             ws.close(0, "");
         } catch (IOException e) {
@@ -175,14 +180,14 @@ public class ConnImpl implements Conn, WebSocketListener {
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
         ws = webSocket;
-        connected = true;
+        connected.set(true);
         logger.info("Connected to server: " + ws_url);
         connCallback.connected();
     }
 
     @Override
     public void onFailure(IOException e, Response response) {
-        connected = false;
+        connected.set(false);
         String reason = e.getMessage();
         logger.warning("Connection closed with error: " + reason);
         connCallback.disconnected(reason);
@@ -211,7 +216,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void onClose(int code, String reason) {
-        connected = false;
+        connected.set(false);
         logger.info("Connection closed to server: " + ws_url);
     }
 }

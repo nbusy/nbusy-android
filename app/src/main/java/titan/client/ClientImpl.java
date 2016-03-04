@@ -46,13 +46,18 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void connect(ConnCallbacks cbs) {
+    public synchronized void connect(ConnCallbacks cbs) {
         if (cbs == null) {
             throw new IllegalArgumentException("callbacks cannot be null");
         }
 
         this.cbs = cbs;
         conn.connect(cbs);
+    }
+
+    @Override
+    public synchronized boolean isConnected() {
+        return conn.isConnected();
     }
 
     @Override
@@ -125,7 +130,7 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         conn.close();
     }
 }

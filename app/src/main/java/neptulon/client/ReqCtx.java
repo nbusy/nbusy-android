@@ -57,11 +57,11 @@ public class ReqCtx {
         return gson.fromJson(params, classOfT);
     }
 
-    public Response getResponse() {
+    public synchronized Response getResponse() {
         return response;
     }
 
-    public <T> void setResponse(T result) {
+    public synchronized <T> void setResponse(T result) {
         if (response != null) {
             throw new IllegalArgumentException("Response was previously set to: " + response);
         }
@@ -71,14 +71,14 @@ public class ReqCtx {
         response = new Response<>(id, result, null);
     }
 
-    public void setResponseError(Response.ResError err) {
+    public synchronized void setResponseError(Response.ResError err) {
         if (response != null) {
             throw new IllegalArgumentException("Response was previously set to: " + response);
         }
         response = new Response<>(id, null, err);
     }
 
-    public void next() {
+    public synchronized void next() {
         mwIndex++;
 
         if (mwIndex <= middleware.size()) {
