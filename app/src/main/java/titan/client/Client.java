@@ -12,6 +12,8 @@ import titan.client.messages.Message;
 public interface Client {
     void connect(ConnCallbacks cbs);
 
+    boolean isConnected();
+
     void jwtAuth(String token, JwtAuthCallback cb);
 
     void echo(String msg, EchoCallback cb);

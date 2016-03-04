@@ -9,6 +9,13 @@ public class Request<T> {
     final T params;
 
     Request(String id, String method, T params) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("id cannot be null or empty");
+        }
+        if (method == null || method.isEmpty()) {
+            throw new IllegalArgumentException("method cannot be null or empty");
+        }
+
         this.id = id;
         this.method = method;
         this.params = params;

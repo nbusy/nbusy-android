@@ -13,6 +13,16 @@ public class Message {
     public final String message;
 
     public Message(String chatId, String from, String to, Date time, String message) {
+        if (chatId == null || chatId.isEmpty()) {
+            throw new IllegalArgumentException("chatId cannot be null or empty");
+        }
+        if (time == null) {
+            throw new IllegalArgumentException("time cannot be null");
+        }
+        if (message == null || message.isEmpty()) {
+            throw new IllegalArgumentException("message cannot be null or empty");
+        }
+
         this.chatId = chatId;
         this.from = from;
         this.to = to;

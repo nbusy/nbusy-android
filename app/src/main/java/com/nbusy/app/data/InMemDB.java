@@ -6,14 +6,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
 public class InMemDB implements DB {
-    private final List<Message> msgQueue = new ArrayList<>();
-
     @Override
-    public void getProfile(final GetProfileCallback cb) {
+    public synchronized void getProfile(final GetProfileCallback cb) {
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+
         simulateDelay(new Function() {
             @Override
             public void execute() {
@@ -28,7 +29,14 @@ public class InMemDB implements DB {
     }
 
     @Override
-    public void getChatMessages(final String chatId, final GetChatMessagesCallback cb) {
+    public synchronized void getChatMessages(final String chatId, final GetChatMessagesCallback cb) {
+        if (chatId == null || chatId.isEmpty()) {
+            throw new IllegalArgumentException("chatId cannot be null or empty");
+        }
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+
         simulateDelay(new Function() {
             @Override
             public void execute() {
@@ -41,7 +49,14 @@ public class InMemDB implements DB {
     }
 
     @Override
-    public void saveMessages(final SaveMessagesCallback cb, final Message... msgs) {
+    public synchronized void saveMessages(final SaveMessagesCallback cb, final Message... msgs) {
+        if (msgs == null || msgs.length == 0) {
+            throw new IllegalArgumentException("messages cannot be null or empty");
+        }
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+
         simulateDelay(new Function() {
             @Override
             public void execute() {
@@ -51,7 +66,14 @@ public class InMemDB implements DB {
     }
 
     @Override
-    public void updateMessages(final UpdateMessagesCallback cb, final Message... msgs) {
+    public synchronized void updateMessages(final UpdateMessagesCallback cb, final Message... msgs) {
+        if (msgs == null || msgs.length == 0) {
+            throw new IllegalArgumentException("messages cannot be null or empty");
+        }
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+
         simulateDelay(new Function() {
             @Override
             public void execute() {
@@ -61,6 +83,10 @@ public class InMemDB implements DB {
     }
 
     private void simulateDelay(final Function fn) {
+        if (fn == null) {
+            throw new IllegalArgumentException("callback function cannot be null");
+        }
+
         class SimulateDatabase extends AsyncTask<Object, Object, Object> {
             @Override
             protected Object doInBackground(Object[] params) {

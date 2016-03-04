@@ -16,6 +16,10 @@ class Message {
     final ResError error;
 
     public Message(String id, String method, JsonElement params, JsonElement result, ResError error) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("id cannot be null or empty");
+        }
+
         this.id = id;
         this.method = method;
         this.params = params;

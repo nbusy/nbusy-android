@@ -17,6 +17,22 @@ public class Message {
     public final Status status; // delivery status
 
     Message(String id, String chatId, String from, String to, boolean owner, String body, Date sent, Status status) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("id cannot be null or empty");
+        }
+        if (chatId == null || chatId.isEmpty()) {
+            throw new IllegalArgumentException("chatId cannot be null or empty");
+        }
+        if (body == null || body.isEmpty()) {
+            throw new IllegalArgumentException("body cannot be null or empty");
+        }
+        if (sent == null) {
+            throw new IllegalArgumentException("sent cannot be null");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("status cannot be null");
+        }
+
         this.id = id;
         this.chatId = chatId;
         this.from = from;

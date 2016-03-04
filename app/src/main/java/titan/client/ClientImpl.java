@@ -27,6 +27,10 @@ public class ClientImpl implements Client {
     private ConnCallbacks cbs;
 
     public ClientImpl(Conn conn) {
+        if (conn == null) {
+            throw new IllegalArgumentException("conn cannot be null");
+        }
+
         conn.middleware(new neptulon.client.middleware.Logger());
         router.request("msg.recv", new RecvMsgsMiddleware(cbs));
         conn.middleware(router);
@@ -42,13 +46,29 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void connect(ConnCallbacks cbs) {
+    public synchronized void connect(ConnCallbacks cbs) {
+        if (cbs == null) {
+            throw new IllegalArgumentException("callbacks cannot be null");
+        }
+
         this.cbs = cbs;
         conn.connect(cbs);
     }
 
     @Override
+    public synchronized boolean isConnected() {
+        return conn.isConnected();
+    }
+
+    @Override
     public void jwtAuth(String token, final JwtAuthCallback cb) {
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("token cannot be null or empty");
+        }
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+
         conn.sendRequest("auth.jwt", new JwtAuth(token), new ResCallback() {
             @Override
             public void callback(ResCtx ctx) {
@@ -64,6 +84,13 @@ public class ClientImpl implements Client {
 
     @Override
     public void echo(String msg, final EchoCallback cb) {
+        if (msg == null || msg.isEmpty()) {
+            throw new IllegalArgumentException("message cannot be null or empty");
+        }
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+
         conn.sendRequest("echo", new EchoMessage(msg), new ResCallback() {
             @Override
             public void callback(ResCtx ctx) {
@@ -78,6 +105,13 @@ public class ClientImpl implements Client {
 
     @Override
     public void sendMessages(final SendMsgsCallback cb, Message... msgs) {
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+        if (msgs == null || msgs.length == 0) {
+            throw new IllegalArgumentException("at least one message must be provided for delivery");
+        }
+
         conn.sendRequest("msg.send", msgs, new ResCallback() {
             @Override
             public void callback(ResCtx ctx) {
@@ -96,7 +130,7 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         conn.close();
     }
 }
