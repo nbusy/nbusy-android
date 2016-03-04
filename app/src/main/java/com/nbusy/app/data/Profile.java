@@ -14,6 +14,13 @@ public class Profile {
     public final List<Chat> chats;
 
     public Profile(String userId, List<Chat> chats) {
+        if (userId == null || userId.isEmpty()) {
+            throw new IllegalArgumentException("userId cannot be null or empty");
+        }
+        if (chats == null) {
+            throw new IllegalArgumentException("chats cannot be null");
+        }
+
         this.userId = userId;
         this.chats = chats;
         for (int i = 0; i < chats.size(); i++) {
@@ -22,6 +29,10 @@ public class Profile {
     }
 
     public synchronized Chat getChat(String chatId) {
+        if (chatId == null || chatId.isEmpty()) {
+            throw new IllegalArgumentException("chatId cannot be null or empty");
+        }
+
         return chats.get(chatIDtoIndex.get(chatId));
     }
 }

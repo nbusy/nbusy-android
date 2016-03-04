@@ -53,7 +53,7 @@ public class ChatListArrayAdapter extends ArrayAdapter<Chat> {
 
         viewHolder.contactName.setText(chat.peerName);
         viewHolder.lastMessage.setText(chat.lastMessage);
-        String sent = new SimpleDateFormat("HH:mm").format(chat.sent);
+        String sent = new SimpleDateFormat("HH:mm").format(chat.lastMessageSent);
         viewHolder.sent.setText(sent);
 
         return convertView;
