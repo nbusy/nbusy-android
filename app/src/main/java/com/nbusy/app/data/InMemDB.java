@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class InMemDB implements DB {
     @Override
-    public void getProfile(final GetProfileCallback cb) {
+    public synchronized void getProfile(final GetProfileCallback cb) {
         if (cb == null) {
             throw new IllegalArgumentException("callback cannot be null");
         }
@@ -29,7 +29,7 @@ public class InMemDB implements DB {
     }
 
     @Override
-    public void getChatMessages(final String chatId, final GetChatMessagesCallback cb) {
+    public synchronized void getChatMessages(final String chatId, final GetChatMessagesCallback cb) {
         if (chatId == null || chatId.isEmpty()) {
             throw new IllegalArgumentException("chatId cannot be null or empty");
         }
@@ -49,7 +49,7 @@ public class InMemDB implements DB {
     }
 
     @Override
-    public void saveMessages(final SaveMessagesCallback cb, final Message... msgs) {
+    public synchronized void saveMessages(final SaveMessagesCallback cb, final Message... msgs) {
         if (msgs == null || msgs.length == 0) {
             throw new IllegalArgumentException("messages cannot be null or empty");
         }
@@ -66,7 +66,7 @@ public class InMemDB implements DB {
     }
 
     @Override
-    public void updateMessages(final UpdateMessagesCallback cb, final Message... msgs) {
+    public synchronized void updateMessages(final UpdateMessagesCallback cb, final Message... msgs) {
         if (msgs == null || msgs.length == 0) {
             throw new IllegalArgumentException("messages cannot be null or empty");
         }

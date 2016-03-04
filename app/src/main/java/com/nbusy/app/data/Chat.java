@@ -11,12 +11,12 @@ import java.util.Objects;
  * One-to-one chat.
  */
 public final class Chat {
-    private final Map<String, Integer> messageIDtoIndex = new HashMap<>(); // message ID -> messages[index]
-
     public final String id; // unique chat id
     public final String peerName; // peer name
     public final String lastMessage; // last message in conversation
     public final Date lastMessageSent; // last message sent time
+
+    private final Map<String, Integer> messageIDtoIndex = new HashMap<>(); // message ID -> messages[index]
     public final List<Message> messages = new ArrayList<>(); // list of messages in this chat
 
     public Chat(String id, String peerName, String lastMessage, Date lastMessageSent) {
@@ -39,7 +39,7 @@ public final class Chat {
         this.lastMessageSent = lastMessageSent;
     }
 
-    public Message addNewOutgoingMessage(String message) {
+    public synchronized Message addNewOutgoingMessage(String message) {
         if (message == null || message.isEmpty()) {
             throw new IllegalArgumentException("message cannot be null or empty");
         }
