@@ -34,6 +34,16 @@ public class Worker {
     public Profile userProfile;
 
     public Worker(final Client client, final EventBus eventBus, DB db) {
+        if (client == null) {
+            throw new IllegalArgumentException("client cannot be null");
+        }
+        if (eventBus == null) {
+            throw new IllegalArgumentException("eventBus cannot be null");
+        }
+        if (db == null) {
+            throw new IllegalArgumentException("db cannot be null ");
+        }
+
         Log.i(TAG, "Instance created.");
         this.client = client;
         this.eventBus = eventBus;
@@ -92,6 +102,10 @@ public class Worker {
      ************************/
 
     private void receiveMessages(titan.client.messages.Message... msgs) {
+        if (msgs == null || msgs.length == 0) {
+            throw new IllegalArgumentException("messages cannot be null or empty");
+        }
+
         final Message[] nbusyMsgs = DataMaps.getNBusyMessages(msgs);
         List<Message> ml = Arrays.asList(nbusyMsgs);
         // add messages to designated chats
@@ -107,6 +121,10 @@ public class Worker {
     }
 
     public void sendMessages(final Message... msgs) {
+        if (msgs == null || msgs.length == 0) {
+            throw new IllegalArgumentException("messages cannot be null or empty");
+        }
+
         // handle echo messages separately
         if (Objects.equals(msgs[0].chatId, "echo")) {
             client.echo(msgs[0].body, new EchoCallback() {
@@ -157,6 +175,10 @@ public class Worker {
      * Retrieve messages from database, update in memory representation, notify views about the new data.
      */
     public void getChatMessages(final String chatId) {
+        if (chatId == null || chatId.isEmpty()) {
+            throw new IllegalArgumentException("chatId cannot be null or empty");
+        }
+
         db.getChatMessages(chatId, new DB.GetChatMessagesCallback() {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
@@ -174,6 +196,9 @@ public class Worker {
         public final Message[] msgs;
 
         public MessagesReceivedEvent(Message... msgs) {
+            if (msgs == null || msgs.length == 0) {
+                throw new IllegalArgumentException("messages cannot be null or empty");
+            }
             this.msgs = msgs;
         }
     }
@@ -182,6 +207,9 @@ public class Worker {
         public final Message[] msgs;
 
         public MessagesStatusChangedEvent(Message... msgs) {
+            if (msgs == null || msgs.length == 0) {
+                throw new IllegalArgumentException("messages cannot be null or empty");
+            }
             this.msgs = msgs;
         }
     }
@@ -193,6 +221,9 @@ public class Worker {
         public final String chatId;
 
         public ChatMessagesRetrievedEvent(String chatId) {
+            if (chatId == null || chatId.isEmpty()) {
+                throw new IllegalArgumentException("chatId cannot be null or empty");
+            }
             this.chatId = chatId;
         }
     }
