@@ -91,6 +91,10 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
      */
     @Override
     public void onItemSelected(String id) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("id cannot be null or empty");
+        }
+
         if (mTwoPane) {
             // in two-pane mode, show the detail view in this activity by adding
             // or replacing the detail fragment using a fragment transaction

@@ -51,6 +51,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     }
 
     private void setMessagesState(Message[] msgs) {
+        if (msgs == null) {
+            throw new IllegalArgumentException("messages cannot be null");
+        }
+
         for (Message msg : msgs) {
             // only update if message belongs to this chat
             int location = chat.getMessageLocation(msg);
