@@ -90,6 +90,10 @@ public final class Chat {
             return 0;
         }
 
-        return messageIDtoIndex.get(msg.id);
+        if (messageIDtoIndex.containsKey(msg.id)) {
+            return messageIDtoIndex.get(msg.id);
+        } else {
+            return 0;
+        }
     }
 }

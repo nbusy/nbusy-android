@@ -133,7 +133,7 @@ public class Worker {
                     msgs[0] = msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
                     userProfile.getChat(msgs[0].chatId).updateMessage(msgs[0]);
                     eventBus.post(new MessagesStatusChangedEvent(msgs));
-                    // todo: receiveMessages(DataMaps.getTitanMessages(msgs));
+                    receiveMessages(DataMaps.getTitanMessages(msgs));
                 }
             });
             return;
