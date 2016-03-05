@@ -2,6 +2,7 @@
   <dictionary name="teo">
     <words>
       <w>msgs</w>
+      <w>nbusy</w>
       <w>recv</w>
     </words>
   </dictionary>
