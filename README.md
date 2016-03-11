@@ -6,7 +6,7 @@ NBusy Android app. Requires Android 5+.
 
 ## Download
 
-[![Get it on Google Play](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=com.nbusy.app)
+<a href="https://play.google.com/store/apps/details?id=com.nbusy.app"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" width="200px" /></a>
 
 ## Tech Stack
 
