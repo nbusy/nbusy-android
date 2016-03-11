@@ -10,10 +10,13 @@ NBusy Android app. Requires Android 5+.
 
 ## Tech Stack
 
-* [Titan](https://github.com/titan-x)
+Android client app communicates with:
+
+* [NBusy Server](https://github.com/nbusy/nbusy)
   * WebSockets over TLS for direct browser and mobile connections.
   * JWT middleware for authentication.
   * Google+ middleware for registration and authentication.
+  * Built on [Titan Framework](https://github.com/titan-x)
 
 ## License
 
