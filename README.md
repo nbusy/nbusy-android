@@ -2,7 +2,11 @@
 
 [![Build Status](https://travis-ci.org/nbusy/nbusy-android.svg?branch=master)](https://travis-ci.org/nbusy/nbusy-android)
 
-NBusy Android app. Requires Android 6+.
+NBusy Android app. Requires Android 5+.
+
+## Download
+
+[![Get it on Google Play](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=com.nbusy.app)
 
 ## Tech Stack
 
