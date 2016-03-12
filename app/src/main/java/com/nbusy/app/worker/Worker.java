@@ -182,7 +182,9 @@ public class Worker {
         db.getChatMessages(chatId, new DB.GetChatMessagesCallback() {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
-                userProfile.getChat(chatId).addMessages(msgs);
+                if (msgs.size() != 0) {
+                    userProfile.getChat(chatId).addMessages(msgs);
+                }
                 eventBus.post(new ChatMessagesRetrievedEvent(chatId));
             }
         });

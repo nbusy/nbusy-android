@@ -53,7 +53,7 @@ public class InMemDB implements DB {
                                     new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, true, "Lorem ip sum my message...", new Date(), Message.Status.DELIVERED_TO_USER),
                                     new Message(UUID.randomUUID().toString(), chatId, "User ID: " + chatId, null, false, "Test test.", new Date(), Message.Status.DELIVERED_TO_USER)));
                 } else {
-                    msgs = new LinkedList<>();
+                    msgs = new ArrayList<>();
                 }
 
                 cb.chatMessagesRetrieved(msgs);
