@@ -32,12 +32,19 @@ public class WorkerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // terminate the service after queued tasks are done if service was started
         // by device boot event and application is not actively running
-        String startedBy = intent.getStringExtra(STARTED_BY);
-        terminateAfterDone = (startedBy != null && Objects.equals(startedBy, DeviceBootBroadcastReceiver.class.getSimpleName()));
-        Log.i(TAG, "Started by: " + startedBy);
+        if (intent != null) {
+            String startedBy = intent.getStringExtra(STARTED_BY);
+            terminateAfterDone = (startedBy != null && Objects.equals(startedBy, DeviceBootBroadcastReceiver.class.getSimpleName()));
+            Log.i(TAG, "Started by: " + startedBy);
+        } else {
+            // service is restarted by Android system after a termination so intent will be null in this case
+            terminateAfterDone = true;
+            Log.i(TAG, "Restarted by Android system after termination.");
+        }
 
         // we want this service to continue running until it is explicitly stopped, so return sticky
-        return Service.START_STICKY;
+//        return Service.START_STICKY;
+        return Service.START_NOT_STICKY;
     }
 
     @Override
