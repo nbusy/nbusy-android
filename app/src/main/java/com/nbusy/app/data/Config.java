@@ -3,7 +3,8 @@ package com.nbusy.app.data;
 import com.nbusy.app.BuildConfig;
 
 public class Config {
-    public static final String[] SERVERS = new String[] {"nbusy.com:80", "nbusy.com:3000"};
+    // todo: nbusy client itself should know these server urls
+    public static final String[] SERVERS = new String[] {"nbusy.com:80", "nbusy.com:3000", "nbusy.heroku.com"};
 
     public final Env env;
     public final String serverUrl;
