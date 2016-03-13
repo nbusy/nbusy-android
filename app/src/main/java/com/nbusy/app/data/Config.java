@@ -3,9 +3,6 @@ package com.nbusy.app.data;
 import com.nbusy.app.BuildConfig;
 
 public class Config {
-    // todo: nbusy client itself should know these server urls
-    public static final String[] SERVERS = new String[] {"nbusy.com:80", "nbusy.com:3000", "nbusy.heroku.com"};
-
     public final Env env;
     public final String serverUrl;
 
@@ -18,11 +15,13 @@ public class Config {
     }
 
     public Config() {
-        env = BuildConfig.DEBUG ? Env.DEBUG : Env.PRODUCTION;
+//        env = BuildConfig.DEBUG ? Env.DEBUG : Env.PRODUCTION;
+        env = Env.PRODUCTION;
         if (env == Env.PRODUCTION) {
-            serverUrl = "wss://" + SERVERS[0];
+            // todo: nbusy client itself should know these server urls
+            serverUrl = "wss://nbusy.herokuapp.com";
         } else {
-            serverUrl = "ws://" + SERVERS[0];
+            serverUrl = "wss://nbusy.herokuapp.com";
         }
     }
 
