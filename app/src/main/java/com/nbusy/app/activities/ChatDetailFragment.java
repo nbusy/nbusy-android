@@ -146,7 +146,12 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     }
 
     @Subscribe
-    public void chatMessagesRetrieved(Worker.ChatMessagesRetrievedEvent e) {
+    public void notifyDataSetChanged(Worker.MessagesReceivedEvent e) {
+        messageAdapter.notifyDataSetChanged();
+    }
+
+    @Subscribe
+    public void chatMessagesRetrieved(Worker.ChatMessagesRetrievedFromDBEvent e) {
         if (Objects.equals(e.chatId, chat.id)) {
             setMessageAdapter();
         }

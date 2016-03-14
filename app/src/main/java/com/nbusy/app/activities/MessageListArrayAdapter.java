@@ -56,19 +56,26 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
         }
 
         viewHolder.body.setText(message.body);
-        String sent = new SimpleDateFormat("HH:mm").format(message.sent);
-        viewHolder.sent.setText(sent);
-        if (message.status == Message.Status.NEW) {
-            viewHolder.check.setVisibility(View.GONE);
-        } else if (message.status == Message.Status.SENT_TO_SERVER) {
-            viewHolder.check.setText("✓");
-        } else {
-            viewHolder.check.setText("✓✓");
+        viewHolder.sent.setText(new SimpleDateFormat("HH:mm").format(message.sent));
+
+        switch (message.status) {
+            case NEW:
+                viewHolder.check.setVisibility(View.GONE);
+                break;
+            case SENT_TO_SERVER:
+                viewHolder.check.setText("✓");
+                break;
+            default:
+                viewHolder.check.setText("✓✓");
+                break;
         }
 
         if (message.owner) {
             viewHolder.body.setGravity(Gravity.END);
             viewHolder.metadata.setGravity(Gravity.END);
+        } else {
+            viewHolder.body.setGravity(Gravity.START);
+            viewHolder.metadata.setGravity(Gravity.START);
         }
 
         return convertView;
