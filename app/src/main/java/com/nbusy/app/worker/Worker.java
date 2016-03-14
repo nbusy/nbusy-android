@@ -130,10 +130,10 @@ public class Worker {
             client.echo(msgs[0].body, new EchoCallback() {
                 @Override
                 public void echoResponse(String msg) {
-                    msgs[0] = msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
-                    userProfile.getChat(msgs[0].chatId).updateMessage(msgs[0]);
-                    eventBus.post(new MessagesStatusChangedEvent(msgs));
-                    receiveMessages(DataMaps.getTitanMessages(msgs));
+//                            msgs[0] = msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
+//                            userProfile.getChat(msgs[0].chatId).updateMessage(msgs[0]);
+//                            eventBus.post(new MessagesStatusChangedEvent(msgs));
+                    receiveMessages(new titan.client.messages.Message(msgs[0].chatId, "echo", null, msgs[0].sent, msgs[0].body));
                 }
             });
             return;
@@ -185,7 +185,7 @@ public class Worker {
                 if (msgs.size() != 0) {
                     userProfile.getChat(chatId).addMessages(msgs);
                 }
-                eventBus.post(new ChatMessagesRetrievedEvent(chatId));
+                eventBus.post(new ChatMessagesRetrievedFromDBEvent(chatId));
             }
         });
     }
@@ -219,10 +219,10 @@ public class Worker {
     public class UserProfileRetrievedEvent {
     }
 
-    public class ChatMessagesRetrievedEvent {
+    public class ChatMessagesRetrievedFromDBEvent {
         public final String chatId;
 
-        public ChatMessagesRetrievedEvent(String chatId) {
+        public ChatMessagesRetrievedFromDBEvent(String chatId) {
             if (chatId == null || chatId.isEmpty()) {
                 throw new IllegalArgumentException("chatId cannot be null or empty");
             }
