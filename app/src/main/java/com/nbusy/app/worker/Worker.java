@@ -130,10 +130,10 @@ public class Worker {
             client.echo(msgs[0].body, new EchoCallback() {
                 @Override
                 public void echoResponse(String msg) {
-//                            msgs[0] = msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
-//                            userProfile.getChat(msgs[0].chatId).updateMessage(msgs[0]);
-//                            eventBus.post(new MessagesStatusChangedEvent(msgs));
-                    receiveMessages(new titan.client.messages.Message(msgs[0].chatId, "echo", null, msgs[0].sent, msgs[0].body));
+                    Message m = msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
+                    userProfile.getChat(m.chatId).updateMessage(m);
+                    // threading bug: eventBus.post(new MessagesStatusChangedEvent(m));
+                    receiveMessages(new titan.client.messages.Message(m.chatId, "echo", null, m.sent, m.body));
                 }
             });
             return;
