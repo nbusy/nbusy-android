@@ -76,14 +76,18 @@ public class ConnImpl implements Conn, WebSocketListener {
             throw new IllegalArgumentException("obj cannot be null");
         }
 
-        String m = gson.toJson(obj);
+        final String m = gson.toJson(obj);
         logger.info("Outgoing message: " + m);
-        try {
-            ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
-        } catch (IOException e) {
-            e.printStackTrace();
-            close();
-        }
+        new Thread(new Runnable() {
+            @Override public void run() {
+                try {
+                    ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    close();
+                }
+            }
+        }).start();
     }
 
     /***********************
