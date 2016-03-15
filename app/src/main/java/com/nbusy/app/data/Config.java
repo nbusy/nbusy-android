@@ -15,8 +15,7 @@ public class Config {
     }
 
     public Config() {
-//        env = BuildConfig.DEBUG ? Env.DEBUG : Env.PRODUCTION;
-        env = Env.PRODUCTION;
+        env = BuildConfig.DEBUG ? Env.DEBUG : Env.PRODUCTION;
         if (env == Env.PRODUCTION) {
             // todo: nbusy client itself should know these server urls
             serverUrl = "wss://nbusy.herokuapp.com";
