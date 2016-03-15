@@ -116,7 +116,7 @@ public class InMemDB implements DB {
                 fn.execute();
             }
         }
-        new SimulateDatabase().execute(null, null, null);
+        new SimulateDatabase().execute();
     }
 
     private interface Function {

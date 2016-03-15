@@ -46,8 +46,6 @@ public class WorkerService extends Service {
             Log.i(TAG, "Restarted by Android system after termination.");
         }
 
-        processQueue();
-
         // we want this service to continue running until it is explicitly stopped, so return sticky
         return Service.START_STICKY;
     }
@@ -60,24 +58,9 @@ public class WorkerService extends Service {
     }
 
     private void processQueue() {
-        new AsyncTask<Void, Void, Void>(){
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    Thread.sleep(3 * 60 * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                if (/*todo: terminateAfterDone && */ !stopSelfResult(startId)) {
-                    Log.e(TAG, "Tried to stop service with startId: " + startId + " which did not match the one from the last start request.");
-                }
-            }
-        }.execute();
+        if (terminateAfterDone && !stopSelfResult(startId)) {
+            Log.e(TAG, "Tried to stop service with startId: " + startId + " which did not match the one from the last start request.");
+        }
     }
 
     /*************************
