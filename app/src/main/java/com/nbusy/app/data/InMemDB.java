@@ -100,9 +100,9 @@ public class InMemDB implements DB {
             throw new IllegalArgumentException("callback function cannot be null");
         }
 
-        class SimulateDatabase extends AsyncTask<Object, Object, Object> {
+        class SimulateDatabase extends AsyncTask<Void, Void, Void> {
             @Override
-            protected Object doInBackground(Object[] params) {
+            protected Void doInBackground(Void... params) {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
@@ -112,7 +112,7 @@ public class InMemDB implements DB {
             }
 
             @Override
-            protected void onPostExecute(Object o) {
+            protected void onPostExecute(Void result) {
                 fn.execute();
             }
         }
