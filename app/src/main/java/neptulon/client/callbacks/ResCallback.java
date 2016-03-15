@@ -8,4 +8,3 @@ import neptulon.client.ResCtx;
 public interface ResCallback {
     void callback(ResCtx ctx);
 }
-

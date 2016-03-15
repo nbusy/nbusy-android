@@ -22,6 +22,7 @@ public class WorkerService extends Service {
     public static final String STARTED_BY = "StartedBy";
     private final Worker worker = WorkerSingleton.getWorker();
     private boolean terminateAfterDone; // whether to terminate service after task queue is done, or keep running till explicitly destroyed
+    private int startId;
 
     @Override
     public void onCreate() {
@@ -30,6 +31,8 @@ public class WorkerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        this.startId = startId;
+
         // terminate the service after queued tasks are done if service was started
         // by device boot event and application is not actively running
         if (intent != null) {
@@ -43,8 +46,7 @@ public class WorkerService extends Service {
         }
 
         // we want this service to continue running until it is explicitly stopped, so return sticky
-//        return Service.START_STICKY;
-        return Service.START_NOT_STICKY;
+        return Service.START_STICKY;
     }
 
     @Override
