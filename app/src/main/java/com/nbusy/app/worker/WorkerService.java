@@ -73,7 +73,7 @@ public class WorkerService extends Service {
 
             @Override
             protected void onPostExecute(Void result) {
-                if (!stopSelfResult(startId)) {
+                if (/*todo: terminateAfterDone && */ !stopSelfResult(startId)) {
                     Log.e(TAG, "Tried to stop service with startId: " + startId + " which did not match the one from the last start request.");
                 }
             }
