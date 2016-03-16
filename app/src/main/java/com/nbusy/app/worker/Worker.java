@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMaps;
 import com.nbusy.app.data.InMemDB;
@@ -115,9 +116,17 @@ public class Worker {
         db.updateMessages(new DB.UpdateMessagesCallback() {
             @Override
             public void messagesUpdated() {
-                eventBus.post(new MessagesReceivedFromServerEvent(nbusyMsgs));
+                // todo: raise notification for all distinct chat IDs involved and not only the first one
+                eventBus.post(new ChatUpdatedEvent(userProfile.getChat(nbusyMsgs[0].chatId)));
             }
         }, nbusyMsgs);
+    }
+
+    public void sendMessage(String chatId, String message) {
+        Chat chat = userProfile.getChat(chatId);
+        Message msg = chat.addNewOutgoingMessage(message);
+        eventBus.post(new ChatUpdatedEvent(chat));
+        sendMessages(msg);
     }
 
     public void sendMessages(final Message... msgs) {
@@ -158,7 +167,8 @@ public class Worker {
                             @Override
                             public void messagesUpdated() {
                                 // finally, notify all listening views about the changes
-                                eventBus.post(new MessagesStatusChangedEvent(msgs));
+                                // todo: raise notification for all distinct chat IDs involved and not only the first one
+                                eventBus.post(new ChatUpdatedEvent(userProfile.getChat(msgs[0].chatId)));
                             }
                         }, msgs);
                     }
@@ -182,10 +192,11 @@ public class Worker {
         db.getChatMessages(chatId, new DB.GetChatMessagesCallback() {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
+                Chat chat = userProfile.getChat(chatId);
                 if (msgs.size() != 0) {
-                    userProfile.getChat(chatId).addMessages(msgs);
+                    chat.addMessages(msgs);
                 }
-                eventBus.post(new ChatMessagesRetrievedFromDBEvent(chatId));
+                eventBus.post(new ChatUpdatedEvent(chat));
             }
         });
     }
@@ -194,39 +205,17 @@ public class Worker {
      * Event Objects *
      *****************/
 
-    public class MessagesReceivedFromServerEvent {
-        public final Message[] msgs;
-
-        public MessagesReceivedFromServerEvent(Message... msgs) {
-            if (msgs == null || msgs.length == 0) {
-                throw new IllegalArgumentException("messages cannot be null or empty");
-            }
-            this.msgs = msgs;
-        }
-    }
-
-    public class MessagesStatusChangedEvent {
-        public final Message[] msgs;
-
-        public MessagesStatusChangedEvent(Message... msgs) {
-            if (msgs == null || msgs.length == 0) {
-                throw new IllegalArgumentException("messages cannot be null or empty");
-            }
-            this.msgs = msgs;
-        }
-    }
-
     public class UserProfileRetrievedEvent {
     }
 
-    public class ChatMessagesRetrievedFromDBEvent {
-        public final String chatId;
+    public class ChatUpdatedEvent {
+        public final Chat chat;
 
-        public ChatMessagesRetrievedFromDBEvent(String chatId) {
-            if (chatId == null || chatId.isEmpty()) {
-                throw new IllegalArgumentException("chatId cannot be null or empty");
+        public ChatUpdatedEvent(Chat chat) {
+            if (chat == null) {
+                throw new IllegalArgumentException("chat cannot be null");
             }
-            this.chatId = chatId;
+            this.chat = chat;
         }
     }
 }

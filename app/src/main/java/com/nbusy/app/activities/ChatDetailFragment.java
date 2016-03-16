@@ -30,6 +30,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
+    private String chatId;
     private MessageListArrayAdapter messageAdapter;
 
     // view elements
@@ -44,13 +45,9 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             return;
         }
 
-        // add message to the UI, and clear message box
-//        Message msg = chat.addNewOutgoingMessage(messageBody);
-        messageAdapter.notifyDataSetChanged();
+        // send the message to server and clear message box
+        worker.sendMessage(chatId, messageBody);
         messageBox.setText("");
-
-        // send the message to the server
-//        worker.sendMessages(msg);
     }
 
     /**
@@ -92,7 +89,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
-            String chatId = (String) arguments.get(ARG_ITEM_ID);
+            chatId = (String) arguments.get(ARG_ITEM_ID);
             Chat chat = worker.userProfile.getChat(chatId);
             if (chat.messages.size() == 0) {
                 messageAdapter = new MessageListArrayAdapter(getActivity());
@@ -146,17 +143,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      ******************************/
 
     @Subscribe
-    public void setMessagesState(Worker.MessagesStatusChangedEvent e) {
-
-    }
-
-    @Subscribe
-    public void notifyDataSetChanged(Worker.MessagesReceivedFromServerEvent e) {
-
-    }
-
-    @Subscribe
-    public void chatMessagesRetrieved(Worker.ChatMessagesRetrievedFromDBEvent e) {
-
+    public synchronized void chatUpdatedEventHandler(Worker.ChatUpdatedEvent e) {
+        setData(e.chat);
     }
 }
