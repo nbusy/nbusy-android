@@ -17,6 +17,7 @@ import com.nbusy.app.data.Message;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -30,6 +31,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     private final Worker worker = WorkerSingleton.getWorker();
     private Chat chat;
     private MessageListArrayAdapter messageAdapter;
+
     private ListView messageListView;
     private EditText messageBox;
     private Button sendButton;
@@ -48,6 +50,18 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
         // send the message to the server
         worker.sendMessages(msg);
+    }
+
+    /**
+     * This function sets the view data.
+     * Any changes between the old and the new data is applied as a diff in an efficient way.
+     */
+    private void setData(Chat chat) {
+        if (messageAdapter == null) {
+            setListAdapter(new MessageListArrayAdapter(getActivity(), new ArrayList<Message>()));
+        }
+
+
     }
 
     private void setMessagesState(Message[] msgs) {
