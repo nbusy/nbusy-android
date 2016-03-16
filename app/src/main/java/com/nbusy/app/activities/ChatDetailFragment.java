@@ -59,12 +59,16 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      * This function sets the view data.
      * Any changes between the old and the new data is applied as a diff in an efficient way.
      */
-    private void setData(Chat chat) {
+    private synchronized void setData(Chat chat) {
         // create underlying array adapter if this is the first time setting data
         if (messageAdapter == null) {
             messages = new ArrayList<>();
             setListAdapter(new MessageListArrayAdapter(getActivity(), messages));
         }
+
+        messages.clear();
+        messages.addAll(chat.messages);
+        messageAdapter.notifyDataSetChanged();
 
 //        boolean notifyDataSetChanged = false;
 //
