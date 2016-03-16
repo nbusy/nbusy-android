@@ -30,8 +30,6 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
-    private Chat chat;
-    private List<Message> messages;
     private MessageListArrayAdapter messageAdapter;
 
     // view elements
@@ -47,12 +45,12 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // add message to the UI, and clear message box
-        Message msg = chat.addNewOutgoingMessage(messageBody);
+//        Message msg = chat.addNewOutgoingMessage(messageBody);
         messageAdapter.notifyDataSetChanged();
         messageBox.setText("");
 
         // send the message to the server
-        worker.sendMessages(msg);
+//        worker.sendMessages(msg);
     }
 
     /**
@@ -60,16 +58,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      * Any changes between the old and the new data is applied as a diff in an efficient way.
      */
     private synchronized void setData(Chat chat) {
-        // create underlying array adapter if this is the first time setting data
-        if (messageAdapter == null) {
-            messages = new ArrayList<>();
-            setListAdapter(new MessageListArrayAdapter(getActivity(), messages));
-        }
+        messageAdapter.clear();
+        messageAdapter.addAll(chat.messages);
 
-        messages.clear();
-        messages.addAll(chat.messages);
-        messageAdapter.notifyDataSetChanged();
-
+        // todo: implement in place updates as below as an optimization
 //        boolean notifyDataSetChanged = false;
 //
 //        // apply changes to existing messages in case any of them was changed
@@ -90,35 +82,6 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 //        }
     }
 
-    private void setMessagesState(Message[] msgs) {
-        if (msgs == null) {
-            throw new IllegalArgumentException("messages cannot be null");
-        }
-
-        for (Message msg : msgs) {
-            // only update if message belongs to this chat
-            int location = chat.getMessageLocation(msg);
-            if (location == 0) {
-                return;
-            }
-
-            // update the check mark on the updated item only as per:
-            //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
-            View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
-            if (v != null) {
-                if (msg.status == Message.Status.SENT_TO_SERVER) {
-                    ((TextView)v.findViewById(R.id.check)).setText("✓");
-                }
-                v.findViewById(R.id.check).setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
-    private void setMessageAdapter() {
-        messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
-        setListAdapter(messageAdapter);
-    }
-
     /**************************
      * ListFragment Overrides *
      **************************/
@@ -130,12 +93,14 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
             String chatId = (String) arguments.get(ARG_ITEM_ID);
-            chat = worker.userProfile.getChat(chatId);
+            Chat chat = worker.userProfile.getChat(chatId);
             if (chat.messages.size() == 0) {
+                messageAdapter = new MessageListArrayAdapter(getActivity());
                 worker.getChatMessages(chatId);
             } else {
-                setMessageAdapter();
+                messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
             }
+            setListAdapter(messageAdapter);
         }
     }
 
@@ -182,18 +147,16 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     @Subscribe
     public void setMessagesState(Worker.MessagesStatusChangedEvent e) {
-        setMessagesState(e.msgs);
+
     }
 
     @Subscribe
     public void notifyDataSetChanged(Worker.MessagesReceivedFromServerEvent e) {
-        messageAdapter.notifyDataSetChanged();
+
     }
 
     @Subscribe
     public void chatMessagesRetrieved(Worker.ChatMessagesRetrievedFromDBEvent e) {
-        if (Objects.equals(e.chatId, chat.id)) {
-            setMessageAdapter();
-        }
+
     }
 }
