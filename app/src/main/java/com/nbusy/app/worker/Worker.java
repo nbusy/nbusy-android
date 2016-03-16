@@ -115,7 +115,7 @@ public class Worker {
         db.updateMessages(new DB.UpdateMessagesCallback() {
             @Override
             public void messagesUpdated() {
-                eventBus.post(new MessagesReceivedEvent(nbusyMsgs));
+                eventBus.post(new MessagesReceivedFromServerEvent(nbusyMsgs));
             }
         }, nbusyMsgs);
     }
@@ -194,10 +194,10 @@ public class Worker {
      * Event Objects *
      *****************/
 
-    public class MessagesReceivedEvent {
+    public class MessagesReceivedFromServerEvent {
         public final Message[] msgs;
 
-        public MessagesReceivedEvent(Message... msgs) {
+        public MessagesReceivedFromServerEvent(Message... msgs) {
             if (msgs == null || msgs.length == 0) {
                 throw new IllegalArgumentException("messages cannot be null or empty");
             }

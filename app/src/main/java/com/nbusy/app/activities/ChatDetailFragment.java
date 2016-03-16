@@ -18,6 +18,7 @@ import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -30,8 +31,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
     private Chat chat;
+    private List<Message> messages;
     private MessageListArrayAdapter messageAdapter;
 
+    // view elements
     private ListView messageListView;
     private EditText messageBox;
     private Button sendButton;
@@ -57,11 +60,30 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      * Any changes between the old and the new data is applied as a diff in an efficient way.
      */
     private void setData(Chat chat) {
+        // create underlying array adapter if this is the first time setting data
         if (messageAdapter == null) {
-            setListAdapter(new MessageListArrayAdapter(getActivity(), new ArrayList<Message>()));
+            messages = new ArrayList<>();
+            setListAdapter(new MessageListArrayAdapter(getActivity(), messages));
         }
 
-
+//        boolean notifyDataSetChanged = false;
+//
+//        // apply changes to existing messages in case any of them was changed
+//        // diffing here is easy as we're always using immutable objects, we can just compare references to get changed ones
+//        for (int i = 0; i < messages.size(); i++) {
+//            if (messages.get(i) != chat.messages.get(i)) {
+//                // update the check mark on the updated item only as per:
+//                //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
+//                View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
+//                if (v != null) {
+//                    if (msg.status == Message.Status.SENT_TO_SERVER) {
+//                        ((TextView)v.findViewById(R.id.check)).setText("✓");
+//                    }
+//                    v.findViewById(R.id.check).setVisibility(View.VISIBLE);
+//                }
+//
+//            }
+//        }
     }
 
     private void setMessagesState(Message[] msgs) {
@@ -160,7 +182,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     }
 
     @Subscribe
-    public void notifyDataSetChanged(Worker.MessagesReceivedEvent e) {
+    public void notifyDataSetChanged(Worker.MessagesReceivedFromServerEvent e) {
         messageAdapter.notifyDataSetChanged();
     }
 
