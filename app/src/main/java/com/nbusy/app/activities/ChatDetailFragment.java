@@ -8,16 +8,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
-import com.nbusy.app.data.Message;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
-
-import java.util.Objects;
 
 /**
  * A fragment representing a single Chat detail screen, along with the messages in the chat.
@@ -28,8 +24,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
-    private Chat chat;
+    private String chatId;
     private MessageListArrayAdapter messageAdapter;
+
+    // view elements
     private ListView messageListView;
     private EditText messageBox;
     private Button sendButton;
@@ -41,42 +39,39 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             return;
         }
 
-        // add message to the UI, and clear message box
-        Message msg = chat.addNewOutgoingMessage(messageBody);
-        messageAdapter.notifyDataSetChanged();
+        // send the message to server and clear message box
+        worker.sendMessage(chatId, messageBody);
         messageBox.setText("");
-
-        // send the message to the server
-        worker.sendMessages(msg);
     }
 
-    private void setMessagesState(Message[] msgs) {
-        if (msgs == null) {
-            throw new IllegalArgumentException("messages cannot be null");
-        }
+    /**
+     * This function sets the view data.
+     * Any changes between the old and the new data is applied as a diff in an efficient way.
+     */
+    private synchronized void setData(Chat chat) {
+        messageAdapter.clear();
+        messageAdapter.addAll(chat.messages);
+        setSelection(messageAdapter.getCount() - 1);
 
-        for (Message msg : msgs) {
-            // only update if message belongs to this chat
-            int location = chat.getMessageLocation(msg);
-            if (location == 0) {
-                return;
-            }
-
-            // update the check mark on the updated item only as per:
-            //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
-            View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
-            if (v != null) {
-                if (msg.status == Message.Status.SENT_TO_SERVER) {
-                    ((TextView)v.findViewById(R.id.check)).setText("✓");
-                }
-                v.findViewById(R.id.check).setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
-    private void setMessageAdapter() {
-        messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
-        setListAdapter(messageAdapter);
+        // todo: implement in place updates as below as an optimization
+//        boolean notifyDataSetChanged = false;
+//
+//        // apply changes to existing messages in case any of them was changed
+//        // diffing here is easy as we're always using immutable objects, we can just compare references to get changed ones
+//        for (int i = 0; i < messages.size(); i++) {
+//            if (messages.get(i) != chat.messages.get(i)) {
+//                // update the check mark on the updated item only as per:
+//                //   http://stackoverflow.com/questions/3724874/how-can-i-update-a-single-row-in-a-listview
+//                View v = messageListView.getChildAt(location - messageListView.getFirstVisiblePosition());
+//                if (v != null) {
+//                    if (msg.status == Message.Status.SENT_TO_SERVER) {
+//                        ((TextView)v.findViewById(R.id.check)).setText("✓");
+//                    }
+//                    v.findViewById(R.id.check).setVisibility(View.VISIBLE);
+//                }
+//
+//            }
+//        }
     }
 
     /**************************
@@ -89,13 +84,15 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
-            String chatId = (String) arguments.get(ARG_ITEM_ID);
-            chat = worker.userProfile.getChat(chatId);
+            chatId = (String) arguments.get(ARG_ITEM_ID);
+            Chat chat = worker.userProfile.getChat(chatId);
             if (chat.messages.size() == 0) {
+                messageAdapter = new MessageListArrayAdapter(getActivity());
                 worker.getChatMessages(chatId);
             } else {
-                setMessageAdapter();
+                messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
             }
+            setListAdapter(messageAdapter);
         }
     }
 
@@ -141,19 +138,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      ******************************/
 
     @Subscribe
-    public void setMessagesState(Worker.MessagesStatusChangedEvent e) {
-        setMessagesState(e.msgs);
-    }
-
-    @Subscribe
-    public void notifyDataSetChanged(Worker.MessagesReceivedEvent e) {
-        messageAdapter.notifyDataSetChanged();
-    }
-
-    @Subscribe
-    public void chatMessagesRetrieved(Worker.ChatMessagesRetrievedFromDBEvent e) {
-        if (Objects.equals(e.chatId, chat.id)) {
-            setMessageAdapter();
-        }
+    public synchronized void chatUpdatedEventHandler(Worker.ChatUpdatedEvent e) {
+        setData(e.chat);
     }
 }

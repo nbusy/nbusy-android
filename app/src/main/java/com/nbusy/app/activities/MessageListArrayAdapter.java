@@ -30,6 +30,11 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
         TextView sent;
     }
 
+    public MessageListArrayAdapter(Context context) {
+        super(context, R.layout.message_list_row);
+        inflater = LayoutInflater.from(context);
+    }
+
     public MessageListArrayAdapter(Context context, List<Message> values) {
         super(context, R.layout.message_list_row, values);
         inflater = LayoutInflater.from(context);
