@@ -2,6 +2,7 @@ package com.nbusy.app.activities;
 
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.nbusy.app.worker.WorkerSingleton;
  */
 public class ChatDetailFragment extends ListFragment implements View.OnClickListener {
 
+    private static final String TAG = ChatListActivity.class.getSimpleName();
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
     private String chatId;
@@ -49,6 +51,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      * Any changes between the old and the new data is applied as a diff in an efficient way.
      */
     private synchronized void setData(Chat chat) {
+        Log.v(TAG, "updating view");
         messageAdapter.clear();
         messageAdapter.addAll(chat.messages);
         setSelection(messageAdapter.getCount() - 1);
