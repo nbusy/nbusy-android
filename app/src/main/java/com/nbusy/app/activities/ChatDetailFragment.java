@@ -8,18 +8,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
-import com.nbusy.app.data.Message;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * A fragment representing a single Chat detail screen, along with the messages in the chat.
@@ -57,6 +51,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     private synchronized void setData(Chat chat) {
         messageAdapter.clear();
         messageAdapter.addAll(chat.messages);
+        setSelection(messageAdapter.getCount() - 1);
 
         // todo: implement in place updates as below as an optimization
 //        boolean notifyDataSetChanged = false;
