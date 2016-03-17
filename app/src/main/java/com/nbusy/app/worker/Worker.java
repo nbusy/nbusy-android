@@ -80,7 +80,7 @@ public class Worker {
             @Override
             public void profileRetrieved(Profile up) {
                 userProfile = up;
-                eventBus.post(new UserProfileRetrievedEvent());
+                eventBus.post(new UserProfileRetrievedEvent(userProfile));
             }
         });
     }
@@ -206,6 +206,14 @@ public class Worker {
      *****************/
 
     public class UserProfileRetrievedEvent {
+        public final Profile profile;
+
+        public UserProfileRetrievedEvent(Profile profile) {
+            if (profile == null) {
+                throw new IllegalArgumentException("profile cannot be null");
+            }
+            this.profile = profile;
+        }
     }
 
     public class ChatUpdatedEvent {
