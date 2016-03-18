@@ -4,7 +4,9 @@ import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * One-to-one chat.
@@ -44,26 +46,44 @@ public final class Chat {
         this(id, peerName, lastMessage, lastMessageSent, ImmutableSet.<Message>of());
     }
 
-    public synchronized ImmutableSet<Message> addNewOutgoingMessage(String... messages) {
+    public synchronized ChatAndNewMessages addNewOutgoingMessage(String... messages) {
         if (messages == null || messages.length == 0) {
             throw new IllegalArgumentException("messages cannot be null or empty");
         }
 
-        List<Message> msgs = new ArrayList<>();
+        Set<Message> msgs = new HashSet<>();
         for (String message : messages) {
             msgs.add(Message.newOutgoingMessage(id, peerName, message));
         }
 
-        return ImmutableSet.copyOf(msgs);
+        return new ChatAndNewMessages(addMessages(msgs), ImmutableSet.copyOf(msgs));
     }
 
-//    public synchronized void addMessages(List<Message> msgs) {
+    public final class ChatAndNewMessages {
+        public final Chat chat;
+        public final ImmutableSet<Message> messages;
+
+        public ChatAndNewMessages(Chat chat, ImmutableSet<Message> messages) {
+            if (chat == null) {
+                throw new IllegalArgumentException("chat cannot be null");
+            }
+            if (messages == null || messages.size() == 0) {
+                throw new IllegalArgumentException("messages cannot be null or empty");
+            }
+
+            this.chat = chat;
+            this.messages = messages;
+        }
+    }
+
+    public synchronized Chat addMessages(Set<Message> msgs) {
 //        if (msgs == null || msgs.size() == 0) {
 //            throw new IllegalArgumentException("message list cannot be null or empty");
 //        }
 //
 //        for (Message msg : msgs) {
-//            // don't re-add duplicates
+//            // todo: don't re-add duplicates
+        // todo: only add messages that belongs to this chat
 //            if (getMessageLocation(msg) != 0) {
 //                continue;
 //            }
@@ -71,8 +91,9 @@ public final class Chat {
 //            messageIDtoIndex.put(msg.id, messages.size());
 //            messages.add(msg);
 //        }
-//    }
-//
+        return this;
+    }
+
 //    public synchronized int updateMessage(Message msg) {
 //        if (msg == null) {
 //            throw new IllegalArgumentException("message cannot be null");
