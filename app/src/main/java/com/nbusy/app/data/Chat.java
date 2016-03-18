@@ -2,7 +2,9 @@ package com.nbusy.app.data;
 
 import com.google.common.collect.ImmutableSet;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * One-to-one chat.
@@ -42,17 +44,19 @@ public final class Chat {
         this(id, peerName, lastMessage, lastMessageSent, ImmutableSet.<Message>of());
     }
 
-//    public synchronized Message addNewOutgoingMessage(String message) {
-//        if (message == null || message.isEmpty()) {
-//            throw new IllegalArgumentException("message cannot be null or empty");
-//        }
-//
-//        Message msg = Message.newOutgoingMessage(id, peerName, message);
-//        messageIDtoIndex.put(msg.id, messages.size());
-//        messages.add(msg);
-//        return msg;
-//    }
-//
+    public synchronized ImmutableSet<Message> addNewOutgoingMessage(String... messages) {
+        if (messages == null || messages.length == 0) {
+            throw new IllegalArgumentException("messages cannot be null or empty");
+        }
+
+        List<Message> msgs = new ArrayList<>();
+        for (String message : messages) {
+            msgs.add(Message.newOutgoingMessage(id, peerName, message));
+        }
+
+        return ImmutableSet.copyOf(msgs);
+    }
+
 //    public synchronized void addMessages(List<Message> msgs) {
 //        if (msgs == null || msgs.size() == 0) {
 //            throw new IllegalArgumentException("message list cannot be null or empty");
