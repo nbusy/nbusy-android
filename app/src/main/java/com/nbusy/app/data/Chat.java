@@ -2,10 +2,9 @@ package com.nbusy.app.data;
 
 import com.google.common.collect.ImmutableSet;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -46,17 +45,17 @@ public final class Chat {
         this(id, peerName, lastMessage, lastMessageSent, ImmutableSet.<Message>of());
     }
 
-    public synchronized ChatAndNewMessages addNewOutgoingMessage(String... messages) {
-        if (messages == null || messages.length == 0) {
-            throw new IllegalArgumentException("messages cannot be null or empty");
+    public synchronized ChatAndNewMessages addNewOutgoingMessage(String... msgs) {
+        if (msgs == null || msgs.length == 0) {
+            throw new IllegalArgumentException("message list be null or empty");
         }
 
-        Set<Message> msgs = new HashSet<>();
-        for (String message : messages) {
-            msgs.add(Message.newOutgoingMessage(id, peerName, message));
+        Set<Message> newMsgs = new HashSet<>();
+        for (String msg : msgs) {
+            newMsgs.add(Message.newOutgoingMessage(id, peerName, msg));
         }
 
-        return new ChatAndNewMessages(addMessages(msgs), ImmutableSet.copyOf(msgs));
+        return new ChatAndNewMessages(addMessages(newMsgs), ImmutableSet.copyOf(newMsgs));
     }
 
     public final class ChatAndNewMessages {
@@ -77,21 +76,31 @@ public final class Chat {
     }
 
     public synchronized Chat addMessages(Set<Message> msgs) {
-//        if (msgs == null || msgs.size() == 0) {
-//            throw new IllegalArgumentException("message list cannot be null or empty");
-//        }
-//
-//        for (Message msg : msgs) {
-//            // todo: don't re-add duplicates
-        // todo: only add messages that belongs to this chat
-//            if (getMessageLocation(msg) != 0) {
-//                continue;
-//            }
-//
-//            messageIDtoIndex.put(msg.id, messages.size());
-//            messages.add(msg);
-//        }
-        return this;
+        if (msgs == null || msgs.size() == 0) {
+            throw new IllegalArgumentException("message list cannot be null or empty");
+        }
+
+        // only add messages that belongs to this chat
+        // only add new messages and don't allow duplicates
+        Set<Message> thisMsgs = new HashSet<>();
+        for (Message msg : msgs) {
+            if (!Objects.equals(msg.chatId, this.id)) {
+                continue;
+            }
+
+            boolean dupe = false;
+            for (Message m : this.messages) {
+                if (Objects.equals(m.id, msg.id)) {
+                    dupe = true;
+                }
+            }
+
+            if (!dupe) {
+                thisMsgs.add(msg);
+            }
+        }
+
+        return new Chat(id, peerName, lastMessage, lastMessageSent, ImmutableSet.<Message>builder().addAll(this.messages).addAll(thisMsgs).build());
     }
 
 //    public synchronized int updateMessage(Message msg) {
@@ -107,21 +116,5 @@ public final class Chat {
 //
 //        messages.set(index, msg);
 //        return index;
-//    }
-//
-//    public synchronized int getMessageLocation(Message msg) {
-//        if (msg == null) {
-//            throw new IllegalArgumentException("message cannot be null");
-//        }
-//
-//        if (!Objects.equals(msg.chatId, id)) {
-//            return 0;
-//        }
-//
-//        if (messageIDtoIndex.containsKey(msg.id)) {
-//            return messageIDtoIndex.get(msg.id);
-//        } else {
-//            return 0;
-//        }
 //    }
 }
