@@ -6,7 +6,7 @@ import java.util.UUID;
 /**
  * A message within a chat.
  */
-public class Message {
+public final class Message {
     public final String id; // unique message ID
     public final String chatId; // ID of chat this message belongs to
     public final String from; // sender of this message
