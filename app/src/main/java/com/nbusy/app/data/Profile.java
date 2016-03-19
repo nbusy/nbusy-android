@@ -44,7 +44,7 @@ public class Profile {
         return null;
     }
 
-    public synchronized List<Chat> updateMessages(Message... msg) {
+    public synchronized List<Chat> updateMessages(Message... msgs) {
         return null;
     }
 }

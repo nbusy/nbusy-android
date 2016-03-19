@@ -115,7 +115,21 @@ public final class Chat {
                 ImmutableSet.<Message>builder().addAll(this.messages).addAll(thisMsgs).build());
     }
 
-    synchronized Chat updateMessages(Message... msg) {
-        return null;
+    synchronized Chat updateMessages(Message... msgs) {
+        ImmutableSet.Builder<Message> msgBuilder = ImmutableSet.builder();
+        for (Message thisMsg : this.messages) {
+            boolean updated = false;
+            for (Message newMsg : msgs) {
+                if (Objects.equals(thisMsg.id, newMsg.id)) {
+                    updated = true;
+                    msgBuilder.add(newMsg);
+                }
+            }
+            if (!updated) {
+                msgBuilder.add(thisMsg);
+            }
+        }
+
+        return new Chat(id, peerName, lastMessage, lastMessageSent, msgBuilder.build());
     }
 }
