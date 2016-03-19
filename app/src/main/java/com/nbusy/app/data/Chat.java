@@ -47,7 +47,7 @@ public final class Chat {
         this(id, peerName, lastMessage, lastMessageSent, ImmutableSet.<Message>of());
     }
 
-    public synchronized ChatAndNewMessages addNewOutgoingMessage(String... msgs) {
+     synchronized ChatAndNewMessages addNewOutgoingMessage(String... msgs) {
         if (msgs == null || msgs.length == 0) {
             throw new IllegalArgumentException("message list be null or empty");
         }
@@ -77,11 +77,11 @@ public final class Chat {
         }
     }
 
-    public synchronized Chat addMessages(List<Message> msgs) {
+     synchronized Chat addMessages(List<Message> msgs) {
         return addMessages(msgs.toArray(new Message[msgs.size()]));
     }
 
-    public synchronized Chat addMessages(Message... msgs) {
+     synchronized Chat addMessages(Message... msgs) {
         if (msgs == null || msgs.length == 0) {
             throw new IllegalArgumentException("message list cannot be null or empty");
         }
@@ -115,18 +115,7 @@ public final class Chat {
                 ImmutableSet.<Message>builder().addAll(this.messages).addAll(thisMsgs).build());
     }
 
-//    public synchronized int updateMessage(Message msg) {
-//        if (msg == null) {
-//            throw new IllegalArgumentException("message cannot be null");
-//        }
-//
-//        // only update if message belongs to this chat
-//        int index = getMessageLocation(msg);
-//        if (index == 0) {
-//            return 0;
-//        }
-//
-//        messages.set(index, msg);
-//        return index;
-//    }
+    synchronized Chat updateMessages(Message... msg) {
+        return null;
+    }
 }
