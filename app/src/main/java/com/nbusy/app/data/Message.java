@@ -51,7 +51,7 @@ public final class Message {
         return new Message(UUID.randomUUID().toString(), chatId, from, null, false, body, sent, Status.RECEIVED);
     }
 
-    public Message setStatus(Status status) {
+    Message setStatus(Status status) {
         return new Message(id, chatId, from, to, owner, body, sent, status);
     }
 
