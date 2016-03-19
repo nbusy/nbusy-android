@@ -47,7 +47,7 @@ public final class Chat {
         this(id, peerName, lastMessage, lastMessageSent, ImmutableSet.<Message>of());
     }
 
-     synchronized ChatAndNewMessages addNewOutgoingMessage(String... msgs) {
+     synchronized ChatAndNewMessages addNewOutgoingMessages(String... msgs) {
         if (msgs == null || msgs.length == 0) {
             throw new IllegalArgumentException("message list be null or empty");
         }

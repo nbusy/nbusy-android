@@ -35,4 +35,16 @@ public class Profile {
 
         return chats.get(chatIDtoIndex.get(chatId));
     }
+
+    public synchronized Chat.ChatAndNewMessages addNewOutgoingMessages(String... msgs) {
+        return null;
+    }
+
+    public synchronized List<Chat> addMessages(Message... msgs) {
+        return null;
+    }
+
+    public synchronized List<Chat> updateMessages(Message... msg) {
+        return null;
+    }
 }
