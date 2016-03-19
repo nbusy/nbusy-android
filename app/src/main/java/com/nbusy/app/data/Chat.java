@@ -2,8 +2,10 @@ package com.nbusy.app.data;
 
 import com.google.common.collect.ImmutableSet;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -50,7 +52,7 @@ public final class Chat {
             throw new IllegalArgumentException("message list be null or empty");
         }
 
-        Set<Message> newMsgs = new HashSet<>();
+        List<Message> newMsgs = new ArrayList<>();
         for (String msg : msgs) {
             newMsgs.add(Message.newOutgoingMessage(id, peerName, msg));
         }
@@ -75,8 +77,12 @@ public final class Chat {
         }
     }
 
-    public synchronized Chat addMessages(Set<Message> msgs) {
-        if (msgs == null || msgs.size() == 0) {
+    public synchronized Chat addMessages(List<Message> msgs) {
+        return addMessages(msgs.toArray(new Message[msgs.size()]));
+    }
+
+    public synchronized Chat addMessages(Message... msgs) {
+        if (msgs == null || msgs.length == 0) {
             throw new IllegalArgumentException("message list cannot be null or empty");
         }
 
@@ -92,6 +98,7 @@ public final class Chat {
             for (Message m : this.messages) {
                 if (Objects.equals(m.id, msg.id)) {
                     dupe = true;
+                    break;
                 }
             }
 
@@ -100,7 +107,12 @@ public final class Chat {
             }
         }
 
-        return new Chat(id, peerName, lastMessage, lastMessageSent, ImmutableSet.<Message>builder().addAll(this.messages).addAll(thisMsgs).build());
+        return new Chat(
+                id,
+                peerName,
+                lastMessage,
+                lastMessageSent,
+                ImmutableSet.<Message>builder().addAll(this.messages).addAll(thisMsgs).build());
     }
 
 //    public synchronized int updateMessage(Message msg) {
