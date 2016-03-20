@@ -120,10 +120,9 @@ public class Worker {
     }
 
     public void sendMessage(String chatId, String message) {
-        Chat chat = userProfile.getChat(chatId);
-        Message msg = chat.addNewOutgoingMessage(message);
-        eventBus.post(new ChatUpdatedEvent(chat));
-        sendMessages(msg);
+        Chat.ChatAndNewMessages cm = userProfile.addNewOutgoingMessages(message);
+        eventBus.post(new ChatUpdatedEvent(cm.chat));
+        sendMessages(cm.messages.iterator().next());
     }
 
     public void sendMessages(final Message... msgs) {
