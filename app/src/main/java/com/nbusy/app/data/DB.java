@@ -15,15 +15,9 @@ public interface DB {
         void chatMessagesRetrieved(List<Message> msgs);
     }
 
-    void saveMessages(SaveMessagesCallback cb, Message... msgs);
+    void upsertMessages(UpsertMessagesCallback cb, Message... msgs);
 
-    interface SaveMessagesCallback {
-        void messagesSaved();
-    }
-
-    void updateMessages(UpdateMessagesCallback cb, Message... msgs);
-
-    interface UpdateMessagesCallback {
+    interface UpsertMessagesCallback {
         void messagesUpdated();
     }
 }

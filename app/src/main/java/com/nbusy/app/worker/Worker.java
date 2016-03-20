@@ -13,9 +13,9 @@ import com.nbusy.app.data.Profile;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
@@ -108,16 +108,13 @@ public class Worker {
         }
 
         final Message[] nbusyMsgs = DataMaps.getNBusyMessages(msgs);
-        List<Message> ml = Arrays.asList(nbusyMsgs);
-        // add messages to designated chats
-        for (Message msg : nbusyMsgs) {
-            userProfile.getChat(msg.chatId).addMessages(ml);
-        }
-        db.updateMessages(new DB.UpdateMessagesCallback() {
+        final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
+        db.upsertMessages(new DB.UpsertMessagesCallback() {
             @Override
             public void messagesUpdated() {
-                // todo: raise notification for all distinct chat IDs involved and not only the first one
-                eventBus.post(new ChatUpdatedEvent(userProfile.getChat(nbusyMsgs[0].chatId)));
+                for (Chat chat : chats) {
+                    eventBus.post(new ChatUpdatedEvent(chat));
+                }
             }
         }, nbusyMsgs);
     }
@@ -163,7 +160,7 @@ public class Worker {
                         }
 
                         // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
-                        db.updateMessages(new DB.UpdateMessagesCallback() {
+                        db.upsertMessages(new DB.UpsertMessagesCallback() {
                             @Override
                             public void messagesUpdated() {
                                 // finally, notify all listening views about the changes

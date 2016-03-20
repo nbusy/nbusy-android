@@ -4,6 +4,7 @@
       <w>msgs</w>
       <w>nbusy</w>
       <w>recv</w>
+      <w>upsert</w>
     </words>
   </dictionary>
 </component>
