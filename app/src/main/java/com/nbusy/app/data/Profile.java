@@ -1,8 +1,12 @@
 package com.nbusy.app.data;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * User profile including user information and chats.
@@ -42,20 +46,15 @@ public class Profile {
         return chatAndMsgs;
     }
 
-    public synchronized List<Chat> addMessages(Message... msgs) {
-        return null;
-    }
-
-    public synchronized List<Chat> updateMessages(Message... msgs) {
-        return null;
-    }
-
-    private synchronized Map<Integer, Chat> getAffectedChats(Message... msgs) {
-        Map<Integer, Chat> chatMap = new HashMap<>();
+    public synchronized Set<Chat> upsertMessages(Message... msgs) {
+        ListMultimap<Chat, Message> chatMap = ArrayListMultimap.create();
         for (Message msg : msgs) {
-            int chatId = chatIDtoIndex.get(msg.chatId);
-            chatMap.put(chatId, chats.get(chatId));
+            chatMap.put(getChat(msg.chatId), msg);
         }
-        return chatMap;
+        for (Chat chat : chatMap.keySet()) {
+            chats.set(chatIDtoIndex.get(chat.id), chat.addMessages(chatMap.get(chat)));
+        }
+
+        return chatMap.keySet();
     }
 }
