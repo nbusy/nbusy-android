@@ -119,6 +119,8 @@ public class Worker {
         }, nbusyMsgs);
     }
 
+    // todo: rethink flow here (both from database -> server, UI -> server and in memory cache updates and when...)
+
     public void sendMessage(String chatId, String message) {
         Chat.ChatAndNewMessages cm = userProfile.addNewOutgoingMessages(chatId, message);
         eventBus.post(new ChatUpdatedEvent(cm.chat));
@@ -148,7 +150,6 @@ public class Worker {
         db.upsertMessages(new DB.UpsertMessagesCallback() {
             @Override
             public void messagesUpserted() {
-                titan.client.messages.Message[] titanMsgs = DataMaps.getTitanMessages(msgs);
                 client.sendMessages(new SendMsgsCallback() {
                     @Override
                     public void sentToServer() {
@@ -166,7 +167,7 @@ public class Worker {
                             }
                         }, msgs);
                     }
-                }, titanMsgs);
+                }, DataMaps.getTitanMessages(msgs));
             }
         }, msgs);
     }
