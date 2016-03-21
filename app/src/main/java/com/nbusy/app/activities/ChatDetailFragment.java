@@ -44,7 +44,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // send the message to server and clear message box
-        worker.sendMessage(chatId, messageBody);
+        worker.sendMessages(chatId, messageBody);
         messageBox.setText("");
     }
 

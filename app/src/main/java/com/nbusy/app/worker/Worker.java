@@ -124,10 +124,12 @@ public class Worker {
 
     // todo: rethink flow here (both from database -> server, UI -> server and in memory cache updates and when...)
 
-    public void sendMessage(String chatId, String message) {
-        Chat.ChatAndNewMessages cm = userProfile.addNewOutgoingMessages(chatId, message);
-        eventBus.post(new ChatsUpdatedEvent(cm.chat));
-        sendMessages(cm.messages.iterator().next());
+    public void sendMessages(String chatId, String... msgs) {
+        sendMessages(userProfile.addNewOutgoingMessages(chatId, msgs).messages);
+    }
+
+    public void sendMessages(Set<Message> msgs) {
+        sendMessages(msgs.toArray(new Message[msgs.size()]));
     }
 
     public void sendMessages(final Message... msgs) {
