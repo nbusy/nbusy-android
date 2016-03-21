@@ -57,7 +57,7 @@ public class Profile {
             chatMap.put(getChat(msg.chatId), msg);
         }
         for (Chat chat : chatMap.keySet()) {
-            chats.set(chatIDtoIndex.get(chat.id), chat.addMessages(chatMap.get(chat)));
+            chats.set(chatIDtoIndex.get(chat.id), chat.upsertMessages(chatMap.get(chat)));
         }
 
         return chatMap.keySet();

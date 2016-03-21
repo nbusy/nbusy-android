@@ -57,7 +57,7 @@ public final class Chat {
             newMsgs.add(Message.newOutgoingMessage(id, peerName, msg));
         }
 
-        return new ChatAndNewMessages(addMessages(newMsgs), ImmutableSet.copyOf(newMsgs));
+        return new ChatAndNewMessages(upsertMessages(newMsgs), ImmutableSet.copyOf(newMsgs));
     }
 
     public final class ChatAndNewMessages {
@@ -77,58 +77,45 @@ public final class Chat {
         }
     }
 
-    Chat addMessages(List<Message> msgs) {
-        return addMessages(msgs.toArray(new Message[msgs.size()]));
+    Chat upsertMessages(List<Message> msgs) {
+        return upsertMessages(msgs.toArray(new Message[msgs.size()]));
     }
 
-    Chat addMessages(Message... msgs) {
+    Chat upsertMessages(Message... msgs) {
         if (msgs == null || msgs.length == 0) {
             throw new IllegalArgumentException("message list cannot be null or empty");
         }
 
-        // only add messages that belongs to this chat
-        // only add new messages and don't allow duplicates
-        Set<Message> thisMsgs = new HashSet<>();
+        // only add or update a message if it belongs to this chat
+        // we're using a set not to allow duplicates
+        Set<Message> uniqueMsgs = new HashSet<>();
         for (Message msg : msgs) {
             if (!Objects.equals(msg.chatId, this.id)) {
                 continue;
             }
-
-            boolean dupe = false;
-            for (Message m : this.messages) {
-                if (Objects.equals(m.id, msg.id)) {
-                    dupe = true;
-                    break;
-                }
-            }
-
-            if (!dupe) {
-                thisMsgs.add(msg);
-            }
+            uniqueMsgs.add(msg);
         }
 
-        return new Chat(
-                id,
-                peerName,
-                lastMessage,
-                lastMessageSent,
-                ImmutableSet.<Message>builder().addAll(this.messages).addAll(thisMsgs).build());
-    }
-
-    Chat updateMessages(Message... msgs) {
+        // replace the modified messages while preserving message list order
+        Set<Message> updatedMsgs = new HashSet<>();
         ImmutableSet.Builder<Message> msgBuilder = ImmutableSet.builder();
         for (Message thisMsg : this.messages) {
             boolean updated = false;
-            for (Message newMsg : msgs) {
+            for (Message newMsg : uniqueMsgs) {
                 if (Objects.equals(thisMsg.id, newMsg.id)) {
                     updated = true;
                     msgBuilder.add(newMsg);
+                    updatedMsgs.add(newMsg);
                 }
             }
             if (!updated) {
                 msgBuilder.add(thisMsg);
             }
         }
+
+        // append the new messages to the end of the list
+        uniqueMsgs.removeAll(updatedMsgs);
+        msgBuilder.addAll(uniqueMsgs);
 
         return new Chat(id, peerName, lastMessage, lastMessageSent, msgBuilder.build());
     }
