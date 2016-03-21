@@ -16,6 +16,7 @@ import com.nbusy.app.data.Chat;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -95,7 +96,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
                 messageAdapter = new MessageListArrayAdapter(getActivity());
                 worker.getChatMessages(chatId);
             } else {
-                messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages.asList());
+                messageAdapter = new MessageListArrayAdapter(getActivity(), new ArrayList<>(chat.messages));
             }
             setListAdapter(messageAdapter);
         }
