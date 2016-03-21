@@ -5,6 +5,7 @@
       <w>nbusy</w>
       <w>recv</w>
       <w>upsert</w>
+      <w>upserted</w>
     </words>
   </dictionary>
 </component>

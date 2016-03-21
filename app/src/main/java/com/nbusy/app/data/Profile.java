@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,9 +41,20 @@ public class Profile {
         return chats.get(chatIDtoIndex.get(chatId));
     }
 
+    private synchronized void setChat(String chatId, Chat chat) {
+        if (chatId == null || chatId.isEmpty()) {
+            throw new IllegalArgumentException("chatId cannot be null or empty");
+        }
+        if (chat == null) {
+            throw new IllegalArgumentException("chat cannot be null");
+        }
+
+        chats.set(chatIDtoIndex.get(chatId), chat);
+    }
+
     public synchronized Chat.ChatAndNewMessages addNewOutgoingMessages(String chatId, String... msgs) {
         Chat.ChatAndNewMessages chatAndMsgs = getChat(chatId).addNewOutgoingMessages(msgs);
-        chats.set(chatIDtoIndex.get(chatId), chatAndMsgs.chat);
+        setChat(chatId, chatAndMsgs.chat);
         return chatAndMsgs;
     }
 
@@ -56,14 +68,17 @@ public class Profile {
     }
 
     public synchronized Set<Chat> upsertMessages(Message... msgs) {
-        ListMultimap<Chat, Message> chatMap = ArrayListMultimap.create();
+        Set<Chat> upsertedChats = new HashSet<>();
+        ListMultimap<String, Message> chatIDToMessages = ArrayListMultimap.create();
         for (Message msg : msgs) {
-            chatMap.put(getChat(msg.chatId), msg);
+            chatIDToMessages.put(msg.chatId, msg);
         }
-        for (Chat chat : chatMap.keySet()) {
-            chats.set(chatIDtoIndex.get(chat.id), chat.upsertMessages(chatMap.get(chat)));
+        for (String chatId : chatIDToMessages.keySet()) {
+            Chat chat = getChat(chatId).upsertMessages(chatIDToMessages.get(chatId));
+            setChat(chatId, chat);
+            upsertedChats.add(chat);
         }
 
-        return chatMap.keySet();
+        return upsertedChats;
     }
 }
