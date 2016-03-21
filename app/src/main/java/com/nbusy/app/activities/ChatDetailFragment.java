@@ -18,6 +18,7 @@ import com.nbusy.app.worker.WorkerSingleton;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A fragment representing a single Chat detail screen, along with the messages in the chat.
@@ -29,6 +30,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     private static final String TAG = ChatDetailFragment.class.getSimpleName();
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
+    private AtomicBoolean viewCreated = new AtomicBoolean(false);
     private String chatId;
     private MessageListArrayAdapter messageAdapter;
 
@@ -54,6 +56,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      * Any changes between the old and the new data is applied as a diff in an efficient way.
      */
     private synchronized void setData(Chat chat) {
+        if (!viewCreated.get()) {
+            return;
+        }
+
         messageAdapter.clear();
         messageAdapter.addAll(chat.messages);
         setSelection(messageAdapter.getCount() - 1);
@@ -100,6 +106,14 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             }
             setListAdapter(messageAdapter);
         }
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        viewCreated.set(true);
+        setSelection(messageAdapter.getCount() - 1);
     }
 
     @Override
