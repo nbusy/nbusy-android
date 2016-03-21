@@ -187,11 +187,10 @@ public class Worker {
         db.getChatMessages(chatId, new DB.GetChatMessagesCallback() {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
-                Chat chat = userProfile.getChat(chatId);
                 if (msgs.size() != 0) {
-                    userProfile.upsertMessages(msgs);
+                    Set<Chat> chats = userProfile.upsertMessages(msgs);
+                    eventBus.post(new ChatUpdatedEvent(chats.iterator().next()));
                 }
-                eventBus.post(new ChatUpdatedEvent(chat));
             }
         });
     }

@@ -56,7 +56,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         messageAdapter.clear();
         messageAdapter.addAll(chat.messages);
         setSelection(messageAdapter.getCount() - 1);
-        Log.v(TAG, "updated view with new data");
+        Log.v(TAG, "updated view with: " + messageAdapter.getCount() + " messages");
 
         // todo: implement in place updates as below as an optimization
 //        boolean notifyDataSetChanged = false;
