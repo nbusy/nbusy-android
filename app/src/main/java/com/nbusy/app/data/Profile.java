@@ -46,6 +46,11 @@ public class Profile {
         return chatAndMsgs;
     }
 
+    public Chat setMessageStatus(Message message, Message.Status newStatus) {
+        Message newMessage = message.setStatus(newStatus);
+        return upsertMessages(newMessage).iterator().next();
+    }
+
     public synchronized Set<Chat> upsertMessages(Message... msgs) {
         ListMultimap<Chat, Message> chatMap = ArrayListMultimap.create();
         for (Message msg : msgs) {
