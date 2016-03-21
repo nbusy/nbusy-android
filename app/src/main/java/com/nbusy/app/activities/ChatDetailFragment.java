@@ -25,7 +25,7 @@ import java.util.Objects;
  */
 public class ChatDetailFragment extends ListFragment implements View.OnClickListener {
 
-    private static final String TAG = ChatListActivity.class.getSimpleName();
+    private static final String TAG = ChatDetailFragment.class.getSimpleName();
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
     private String chatId;
@@ -53,10 +53,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      * Any changes between the old and the new data is applied as a diff in an efficient way.
      */
     private synchronized void setData(Chat chat) {
-        Log.v(TAG, "updating view");
         messageAdapter.clear();
         messageAdapter.addAll(chat.messages);
         setSelection(messageAdapter.getCount() - 1);
+        Log.v(TAG, "updated view with new data");
 
         // todo: implement in place updates as below as an optimization
 //        boolean notifyDataSetChanged = false;
