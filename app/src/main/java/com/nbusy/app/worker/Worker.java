@@ -2,6 +2,7 @@ package com.nbusy.app.worker;
 
 import android.util.Log;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.nbusy.app.data.Chat;
@@ -212,7 +213,7 @@ public class Worker {
         public final Set<Chat> chats;
 
         public ChatsUpdatedEvent(Chat... chats) {
-            this(new HashSet<Chat>(Arrays.asList(chats)));
+            this(ImmutableSet.copyOf(chats));
         }
 
         public ChatsUpdatedEvent(Set<Chat> chats) {
