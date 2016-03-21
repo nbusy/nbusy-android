@@ -11,9 +11,7 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.nbusy.app.R;
-import com.nbusy.app.worker.Worker;
-import com.nbusy.app.worker.WorkerService;
-import com.nbusy.app.worker.WorkerSingleton;
+import com.nbusy.app.services.WorkerService;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
