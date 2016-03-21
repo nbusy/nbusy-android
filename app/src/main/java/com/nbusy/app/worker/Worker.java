@@ -136,8 +136,8 @@ public class Worker {
             client.echo(m.body, new EchoCallback() {
                 @Override
                 public void echoResponse(String msg) {
-                    Chat chat = userProfile.setMessageStatus(m, Message.Status.DELIVERED_TO_USER);
-                    eventBus.post(new ChatUpdatedEvent(chat));
+                    Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m);
+                    eventBus.post(new ChatUpdatedEvent(chats.iterator().next()));
                     receiveMessages(new titan.client.messages.Message(m.chatId, "echo", null, m.sent, msg));
                 }
             });
@@ -153,14 +153,13 @@ public class Worker {
                     @Override
                     public void sentToServer() {
                         // update in memory representation of messages
-                        final Set<Chat> chats = userProfile.upsertMessages(msgs);
+                        final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
 
                         // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
                         db.upsertMessages(new DB.UpsertMessagesCallback() {
                             @Override
                             public void messagesUpserted() {
                                 // finally, notify all listening views about the changes
-                                // todo: raise notification for all distinct chat IDs involved and not only the first one
                                 for (Chat chat : chats) {
                                     eventBus.post(new ChatUpdatedEvent(chat));
                                 }

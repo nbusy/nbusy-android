@@ -58,9 +58,17 @@ public class Profile {
         return chatAndMsgs;
     }
 
-    public Chat setMessageStatus(Message message, Message.Status newStatus) {
-        Message newMessage = message.setStatus(newStatus);
-        return upsertMessages(newMessage).iterator().next();
+    public Set<Chat> setMessageStatuses(Message.Status newStatus, Message... msgs) {
+        Set<Message> updatedMsgs = new HashSet<>();
+        for (Message msg : msgs) {
+            updatedMsgs.add(msg.setStatus(newStatus));
+        }
+
+        return upsertMessages(updatedMsgs);
+    }
+
+    public synchronized Set<Chat> upsertMessages(Set<Message> msgs) {
+        return upsertMessages(msgs.toArray(new Message[msgs.size()]));
     }
 
     public synchronized Set<Chat> upsertMessages(List<Message> msgs) {
