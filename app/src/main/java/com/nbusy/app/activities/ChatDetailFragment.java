@@ -143,9 +143,11 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      ******************************/
 
     @Subscribe
-    public synchronized void chatUpdatedEventHandler(Worker.ChatUpdatedEvent e) {
-        if (Objects.equals(e.chat.id, chatId)) {
-            setData(e.chat);
+    public synchronized void chatUpdatedEventHandler(Worker.ChatsUpdatedEvent e) {
+        for (Chat chat : e.chats) {
+            if (Objects.equals(chat.id, chatId)) {
+                setData(chat);
+            }
         }
     }
 }

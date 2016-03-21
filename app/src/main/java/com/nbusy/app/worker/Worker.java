@@ -13,6 +13,8 @@ import com.nbusy.app.data.Profile;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -113,7 +115,7 @@ public class Worker {
             @Override
             public void messagesUpserted() {
                 for (Chat chat : chats) {
-                    eventBus.post(new ChatUpdatedEvent(chat));
+                    eventBus.post(new ChatsUpdatedEvent(chat));
                 }
             }
         }, nbusyMsgs);
@@ -123,7 +125,7 @@ public class Worker {
 
     public void sendMessage(String chatId, String message) {
         Chat.ChatAndNewMessages cm = userProfile.addNewOutgoingMessages(chatId, message);
-        eventBus.post(new ChatUpdatedEvent(cm.chat));
+        eventBus.post(new ChatsUpdatedEvent(cm.chat));
         sendMessages(cm.messages.iterator().next());
     }
 
@@ -138,8 +140,7 @@ public class Worker {
             client.echo(m.body, new EchoCallback() {
                 @Override
                 public void echoResponse(String msg) {
-                    Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m);
-                    eventBus.post(new ChatUpdatedEvent(chats.iterator().next()));
+                    eventBus.post(new ChatsUpdatedEvent(userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
                     receiveMessages(new titan.client.messages.Message(m.chatId, "echo", null, m.sent, msg));
                 }
             });
@@ -161,9 +162,7 @@ public class Worker {
                             @Override
                             public void messagesUpserted() {
                                 // finally, notify all listening views about the changes
-                                for (Chat chat : chats) {
-                                    eventBus.post(new ChatUpdatedEvent(chat));
-                                }
+                                eventBus.post(new ChatsUpdatedEvent(chats));
                             }
                         }, msgs);
                     }
@@ -188,8 +187,7 @@ public class Worker {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
                 if (msgs.size() != 0) {
-                    Set<Chat> chats = userProfile.upsertMessages(msgs);
-                    eventBus.post(new ChatUpdatedEvent(chats.iterator().next()));
+                    eventBus.post(new ChatsUpdatedEvent(userProfile.upsertMessages(msgs)));
                 }
             }
         });
@@ -210,14 +208,18 @@ public class Worker {
         }
     }
 
-    public class ChatUpdatedEvent {
-        public final Chat chat;
+    public class ChatsUpdatedEvent {
+        public final Set<Chat> chats;
 
-        public ChatUpdatedEvent(Chat chat) {
-            if (chat == null) {
-                throw new IllegalArgumentException("chat cannot be null");
+        public ChatsUpdatedEvent(Chat... chats) {
+            this(new HashSet<Chat>(Arrays.asList(chats)));
+        }
+
+        public ChatsUpdatedEvent(Set<Chat> chats) {
+            if (chats == null || chats.isEmpty()) {
+                throw new IllegalArgumentException("chats cannot be null or empty");
             }
-            this.chat = chat;
+            this.chats = chats;
         }
     }
 }
