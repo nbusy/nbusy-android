@@ -168,7 +168,7 @@ public class ChatListFragment extends ListFragment {
      ******************************/
 
     @Subscribe
-    public void userProfileReady(Worker.UserProfileRetrievedEvent e) {
-        setListAdapter(new ChatListArrayAdapter(getActivity(), worker.userProfile.chats));
+    public void userProfileRetrievedEventHandler(Worker.UserProfileRetrievedEvent e) {
+        setListAdapter(new ChatListArrayAdapter(getActivity(), e.profile.chats));
     }
 }

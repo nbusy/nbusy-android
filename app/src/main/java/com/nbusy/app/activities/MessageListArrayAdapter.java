@@ -66,11 +66,14 @@ public class MessageListArrayAdapter extends ArrayAdapter<Message> {
         switch (message.status) {
             case NEW:
                 viewHolder.check.setVisibility(View.GONE);
+                viewHolder.check.setText("");
                 break;
             case SENT_TO_SERVER:
+                viewHolder.check.setVisibility(View.VISIBLE);
                 viewHolder.check.setText("✓");
                 break;
             default:
+                viewHolder.check.setVisibility(View.VISIBLE);
                 viewHolder.check.setText("✓✓");
                 break;
         }

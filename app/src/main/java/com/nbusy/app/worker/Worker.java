@@ -2,6 +2,7 @@ package com.nbusy.app.worker;
 
 import android.util.Log;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.nbusy.app.data.Chat;
@@ -14,8 +15,10 @@ import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
@@ -80,7 +83,7 @@ public class Worker {
             @Override
             public void profileRetrieved(Profile up) {
                 userProfile = up;
-                eventBus.post(new UserProfileRetrievedEvent());
+                eventBus.post(new UserProfileRetrievedEvent(userProfile));
             }
         });
     }
@@ -108,25 +111,25 @@ public class Worker {
         }
 
         final Message[] nbusyMsgs = DataMaps.getNBusyMessages(msgs);
-        List<Message> ml = Arrays.asList(nbusyMsgs);
-        // add messages to designated chats
-        for (Message msg : nbusyMsgs) {
-            userProfile.getChat(msg.chatId).addMessages(ml);
-        }
-        db.updateMessages(new DB.UpdateMessagesCallback() {
+        final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
+        db.upsertMessages(new DB.UpsertMessagesCallback() {
             @Override
-            public void messagesUpdated() {
-                // todo: raise notification for all distinct chat IDs involved and not only the first one
-                eventBus.post(new ChatUpdatedEvent(userProfile.getChat(nbusyMsgs[0].chatId)));
+            public void messagesUpserted() {
+                for (Chat chat : chats) {
+                    eventBus.post(new ChatsUpdatedEvent(chat));
+                }
             }
         }, nbusyMsgs);
     }
 
-    public void sendMessage(String chatId, String message) {
-        Chat chat = userProfile.getChat(chatId);
-        Message msg = chat.addNewOutgoingMessage(message);
-        eventBus.post(new ChatUpdatedEvent(chat));
-        sendMessages(msg);
+    // todo: rethink flow here (both from database -> server, UI -> server and in memory cache updates and when...)
+
+    public void sendMessages(String chatId, String... msgs) {
+        sendMessages(userProfile.addNewOutgoingMessages(chatId, msgs).messages);
+    }
+
+    public void sendMessages(Set<Message> msgs) {
+        sendMessages(msgs.toArray(new Message[msgs.size()]));
     }
 
     public void sendMessages(final Message... msgs) {
@@ -136,43 +139,41 @@ public class Worker {
 
         // handle echo messages separately
         if (Objects.equals(msgs[0].chatId, "echo")) {
-            client.echo(msgs[0].body, new EchoCallback() {
+            final Message m = msgs[0];
+            client.echo(m.body, new EchoCallback() {
                 @Override
                 public void echoResponse(String msg) {
-                    Message m = msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
-                    userProfile.getChat(m.chatId).updateMessage(m);
-                    // threading bug: eventBus.post(new MessagesStatusChangedEvent(m));
-                    receiveMessages(new titan.client.messages.Message(m.chatId, "echo", null, m.sent, m.body));
+                    eventBus.post(new ChatsUpdatedEvent(userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
+                    receiveMessages(new titan.client.messages.Message(m.chatId, "echo", null, m.sent, msg));
                 }
             });
             return;
         }
 
+        // update in memory user profile with messages in case any of them are new, and notify all listener about this state change
+        Set<Chat> chats = userProfile.upsertMessages(msgs);
+        eventBus.post(new ChatsUpdatedEvent(chats));
+
         // persist messages in the database with Status = NEW
-        db.saveMessages(new DB.SaveMessagesCallback() {
+        db.upsertMessages(new DB.UpsertMessagesCallback() {
             @Override
-            public void messagesSaved() {
-                titan.client.messages.Message[] titanMsgs = DataMaps.getTitanMessages(msgs);
+            public void messagesUpserted() {
                 client.sendMessages(new SendMsgsCallback() {
                     @Override
                     public void sentToServer() {
                         // update in memory representation of messages
-                        for (int i = 0; i < msgs.length; i++) {
-                            msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
-                            userProfile.getChat(msgs[i].chatId).updateMessage(msgs[i]);
-                        }
+                        final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
 
                         // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
-                        db.updateMessages(new DB.UpdateMessagesCallback() {
+                        db.upsertMessages(new DB.UpsertMessagesCallback() {
                             @Override
-                            public void messagesUpdated() {
+                            public void messagesUpserted() {
                                 // finally, notify all listening views about the changes
-                                // todo: raise notification for all distinct chat IDs involved and not only the first one
-                                eventBus.post(new ChatUpdatedEvent(userProfile.getChat(msgs[0].chatId)));
+                                eventBus.post(new ChatsUpdatedEvent(chats));
                             }
                         }, msgs);
                     }
-                }, titanMsgs);
+                }, DataMaps.getTitanMessages(msgs));
             }
         }, msgs);
     }
@@ -192,11 +193,9 @@ public class Worker {
         db.getChatMessages(chatId, new DB.GetChatMessagesCallback() {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
-                Chat chat = userProfile.getChat(chatId);
                 if (msgs.size() != 0) {
-                    chat.addMessages(msgs);
+                    eventBus.post(new ChatsUpdatedEvent(userProfile.upsertMessages(msgs)));
                 }
-                eventBus.post(new ChatUpdatedEvent(chat));
             }
         });
     }
@@ -206,16 +205,28 @@ public class Worker {
      *****************/
 
     public class UserProfileRetrievedEvent {
+        public final Profile profile;
+
+        public UserProfileRetrievedEvent(Profile profile) {
+            if (profile == null) {
+                throw new IllegalArgumentException("profile cannot be null");
+            }
+            this.profile = profile;
+        }
     }
 
-    public class ChatUpdatedEvent {
-        public final Chat chat;
+    public class ChatsUpdatedEvent {
+        public final Set<Chat> chats;
 
-        public ChatUpdatedEvent(Chat chat) {
-            if (chat == null) {
-                throw new IllegalArgumentException("chat cannot be null");
+        public ChatsUpdatedEvent(Chat... chats) {
+            this(ImmutableSet.copyOf(chats));
+        }
+
+        public ChatsUpdatedEvent(Set<Chat> chats) {
+            if (chats == null || chats.isEmpty()) {
+                throw new IllegalArgumentException("chats cannot be null or empty");
             }
-            this.chat = chat;
+            this.chats = chats;
         }
     }
 }

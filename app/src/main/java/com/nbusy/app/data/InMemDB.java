@@ -62,7 +62,7 @@ public class InMemDB implements DB {
     }
 
     @Override
-    public synchronized void saveMessages(final SaveMessagesCallback cb, final Message... msgs) {
+    public synchronized void upsertMessages(final UpsertMessagesCallback cb, final Message... msgs) {
         if (msgs == null || msgs.length == 0) {
             throw new IllegalArgumentException("messages cannot be null or empty");
         }
@@ -73,24 +73,7 @@ public class InMemDB implements DB {
         simulateDelay(new Function() {
             @Override
             public void execute() {
-                cb.messagesSaved();
-            }
-        });
-    }
-
-    @Override
-    public synchronized void updateMessages(final UpdateMessagesCallback cb, final Message... msgs) {
-        if (msgs == null || msgs.length == 0) {
-            throw new IllegalArgumentException("messages cannot be null or empty");
-        }
-        if (cb == null) {
-            throw new IllegalArgumentException("callback cannot be null");
-        }
-
-        simulateDelay(new Function() {
-            @Override
-            public void execute() {
-                cb.messagesUpdated();
+                cb.messagesUpserted();
             }
         });
     }

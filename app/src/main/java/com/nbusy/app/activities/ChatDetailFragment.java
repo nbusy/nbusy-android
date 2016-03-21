@@ -2,6 +2,7 @@ package com.nbusy.app.activities;
 
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,10 @@ import com.nbusy.app.data.Chat;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
 
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * A fragment representing a single Chat detail screen, along with the messages in the chat.
  * This fragment is either contained in a {@link ChatListActivity}
@@ -22,8 +27,10 @@ import com.nbusy.app.worker.WorkerSingleton;
  */
 public class ChatDetailFragment extends ListFragment implements View.OnClickListener {
 
+    private static final String TAG = ChatDetailFragment.class.getSimpleName();
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = WorkerSingleton.getWorker();
+    private AtomicBoolean viewCreated = new AtomicBoolean(false);
     private String chatId;
     private MessageListArrayAdapter messageAdapter;
 
@@ -40,7 +47,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         }
 
         // send the message to server and clear message box
-        worker.sendMessage(chatId, messageBody);
+        worker.sendMessages(chatId, messageBody);
         messageBox.setText("");
     }
 
@@ -49,9 +56,14 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      * Any changes between the old and the new data is applied as a diff in an efficient way.
      */
     private synchronized void setData(Chat chat) {
+        if (!viewCreated.get()) {
+            return;
+        }
+
         messageAdapter.clear();
         messageAdapter.addAll(chat.messages);
         setSelection(messageAdapter.getCount() - 1);
+        Log.v(TAG, "updated view with: " + messageAdapter.getCount() + " messages");
 
         // todo: implement in place updates as below as an optimization
 //        boolean notifyDataSetChanged = false;
@@ -90,10 +102,18 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
                 messageAdapter = new MessageListArrayAdapter(getActivity());
                 worker.getChatMessages(chatId);
             } else {
-                messageAdapter = new MessageListArrayAdapter(getActivity(), chat.messages);
+                messageAdapter = new MessageListArrayAdapter(getActivity(), new ArrayList<>(chat.messages));
             }
             setListAdapter(messageAdapter);
         }
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        viewCreated.set(true);
+        setSelection(messageAdapter.getCount() - 1);
     }
 
     @Override
@@ -138,7 +158,11 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      ******************************/
 
     @Subscribe
-    public synchronized void chatUpdatedEventHandler(Worker.ChatUpdatedEvent e) {
-        setData(e.chat);
+    public synchronized void chatUpdatedEventHandler(Worker.ChatsUpdatedEvent e) {
+        for (Chat chat : e.chats) {
+            if (Objects.equals(chat.id, chatId)) {
+                setData(chat);
+            }
+        }
     }
 }
