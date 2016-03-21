@@ -18,6 +18,6 @@ public interface DB {
     void upsertMessages(UpsertMessagesCallback cb, Message... msgs);
 
     interface UpsertMessagesCallback {
-        void messagesUpdated();
+        void messagesUpserted();
     }
 }

@@ -111,7 +111,7 @@ public class Worker {
         final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
         db.upsertMessages(new DB.UpsertMessagesCallback() {
             @Override
-            public void messagesUpdated() {
+            public void messagesUpserted() {
                 for (Chat chat : chats) {
                     eventBus.post(new ChatUpdatedEvent(chat));
                 }
@@ -120,7 +120,7 @@ public class Worker {
     }
 
     public void sendMessage(String chatId, String message) {
-        Chat.ChatAndNewMessages cm = userProfile.addNewOutgoingMessages(message);
+        Chat.ChatAndNewMessages cm = userProfile.addNewOutgoingMessages(chatId, message);
         eventBus.post(new ChatUpdatedEvent(cm.chat));
         sendMessages(cm.messages.iterator().next());
     }
@@ -132,39 +132,38 @@ public class Worker {
 
         // handle echo messages separately
         if (Objects.equals(msgs[0].chatId, "echo")) {
-            client.echo(msgs[0].body, new EchoCallback() {
+            final Message m = msgs[0];
+            client.echo(m.body, new EchoCallback() {
                 @Override
                 public void echoResponse(String msg) {
-                    Message m = msgs[0].setStatus(Message.Status.DELIVERED_TO_USER);
-                    userProfile.getChat(m.chatId).updateMessage(m);
-                    // threading bug: eventBus.post(new MessagesStatusChangedEvent(m));
-                    receiveMessages(new titan.client.messages.Message(m.chatId, "echo", null, m.sent, m.body));
+                    Chat chat = userProfile.setMessageStatus(m, Message.Status.DELIVERED_TO_USER);
+                    eventBus.post(new ChatUpdatedEvent(chat));
+                    receiveMessages(new titan.client.messages.Message(m.chatId, "echo", null, m.sent, msg));
                 }
             });
             return;
         }
 
         // persist messages in the database with Status = NEW
-        db.saveMessages(new DB.SaveMessagesCallback() {
+        db.upsertMessages(new DB.UpsertMessagesCallback() {
             @Override
-            public void messagesSaved() {
+            public void messagesUpserted() {
                 titan.client.messages.Message[] titanMsgs = DataMaps.getTitanMessages(msgs);
                 client.sendMessages(new SendMsgsCallback() {
                     @Override
                     public void sentToServer() {
                         // update in memory representation of messages
-                        for (int i = 0; i < msgs.length; i++) {
-                            msgs[i] = msgs[i].setStatus(Message.Status.SENT_TO_SERVER);
-                            userProfile.getChat(msgs[i].chatId).updateMessage(msgs[i]);
-                        }
+                        final Set<Chat> chats = userProfile.upsertMessages(msgs);
 
                         // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
                         db.upsertMessages(new DB.UpsertMessagesCallback() {
                             @Override
-                            public void messagesUpdated() {
+                            public void messagesUpserted() {
                                 // finally, notify all listening views about the changes
                                 // todo: raise notification for all distinct chat IDs involved and not only the first one
-                                eventBus.post(new ChatUpdatedEvent(userProfile.getChat(msgs[0].chatId)));
+                                for (Chat chat : chats) {
+                                    eventBus.post(new ChatUpdatedEvent(chat));
+                                }
                             }
                         }, msgs);
                     }
@@ -190,7 +189,7 @@ public class Worker {
             public void chatMessagesRetrieved(List<Message> msgs) {
                 Chat chat = userProfile.getChat(chatId);
                 if (msgs.size() != 0) {
-                    chat.addMessages(msgs);
+                    userProfile.upsertMessages(msgs);
                 }
                 eventBus.post(new ChatUpdatedEvent(chat));
             }
