@@ -150,6 +150,10 @@ public class Worker {
             return;
         }
 
+        // update in memory user profile with messages in case any of them are new, and notify all listener about this state change
+        Set<Chat> chats = userProfile.upsertMessages(msgs);
+        eventBus.post(new ChatsUpdatedEvent(chats));
+
         // persist messages in the database with Status = NEW
         db.upsertMessages(new DB.UpsertMessagesCallback() {
             @Override
