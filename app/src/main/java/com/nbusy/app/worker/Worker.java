@@ -31,7 +31,7 @@ import titan.client.callbacks.SendMsgsCallback;
 public class Worker {
     private static final String TAG = Worker.class.getSimpleName();
     private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA";
-    private final List<Object> subscribers = new CopyOnWriteArrayList<Object>();
+    private final List<Object> subscribers = new CopyOnWriteArrayList<>();
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
@@ -108,6 +108,13 @@ public class Worker {
     public void unregister(Object o) {
         subscribers.remove(o);
         eventBus.unregister(o);
+    }
+
+    /**
+     * Whether worker needs an active connection to server.
+     */
+    public boolean needConnection() {
+        return !subscribers.isEmpty(); // or there are ongoing operations or queued operations
     }
 
     /************************
