@@ -114,7 +114,7 @@ public class Worker {
      * Whether worker needs an active connection to server.
      */
     public boolean needConnection() {
-        return !subscribers.isEmpty(); // or there are ongoing operations or queued operations
+        return !subscribers.isEmpty(); // todo: or there are ongoing operations or queued operations
     }
 
     /************************
