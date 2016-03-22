@@ -36,6 +36,33 @@ public class Worker {
     private final EventBus eventBus;
     private final DB db;
     public Profile userProfile;
+    private ConnCallbacks connCallbacks = new ConnCallbacks() {
+        @Override
+        public void messagesReceived(titan.client.messages.Message... msgs) {
+            receiveMessages(msgs);
+        }
+
+        @Override
+        public void connected() {
+            Log.i(TAG, "Connected to NBusy server.");
+            client.jwtAuth(JWT_TOKEN, new JwtAuthCallback() {
+                @Override
+                public void success() {
+                    Log.i(TAG, "Authenticated with NBusy server.");
+                }
+
+                @Override
+                public void fail() {
+                    Log.i(TAG, "Authentication failed with NBusy server.");
+                }
+            });
+        }
+
+        @Override
+        public void disconnected(String reason) {
+            Log.w(TAG, "Failed to connect to NBusy server.");
+        }
+    };
 
     public Worker(final Client client, final EventBus eventBus, DB db) {
         if (client == null) {
@@ -52,33 +79,7 @@ public class Worker {
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
-        client.connect(new ConnCallbacks() {
-            @Override
-            public void messagesReceived(titan.client.messages.Message... msgs) {
-                receiveMessages(msgs);
-            }
-
-            @Override
-            public void connected() {
-                Log.i(TAG, "Connected to NBusy server.");
-                client.jwtAuth(JWT_TOKEN, new JwtAuthCallback() {
-                    @Override
-                    public void success() {
-                        Log.i(TAG, "Authenticated with NBusy server.");
-                    }
-
-                    @Override
-                    public void fail() {
-                        Log.i(TAG, "Authentication failed with NBusy server.");
-                    }
-                });
-            }
-
-            @Override
-            public void disconnected(String reason) {
-                Log.w(TAG, "Failed to connect to NBusy server.");
-            }
-        });
+        client.connect(connCallbacks);
         db.getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile up) {
@@ -101,7 +102,11 @@ public class Worker {
      * Event bus reg/unreg.
      */
     public void register(Object o) {
-        // todo: reconnect here if nbusy sdk is not connected
+        // a view is attaching to event bus so we need to ensure connectivity
+        if (!client.isConnected()) {
+            client.connect(connCallbacks);
+        }
+
         subscribers.add(o);
         eventBus.register(o);
     }
