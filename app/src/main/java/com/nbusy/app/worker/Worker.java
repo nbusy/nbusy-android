@@ -108,13 +108,14 @@ public class Worker {
     public void unregister(Object o) {
         subscribers.remove(o);
         eventBus.unregister(o);
+        // todo: start 3 min standBy timer here in case a view wants to register again or we're in a brief limbo state
     }
 
     /**
      * Whether worker needs an active connection to server.
      */
     public boolean needConnection() {
-        return !subscribers.isEmpty(); // todo: or there are ongoing operations or queued operations
+        return !subscribers.isEmpty(); // todo: or there are ongoing operations or queued operations or standby timer is still running
     }
 
     /************************

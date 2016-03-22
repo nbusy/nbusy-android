@@ -75,8 +75,8 @@ public class WorkerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i(TAG, "Destroyed.");
         WorkerSingleton.destroyWorker();
+        Log.i(TAG, "destroyed");
     }
 
     /*************************
