@@ -14,8 +14,6 @@ import com.nbusy.app.data.Profile;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -121,8 +119,6 @@ public class Worker {
             }
         }, nbusyMsgs);
     }
-
-    // todo: rethink flow here (both from database -> server, UI -> server and in memory cache updates and when...)
 
     public void sendMessages(String chatId, String... msgs) {
         sendMessages(userProfile.addNewOutgoingMessages(chatId, msgs).messages);
