@@ -101,6 +101,7 @@ public class Worker {
      * Event bus reg/unreg.
      */
     public void register(Object o) {
+        // todo: reconnect here if nbusy sdk is not connected
         subscribers.add(o);
         eventBus.register(o);
     }
