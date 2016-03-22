@@ -2,6 +2,7 @@ package com.nbusy.app.services;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -16,13 +17,32 @@ public class WorkerService extends Service {
 
     private static final String TAG = WorkerService.class.getSimpleName();
     public static final String STARTED_BY = "StartedBy";
+    private static final int STANDBY_TIME = 3 * 60 * 1000;
     private final Worker worker = WorkerSingleton.getWorker();
     private int startId;
 
     private void init() {
-        if (!stopSelfResult(startId)) {
-            Log.e(TAG, "failed to stop service with startId: " + startId + " which did not match the one from the last start request");
+        class StopStandby extends AsyncTask<Void, Void, Void> {
+            @Override
+            protected Void doInBackground(Void... params) {
+                while (worker.needConnection()) {
+                    try {
+                        Thread.sleep(STANDBY_TIME);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                if (!stopSelfResult(startId)) {
+                    Log.e(TAG, "failed to stop service with startId: " + startId + " which did not match the one from the last start request");
+                }
+            }
         }
+        new StopStandby().execute();
     }
 
     /*********************
