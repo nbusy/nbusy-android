@@ -17,6 +17,7 @@ import com.nbusy.sdk.ClientImpl;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
@@ -30,6 +31,7 @@ import titan.client.callbacks.SendMsgsCallback;
 public class Worker {
     private static final String TAG = Worker.class.getSimpleName();
     private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA";
+    private final List<Object> subscribers = new CopyOnWriteArrayList<Object>();
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
@@ -95,8 +97,17 @@ public class Worker {
         client.close();
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
+    /**
+     * Event bus reg/unreg.
+     */
+    public void register(Object o) {
+        subscribers.add(o);
+        eventBus.register(o);
+    }
+
+    public void unregister(Object o) {
+        subscribers.remove(o);
+        eventBus.unregister(o);
     }
 
     /************************
