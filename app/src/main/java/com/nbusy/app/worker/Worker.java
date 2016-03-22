@@ -93,7 +93,7 @@ public class Worker {
     }
 
     public void destroy() {
-        Log.i(TAG, "Instance destroyed.");
+        Log.i(TAG, "destroyed");
         client.close();
     }
 

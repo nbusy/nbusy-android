@@ -65,7 +65,7 @@ public class WorkerService extends Service {
         }
 
         if (stopStandby.getStatus() != AsyncTask.Status.RUNNING) {
-            stopStandby.execute();
+            stopStandby.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
         // we want this service to continue running until it is explicitly stopped, so return sticky
