@@ -11,9 +11,6 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.nbusy.app.R;
-import com.nbusy.app.worker.Worker;
-import com.nbusy.app.worker.WorkerService;
-import com.nbusy.app.worker.WorkerSingleton;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,11 +49,6 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // start the worker service
-        Intent serviceIntent = new Intent(this, WorkerService.class);
-        serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
-        this.startService(serviceIntent);
 
         // set view(s)
         setContentView(R.layout.activity_chat_list);

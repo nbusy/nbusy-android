@@ -1,4 +1,4 @@
-package com.nbusy.app.worker;
+package com.nbusy.app.services;
 
 import android.app.Service;
 import android.content.Intent;
@@ -7,23 +7,48 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.nbusy.app.services.DeviceBootBroadcastReceiver;
+import com.nbusy.app.worker.Worker;
+import com.nbusy.app.worker.WorkerSingleton;
 
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Hosts {@link Worker} class to ensure continuous operation even when no activity is visible.
  */
 public class WorkerService extends Service {
 
-    // todo: stopSelf() after all queue is done if terminateAfterDone is true
-    // todo: stopService() when all queue is done and application is terminated completely (not hidden activities but complete termination, or with a timeout after hidden activities)
-
     private static final String TAG = WorkerService.class.getSimpleName();
     public static final String STARTED_BY = "StartedBy";
+    public static final AtomicBoolean RUNNING = new AtomicBoolean();
+    private static final int STANDBY_TIME = 3 * 60 * 1000;
+    private final StopStandby stopStandby = new StopStandby();
     private final Worker worker = WorkerSingleton.getWorker();
-    private boolean terminateAfterDone; // whether to terminate service after task queue is done, or keep running till explicitly destroyed
     private int startId;
+
+    class StopStandby extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            while (worker.needConnection()) {
+                try {
+                    Thread.sleep(STANDBY_TIME);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if (!stopSelfResult(startId)) {
+                Log.e(TAG, "failed to stop service with startId: " + startId + " which did not match the one from the last start request");
+            }
+        }
+    }
+
+    /*********************
+     * Service Overrides *
+     *********************/
 
     @Override
     public void onCreate() {
@@ -34,17 +59,19 @@ public class WorkerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         this.startId = startId;
 
-        // terminate the service after queued tasks are done if service was started
-        // by device boot event and application is not actively running
         if (intent != null) {
             String startedBy = intent.getStringExtra(STARTED_BY);
-            terminateAfterDone = (startedBy != null && Objects.equals(startedBy, DeviceBootBroadcastReceiver.class.getSimpleName()));
             Log.i(TAG, "Started by: " + startedBy);
         } else {
             // service is restarted by Android system after a termination so intent will be null in this case
-            terminateAfterDone = true;
             Log.i(TAG, "Restarted by Android system after termination.");
         }
+
+        if (stopStandby.getStatus() != AsyncTask.Status.RUNNING) {
+            stopStandby.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+
+        WorkerService.RUNNING.set(true);
 
         // we want this service to continue running until it is explicitly stopped, so return sticky
         return Service.START_STICKY;
@@ -53,14 +80,9 @@ public class WorkerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i(TAG, "Destroyed.");
         WorkerSingleton.destroyWorker();
-    }
-
-    private void processQueue() {
-        if (terminateAfterDone && !stopSelfResult(startId)) {
-            Log.e(TAG, "Tried to stop service with startId: " + startId + " which did not match the one from the last start request.");
-        }
+        RUNNING.set(false);
+        Log.i(TAG, "destroyed");
     }
 
     /*************************

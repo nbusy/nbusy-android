@@ -1,5 +1,7 @@
 package com.nbusy.app.worker;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.common.collect.ImmutableSet;
@@ -11,14 +13,14 @@ import com.nbusy.app.data.DataMaps;
 import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
+import com.nbusy.app.services.WorkerService;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
@@ -32,10 +34,38 @@ import titan.client.callbacks.SendMsgsCallback;
 public class Worker {
     private static final String TAG = Worker.class.getSimpleName();
     private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA";
+    private final List<Object> subscribers = new CopyOnWriteArrayList<>();
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
     public Profile userProfile;
+    private ConnCallbacks connCallbacks = new ConnCallbacks() {
+        @Override
+        public void messagesReceived(titan.client.messages.Message... msgs) {
+            receiveMessages(msgs);
+        }
+
+        @Override
+        public void connected() {
+            Log.i(TAG, "Connected to NBusy server.");
+            client.jwtAuth(JWT_TOKEN, new JwtAuthCallback() {
+                @Override
+                public void success() {
+                    Log.i(TAG, "Authenticated with NBusy server.");
+                }
+
+                @Override
+                public void fail() {
+                    Log.i(TAG, "Authentication failed with NBusy server.");
+                }
+            });
+        }
+
+        @Override
+        public void disconnected(String reason) {
+            Log.w(TAG, "Failed to connect to NBusy server.");
+        }
+    };
 
     public Worker(final Client client, final EventBus eventBus, DB db) {
         if (client == null) {
@@ -52,33 +82,7 @@ public class Worker {
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
-        client.connect(new ConnCallbacks() {
-            @Override
-            public void messagesReceived(titan.client.messages.Message... msgs) {
-                receiveMessages(msgs);
-            }
-
-            @Override
-            public void connected() {
-                Log.i(TAG, "Connected to NBusy server.");
-                client.jwtAuth(JWT_TOKEN, new JwtAuthCallback() {
-                    @Override
-                    public void success() {
-                        Log.i(TAG, "Authenticated with NBusy server.");
-                    }
-
-                    @Override
-                    public void fail() {
-                        Log.i(TAG, "Authentication failed with NBusy server.");
-                    }
-                });
-            }
-
-            @Override
-            public void disconnected(String reason) {
-                Log.w(TAG, "Failed to connect to NBusy server.");
-            }
-        });
+        client.connect(connCallbacks);
         db.getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile up) {
@@ -93,12 +97,45 @@ public class Worker {
     }
 
     public void destroy() {
-        Log.i(TAG, "Instance destroyed.");
+        Log.i(TAG, "destroyed");
         client.close();
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
+    /**
+     * Event bus reg/unreg.
+     */
+    public void register(Object o, Context c) {
+        if (o == null) {
+            throw new IllegalArgumentException("object cannot be null");
+        }
+
+        // a view is attaching to event bus so we need to ensure connectivity
+        if (!client.isConnected()) {
+            client.connect(connCallbacks);
+        }
+
+        // start the worker service if not running
+        if (!WorkerService.RUNNING.get() && c != null) {
+            Intent serviceIntent = new Intent(c, WorkerService.class);
+            serviceIntent.putExtra(WorkerService.STARTED_BY, o.getClass().getSimpleName());
+            c.startService(serviceIntent);
+        }
+
+        subscribers.add(o);
+        eventBus.register(o);
+    }
+
+    public void unregister(Object o) {
+        subscribers.remove(o);
+        eventBus.unregister(o);
+        // todo: start 3 min standBy timer here in case a view wants to register again or we're in a brief limbo state
+    }
+
+    /**
+     * Whether worker needs an active connection to server.
+     */
+    public boolean needConnection() {
+        return !subscribers.isEmpty(); // todo: or there are ongoing operations or queued operations or standby timer is still running
     }
 
     /************************
@@ -121,8 +158,6 @@ public class Worker {
             }
         }, nbusyMsgs);
     }
-
-    // todo: rethink flow here (both from database -> server, UI -> server and in memory cache updates and when...)
 
     public void sendMessages(String chatId, String... msgs) {
         sendMessages(userProfile.addNewOutgoingMessages(chatId, msgs).messages);
