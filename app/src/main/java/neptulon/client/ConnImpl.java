@@ -57,6 +57,7 @@ public class ConnImpl implements Conn, WebSocketListener {
                 .readTimeout(300, TimeUnit.SECONDS)
                 .build();
 
+        this.middleware(new neptulon.client.middleware.Logger());
         this.middleware(router);
     }
 

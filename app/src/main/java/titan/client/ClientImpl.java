@@ -29,7 +29,6 @@ public class ClientImpl implements Client {
             throw new IllegalArgumentException("conn cannot be null");
         }
 
-        conn.middleware(new neptulon.client.middleware.Logger());
         conn.handleRequest("msg.recv", new RecvMsgsMiddleware(cbs));
         this.conn = conn;
     }
