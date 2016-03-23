@@ -69,7 +69,7 @@ public class ChatListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        worker.register(this);
+        worker.register(this, getContext());
     }
 
     @Override

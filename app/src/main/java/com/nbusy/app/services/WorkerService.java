@@ -10,6 +10,8 @@ import android.util.Log;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Hosts {@link Worker} class to ensure continuous operation even when no activity is visible.
  */
@@ -17,6 +19,7 @@ public class WorkerService extends Service {
 
     private static final String TAG = WorkerService.class.getSimpleName();
     public static final String STARTED_BY = "StartedBy";
+    public static final AtomicBoolean RUNNING = new AtomicBoolean();
     private static final int STANDBY_TIME = 3 * 60 * 1000;
     private final StopStandby stopStandby = new StopStandby();
     private final Worker worker = WorkerSingleton.getWorker();
@@ -68,6 +71,8 @@ public class WorkerService extends Service {
             stopStandby.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
+        WorkerService.RUNNING.set(true);
+
         // we want this service to continue running until it is explicitly stopped, so return sticky
         return Service.START_STICKY;
     }
@@ -76,6 +81,7 @@ public class WorkerService extends Service {
     public void onDestroy() {
         super.onDestroy();
         WorkerSingleton.destroyWorker();
+        RUNNING.set(false);
         Log.i(TAG, "destroyed");
     }
 

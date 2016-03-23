@@ -131,7 +131,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
-        worker.register(this);
+        worker.register(this, getContext());
     }
 
     @Override

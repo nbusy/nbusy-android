@@ -1,5 +1,7 @@
 package com.nbusy.app.worker;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.common.collect.ImmutableSet;
@@ -11,6 +13,7 @@ import com.nbusy.app.data.DataMaps;
 import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
+import com.nbusy.app.services.WorkerService;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
@@ -101,10 +104,21 @@ public class Worker {
     /**
      * Event bus reg/unreg.
      */
-    public void register(Object o) {
+    public void register(Object o, Context c) {
+        if (o == null) {
+            throw new IllegalArgumentException("object cannot be null");
+        }
+
         // a view is attaching to event bus so we need to ensure connectivity
         if (!client.isConnected()) {
             client.connect(connCallbacks);
+        }
+
+        // start the worker service if not running
+        if (!WorkerService.RUNNING.get() && c != null) {
+            Intent serviceIntent = new Intent(c, WorkerService.class);
+            serviceIntent.putExtra(WorkerService.STARTED_BY, o.getClass().getSimpleName());
+            c.startService(serviceIntent);
         }
 
         subscribers.add(o);
