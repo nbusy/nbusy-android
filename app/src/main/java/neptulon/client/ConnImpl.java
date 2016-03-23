@@ -115,7 +115,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public synchronized void handleRequest(String route, Middleware mw) {
-
+        router.request(route, mw);
     }
 
     @Override
