@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import neptulon.client.callbacks.ConnCallback;
 import neptulon.client.callbacks.ResCallback;
+import neptulon.client.middleware.Router;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -37,6 +38,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final String ws_url;
     private final AtomicBoolean connected = new AtomicBoolean();
     private final AtomicBoolean connecting = new AtomicBoolean();
+    private final Router router = new Router();
     private WebSocket ws;
     private ConnCallback connCallback;
 
@@ -54,6 +56,8 @@ public class ConnImpl implements Conn, WebSocketListener {
                 .writeTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
                 .build();
+
+        this.middleware(router);
     }
 
     /**
@@ -108,8 +112,10 @@ public class ConnImpl implements Conn, WebSocketListener {
         middleware.add(mw);
     }
 
-    // todo: add a default router since this is a client that should be functional out of box (and remote custom router from Titan client)
-    // handleRequest(method, .....) { if isClientConn... else exception } // same goes for go-client
+    @Override
+    public synchronized void handleRequest(String route, Middleware mw) {
+
+    }
 
     @Override
     public synchronized void connect(ConnCallback cb) {

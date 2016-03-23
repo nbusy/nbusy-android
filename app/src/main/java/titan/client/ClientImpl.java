@@ -7,7 +7,6 @@ import neptulon.client.Conn;
 import neptulon.client.ConnImpl;
 import neptulon.client.ResCtx;
 import neptulon.client.callbacks.ResCallback;
-import neptulon.client.middleware.Router;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.JwtAuthCallback;
@@ -22,7 +21,6 @@ import titan.client.messages.Message;
 public class ClientImpl implements Client {
     private static final Logger logger = Logger.getLogger("Titan: " + ClientImpl.class.getSimpleName());
     private static final String ACK = "ACK";
-    private final Router router = new Router();
     private final Conn conn;
     private ConnCallbacks cbs;
 
@@ -32,8 +30,7 @@ public class ClientImpl implements Client {
         }
 
         conn.middleware(new neptulon.client.middleware.Logger());
-        router.request("msg.recv", new RecvMsgsMiddleware(cbs));
-        conn.middleware(router);
+        conn.handleRequest("msg.recv", new RecvMsgsMiddleware(cbs));
         this.conn = conn;
     }
 
