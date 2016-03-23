@@ -108,6 +108,9 @@ public class Worker {
         if (o == null) {
             throw new IllegalArgumentException("object cannot be null");
         }
+        if (c == null) {
+            throw new IllegalArgumentException("context cannot be null");
+        }
 
         // a view is attaching to event bus so we need to ensure connectivity
         if (!client.isConnected()) {
@@ -115,7 +118,7 @@ public class Worker {
         }
 
         // start the worker service if not running
-        if (!WorkerService.RUNNING.get() && c != null) {
+        if (!WorkerService.RUNNING.get()) {
             Intent serviceIntent = new Intent(c, WorkerService.class);
             serviceIntent.putExtra(WorkerService.STARTED_BY, o.getClass().getSimpleName());
             c.startService(serviceIntent);
