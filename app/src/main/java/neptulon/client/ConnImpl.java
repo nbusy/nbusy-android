@@ -108,7 +108,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         middleware.add(mw);
     }
 
-    // todo: add default router
+    // todo: add a default router since this is a client that should be functional out of box (and remote custom router from Titan client)
     // handleRequest(method, .....) { if isClientConn... else exception } // same goes for go-client
 
     @Override
