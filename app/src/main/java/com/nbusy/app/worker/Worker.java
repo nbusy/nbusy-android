@@ -178,6 +178,12 @@ public class Worker {
         // handle echo messages separately
         if (Objects.equals(msgs[0].chatId, "echo")) {
             final Message m = msgs[0];
+            // todo: should this be handled by autoconnect behavior flag of Neptulon client?
+            if (!client.isConnected()) {
+                client.connect(connCallbacks);
+                return;
+            }
+
             client.echo(m.body, new EchoCallback() {
                 @Override
                 public void echoResponse(String msg) {
@@ -196,6 +202,11 @@ public class Worker {
         db.upsertMessages(new DB.UpsertMessagesCallback() {
             @Override
             public void messagesUpserted() {
+                if (!client.isConnected()) {
+                    client.connect(connCallbacks);
+                    return;
+                }
+
                 client.sendMessages(new SendMsgsCallback() {
                     @Override
                     public void sentToServer() {
