@@ -34,10 +34,10 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final OkHttpClient client;
     private final List<Middleware> middleware = new CopyOnWriteArrayList<>();
     private final ConcurrentMap<String, ResCallback> resCallbacks = new ConcurrentHashMap<>();
-    private String ws_url;
+    private final String ws_url;
+    private final AtomicBoolean connected = new AtomicBoolean();
+    private final AtomicBoolean connecting = new AtomicBoolean();
     private WebSocket ws;
-    private AtomicBoolean connected = new AtomicBoolean();
-    private AtomicBoolean connecting = new AtomicBoolean();
     private ConnCallback connCallback;
 
     /**
