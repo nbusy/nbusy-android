@@ -32,13 +32,12 @@ public class ConnImpl implements Conn, WebSocketListener {
     private static final Logger logger = Logger.getLogger("Neptulon: " + ConnImpl.class.getSimpleName());
     private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").create();
     private final OkHttpClient client;
-    private final Request request;
-    private final WebSocketCall wsCall;
     private final List<Middleware> middleware = new CopyOnWriteArrayList<>();
     private final ConcurrentMap<String, ResCallback> resCallbacks = new ConcurrentHashMap<>();
     private String ws_url;
     private WebSocket ws;
     private AtomicBoolean connected = new AtomicBoolean();
+    private AtomicBoolean connecting = new AtomicBoolean();
     private ConnCallback connCallback;
 
     /**
@@ -55,12 +54,6 @@ public class ConnImpl implements Conn, WebSocketListener {
                 .writeTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
                 .build();
-
-        request = new Request.Builder()
-                .url(url)
-                .build();
-
-        wsCall = WebSocketCall.create(client, request);
     }
 
     /**
@@ -123,10 +116,14 @@ public class ConnImpl implements Conn, WebSocketListener {
         if (cb == null) {
             throw new IllegalArgumentException("callback cannot be null");
         }
+        if (connecting.get()) {
+            return;
+        }
 
         // enqueue this listener implementation to initiate the WebSocket connection
         connCallback = cb;
-        wsCall.enqueue(this);
+        connecting.set(true);
+        WebSocketCall.create(client, new Request.Builder().url(ws_url).build()).enqueue(this);
     }
 
     @Override
@@ -184,6 +181,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
         ws = webSocket;
+        connecting.set(false);
         connected.set(true);
         logger.info("Connected to server: " + ws_url);
         connCallback.connected();
