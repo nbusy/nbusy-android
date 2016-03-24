@@ -204,6 +204,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void onFailure(IOException e, Response response) {
+        connecting.set(false);
         connected.set(false);
         String reason = e.getMessage();
         logger.warning("Connection closed with error: " + reason);
@@ -233,7 +234,9 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void onClose(int code, String reason) {
+        connecting.set(false);
         connected.set(false);
-        logger.info("Connection closed to server: " + ws_url);
+        logger.info("Connection closed to server: " + ws_url + ", with reason: " + reason);
+        connCallback.disconnected(reason);
     }
 }
