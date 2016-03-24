@@ -60,8 +60,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
             return;
         }
 
+        messageAdapter.setNotifyOnChange(false);
         messageAdapter.clear();
         messageAdapter.addAll(chat.messages);
+        messageAdapter.notifyDataSetChanged();
         setSelection(messageAdapter.getCount() - 1);
         Log.v(TAG, "updated view with: " + messageAdapter.getCount() + " messages");
 
