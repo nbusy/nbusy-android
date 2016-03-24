@@ -39,6 +39,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final AtomicBoolean connected = new AtomicBoolean();
     private final AtomicBoolean connecting = new AtomicBoolean();
     private final Router router = new Router();
+    private WebSocketCall wsConnectRequest;
     private WebSocket ws;
     private ConnCallback connCallback;
 
@@ -130,7 +131,8 @@ public class ConnImpl implements Conn, WebSocketListener {
         // enqueue this listener implementation to initiate the WebSocket connection
         connCallback = cb;
         connecting.set(true);
-        WebSocketCall.create(client, new Request.Builder().url(ws_url).build()).enqueue(this);
+        wsConnectRequest = WebSocketCall.create(client, new Request.Builder().url(ws_url).build());
+        wsConnectRequest.enqueue(this);
     }
 
     @Override
@@ -169,7 +171,13 @@ public class ConnImpl implements Conn, WebSocketListener {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
+        // if connecting, cancel that
+        if (connecting.getAndSet(false)) {
+            wsConnectRequest.cancel();
+        }
+
+        // if not connected, do nothing
         if (!connected.getAndSet(false)) {
             return;
         }
