@@ -1,5 +1,6 @@
 package neptulon.client;
 
+import java.util.Timer;
 import java.util.logging.Logger;
 
 import neptulon.client.callbacks.ConnCallback;
@@ -14,7 +15,9 @@ public class ReconnImpl extends ConnImpl {
     private boolean firstConnection = true;
     private boolean manuallyDisconnected = false;
     private boolean retriesExhausted = false;
-    private final int retryLimit = 5;
+    private final Timer timer = new Timer();
+    private final int retryLimit = 7;
+    private final int retryDelay = 5; // seconds
     private int retryCount = 0;
 
     @Override
@@ -39,11 +42,18 @@ public class ReconnImpl extends ConnImpl {
 
                 // try to reconnect
                 if (retryCount <= retryLimit) {
-                    // todo: do this in a background thread with exponential backoff
                     connect(this);
                 }
 
                 retryCount++;
+
+                // todo: do this in a background thread with exponential backoff
+//                    timer.schedule(new TimerTask() {
+//                        @Override
+//                        public void run() {
+//                            // Your database code here
+//                        }
+//                    }, 2*60*1000);
             }
         });
     }
