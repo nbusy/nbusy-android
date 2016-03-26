@@ -4,6 +4,8 @@ import java.util.logging.Logger;
 
 import neptulon.client.callbacks.ConnCallback;
 
+// todo: needs review
+
 /**
  * This class extends {ConnImpl} with auto-reconnect functionality.
  */
@@ -37,6 +39,7 @@ public class ReconnImpl extends ConnImpl {
 
                 // try to reconnect
                 if (retryCount <= retryLimit) {
+                    // todo: do this in a background thread with exponential backoff
                     connect(this);
                 }
 

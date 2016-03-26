@@ -63,7 +63,7 @@ public class Worker {
 
         @Override
         public void disconnected(String reason) {
-            Log.w(TAG, "Failed to connect to NBusy server.");
+            Log.w(TAG, "Connection attempt or connection to NBusy server was shut down with reason: " + reason);
         }
     };
 

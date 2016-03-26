@@ -207,7 +207,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         connecting.set(false);
         connected.set(false);
         String reason = e.getMessage();
-        logger.warning("Connection closed with error: " + reason);
+        logger.info("Connection attempt failed, server: " + ws_url + ", reason: " + reason);
         connCallback.disconnected(reason);
     }
 
