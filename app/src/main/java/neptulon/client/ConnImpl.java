@@ -37,7 +37,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final ConcurrentMap<String, ResCallback> resCallbacks = new ConcurrentHashMap<>();
     private final String ws_url;
     private final AtomicBoolean connected = new AtomicBoolean();
-    private final AtomicBoolean connecting = new AtomicBoolean();
+    protected final AtomicBoolean connecting = new AtomicBoolean();
     private final Router router = new Router();
     private WebSocketCall wsConnectRequest;
     private WebSocket ws;

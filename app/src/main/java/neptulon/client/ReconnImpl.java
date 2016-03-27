@@ -1,6 +1,6 @@
 package neptulon.client;
 
-import java.util.Timer;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 import neptulon.client.callbacks.ConnCallback;
@@ -13,9 +13,7 @@ import neptulon.client.callbacks.ConnCallback;
 public class ReconnImpl extends ConnImpl {
     private static final Logger logger = Logger.getLogger("Titan: " + ReconnImpl.class.getSimpleName());
     private boolean firstConnection = true;
-    private boolean manuallyDisconnected = false;
-    private boolean retriesExhausted = false;
-    private final Timer timer = new Timer();
+    private final AtomicBoolean manuallyDisconnected = new AtomicBoolean(false);
     private final int retryLimit = 7;
     private final int retryDelay = 5; // seconds
     private int retryCount = 0;
@@ -25,7 +23,7 @@ public class ReconnImpl extends ConnImpl {
         super.connect(new ConnCallback() {
             @Override
             public void connected() {
-                // only fire connected event once
+                // only fire connected event once and not for reconnects
                 if (firstConnection) {
                     cb.connected();
                 }
@@ -34,18 +32,19 @@ public class ReconnImpl extends ConnImpl {
 
             @Override
             public void disconnected(String reason) {
-                // only fire disconnected event when retries are exhausted or on manual disconnect call
-                if (manuallyDisconnected || retriesExhausted) {
+                if (connecting.get()) {
+                    return;
+                }
+
+                // only fire disconnected event when retries are exhausted or on manual disconnect call by user
+                if (manuallyDisconnected.get() || retryCount >= retryLimit) {
                     cb.disconnected(reason);
                     return;
                 }
 
                 // try to reconnect
-                if (retryCount <= retryLimit) {
-                    connect(this);
-                }
-
                 retryCount++;
+                connect(this);
 
                 // todo: do this in a background thread with exponential backoff
 //                    timer.schedule(new TimerTask() {
@@ -60,7 +59,7 @@ public class ReconnImpl extends ConnImpl {
 
     @Override
     public synchronized void close() {
-        manuallyDisconnected = true;
+        manuallyDisconnected.set(true);
         super.close();
     }
 }
