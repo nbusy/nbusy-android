@@ -15,7 +15,7 @@ public class ReconnImpl extends ConnImpl {
     private boolean firstConnection = true;
     private final AtomicBoolean manuallyDisconnected = new AtomicBoolean(false);
     private final int retryLimit = 7;
-    private final int retryDelay = 5; // seconds
+    private int retryDelay = 5; // seconds (x2 backoff for each retry)
     private int retryCount = 0;
 
     @Override
@@ -46,7 +46,9 @@ public class ReconnImpl extends ConnImpl {
                 retryCount++;
                 connect(this);
 
-                // todo: do this in a background thread with exponential backoff
+                // todo: do this in a background thread with exponential backoff, though for this, we need a 3rd state called 'reconnecting'
+                // todo: states: connecting, reconnecting, connected, reconnected, disconnected, closed (manually disconnected)
+
 //                    timer.schedule(new TimerTask() {
 //                        @Override
 //                        public void run() {
