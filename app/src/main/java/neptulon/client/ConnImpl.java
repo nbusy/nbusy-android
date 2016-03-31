@@ -88,6 +88,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
         if (s == State.CLOSED || retryCount >= retryLimit) {
             connCallback.disconnected(reason);
+            retryCount = 0;
             return;
         }
 
@@ -104,7 +105,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 //                    }, 2*60*1000);
     }
 
-    private void send(Object obj) {
+    void send(Object obj) {
         if (obj == null) {
             throw new IllegalArgumentException("obj cannot be null");
         }
