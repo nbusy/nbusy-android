@@ -47,11 +47,6 @@ public interface Conn {
     boolean isConnected();
 
     /**
-     * Returns the remote network address.
-     */
-    void remoteAddr();
-
-    /**
      * Sends a JSON-RPC request through the connection with an auto generated request ID.
      */
     <T> void sendRequest(String method, T params, ResCallback cb);

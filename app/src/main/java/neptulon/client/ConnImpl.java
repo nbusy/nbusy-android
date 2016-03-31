@@ -42,8 +42,6 @@ public class ConnImpl implements Conn, WebSocketListener {
     private WebSocket ws;
     private ConnCallback connCallback;
 
-    // todo: needs review 'state.'
-
     public enum State {
         CONNECTING,
         RECONNECTING,
@@ -134,7 +132,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         if (cb == null) {
             throw new IllegalArgumentException("callback cannot be null");
         }
-        if (state.get() == State.CONNECTING) {
+        if (isConnected()) {
             return;
         }
 
@@ -146,31 +144,24 @@ public class ConnImpl implements Conn, WebSocketListener {
     }
 
     @Override
-    public synchronized boolean isConnected() {
+    public boolean isConnected() {
         return isConnected(state.get());
     }
 
-    private synchronized boolean isConnected(State s) {
+    private boolean isConnected(State s) {
         return s == State.CONNECTED || s == State.RECONNECTED;
     }
 
     @Override
-    public synchronized void remoteAddr() {
-        if (!isConnected()) {
-            throw new IllegalStateException("Not connected.");
-        }
-    }
-
-    @Override
     public <T> void sendRequest(String method, T params, ResCallback cb) {
-        if (!isConnected()) {
-            throw new IllegalStateException("Not connected.");
-        }
         if (method == null || method.isEmpty()) {
             throw new IllegalArgumentException("method cannot be null or empty");
         }
         if (cb == null) {
             throw new IllegalArgumentException("callback cannot be null");
+        }
+        if (!isConnected()) {
+            throw new IllegalStateException("Not connected.");
         }
 
         String id = UUID.randomUUID().toString();
