@@ -37,15 +37,18 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final ConcurrentMap<String, ResCallback> resCallbacks = new ConcurrentHashMap<>();
     private final String ws_url;
     private final AtomicReference<State> state = new AtomicReference<>(State.CLOSED);
-    private boolean firstConnection = true;
     private final Router router = new Router();
     private WebSocketCall wsConnectRequest;
     private WebSocket ws;
     private ConnCallback connCallback;
 
+    private boolean firstConnection = true;
+    private final int retryLimit = 7;
+    private int retryDelay = 5; // seconds (x2 backoff for each retry)
+    private int retryCount = 0;
+
     public enum State {
         CONNECTING,
-        RECONNECTING,
         CONNECTED,
         DISCONNECTED,
         CLOSED
@@ -78,7 +81,30 @@ public class ConnImpl implements Conn, WebSocketListener {
         this("ws://10.0.2.2:3000");
     }
 
-    void send(Object obj) {
+    private void reconnect(String reason) {
+        State s = state.get();
+        if (s == State.CONNECTED || s == State.CONNECTING) {
+            return;
+        }
+        if (s == State.CLOSED || retryCount >= retryLimit) {
+            connCallback.disconnected(reason);
+            return;
+        }
+
+        // try to reconnect
+        retryCount++;
+        connect(connCallback);
+
+        // todo: do this in a background thread with exponential backoff, though for this, we need a 3rd state called 'reconnecting'
+//                    timer.schedule(new TimerTask() {
+//                        @Override
+//                        public void run() {
+//                            // Your database code here
+//                        }
+//                    }, 2*60*1000);
+    }
+
+    private void send(Object obj) {
         if (obj == null) {
             throw new IllegalArgumentException("obj cannot be null");
         }
@@ -209,7 +235,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         state.set(State.DISCONNECTED);
         String reason = e.getMessage();
         logger.info("Connection attempt failed, server: " + ws_url + ", reason: " + reason);
-        connCallback.disconnected(reason);
+        reconnect(reason);
     }
 
     @Override
@@ -241,6 +267,6 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
 
         logger.info("Connection closed to server: " + ws_url + ", with reason: " + reason);
-        connCallback.disconnected(reason);
+        reconnect(reason);
     }
 }
