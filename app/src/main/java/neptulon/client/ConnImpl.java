@@ -36,7 +36,8 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final List<Middleware> middleware = new CopyOnWriteArrayList<>();
     private final ConcurrentMap<String, ResCallback> resCallbacks = new ConcurrentHashMap<>();
     private final String ws_url;
-    private final AtomicReference<State> state = new AtomicReference<>();
+    private final AtomicReference<State> state = new AtomicReference<>(State.CLOSED);
+    private boolean firstConnection = true;
     private final Router router = new Router();
     private WebSocketCall wsConnectRequest;
     private WebSocket ws;
@@ -46,7 +47,6 @@ public class ConnImpl implements Conn, WebSocketListener {
         CONNECTING,
         RECONNECTING,
         CONNECTED,
-        RECONNECTED,
         DISCONNECTED,
         CLOSED
     }
@@ -145,11 +145,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public boolean isConnected() {
-        return isConnected(state.get());
-    }
-
-    private boolean isConnected(State s) {
-        return s == State.CONNECTED || s == State.RECONNECTED;
+        return state.get() == State.CONNECTED;
     }
 
     @Override
@@ -200,7 +196,12 @@ public class ConnImpl implements Conn, WebSocketListener {
         ws = webSocket;
         state.set(State.CONNECTED);
         logger.info("Connected to server: " + ws_url);
-        connCallback.connected();
+
+        // only fire connected event once and not for reconnects
+        if (firstConnection) {
+            connCallback.connected();
+        }
+        firstConnection = false;
     }
 
     @Override
@@ -234,7 +235,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void onClose(int code, String reason) {
-        // if we didn't close the connection, then server sent a close message
+        // if the user didn't manually close the connection, then server sent a close message
         if (state.get() != State.CLOSED) {
             state.set(State.DISCONNECTED);
         }
