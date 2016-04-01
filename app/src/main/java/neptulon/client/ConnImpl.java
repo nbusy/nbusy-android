@@ -115,16 +115,12 @@ public class ConnImpl implements Conn, WebSocketListener {
 
         final String m = gson.toJson(obj);
         logger.info("Outgoing message: " + m);
-        new Thread(new Runnable() {
-            @Override public void run() {
-                try {
-                    ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    close();
-                }
-            }
-        }).start();
+        try {
+            ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
+        } catch (IOException e) {
+            e.printStackTrace();
+            close();
+        }
     }
 
     /***********************
