@@ -179,6 +179,11 @@ public class ConnImpl implements Conn, WebSocketListener {
     }
 
     @Override
+    public String remoteAddr() {
+        return ws_url;
+    }
+
+    @Override
     public <T> void sendRequest(String method, T params, ResCallback cb) {
         if (method == null || method.isEmpty()) {
             throw new IllegalArgumentException("method cannot be null or empty");
