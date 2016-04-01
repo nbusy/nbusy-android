@@ -88,7 +88,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
         if (s == State.CLOSED || retryCount >= retryLimit) {
             if (retryCount >= retryLimit) {
-                reason += " and retry limits reacted";
+                reason += ", retry limits reacted";
             }
             connCallback.disconnected(reason);
             retryCount = 0;
