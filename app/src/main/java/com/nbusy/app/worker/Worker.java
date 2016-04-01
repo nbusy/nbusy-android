@@ -47,6 +47,7 @@ public class Worker {
 
         @Override
         public void connected() {
+            // todo: this is not getting called on reconnects (as well as 'disconnected'). shall we handle this in neptulon (which is likely?)
             Log.i(TAG, "Connected to NBusy server.");
             client.jwtAuth(JWT_TOKEN, new JwtAuthCallback() {
                 @Override
