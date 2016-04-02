@@ -230,9 +230,12 @@ public class ConnImpl implements Conn, WebSocketListener {
 
         // only fire connected event once and not for reconnects
         if (firstConnection) {
-            connCallback.connected();
+            connCallback.connected("");
+            firstConnection = false;
+            return;
         }
-        firstConnection = false;
+
+        connCallback.connected("reconnected");
     }
 
     @Override

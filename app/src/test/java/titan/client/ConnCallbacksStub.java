@@ -10,7 +10,7 @@ public class ConnCallbacksStub implements ConnCallbacks {
     }
 
     @Override
-    public void connected() {
+    public void connected(String reason) {
 
     }
 
