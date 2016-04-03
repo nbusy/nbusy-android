@@ -52,26 +52,28 @@ public class Worker {
                 @Override
                 public void success() {
                     Log.i(TAG, "Authenticated with NBusy server.");
-                    // todo: send queued messages to server and log the count
                     db.getQueuedMessages(new DB.GetChatMessagesCallback() {
                         @Override
-                        public void chatMessagesRetrieved(List<Message> msgs) {
-//                            client.sendMessages(new SendMsgsCallback() {
-//                                @Override
-//                                public void sentToServer() {
-//                                    // update in memory representation of messages
-//                                    final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
-//
-//                                    // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
-//                                    db.upsertMessages(new DB.UpsertMessagesCallback() {
-//                                        @Override
-//                                        public void messagesUpserted() {
-//                                            // finally, notify all listening views about the changes
-//                                            eventBus.post(new ChatsUpdatedEvent(chats));
-//                                        }
-//                                    }, msgs);
-//                                }
-//                            }, DataMaps.getTitanMessages(msgs));
+                        public void chatMessagesRetrieved(final List<Message> msgs) {
+                            final Message[] msgsArray = msgs.toArray(new Message[msgs.size()]);
+                            client.sendMessages(new SendMsgsCallback() {
+                                @Override
+                                public void sentToServer() {
+                                    // update in memory representation of messages
+                                    // todo: Profile.upsertMessages will probably mess up chats that has 0 loaded messages in them!
+                                    final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
+
+                                    // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
+                                    db.upsertMessages(new DB.UpsertMessagesCallback() {
+                                        @Override
+                                        public void messagesUpserted() {
+                                            Log.i(TAG, "Sent queued messages to server: " + msgs.size());
+                                            // finally, notify all listening views about the changes
+                                            eventBus.post(new ChatsUpdatedEvent(chats));
+                                        }
+                                    }, msgsArray);
+                                }
+                            }, DataMaps.getTitanMessages(msgsArray));
                         }
                     });
                 }
