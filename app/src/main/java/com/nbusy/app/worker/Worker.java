@@ -47,12 +47,33 @@ public class Worker {
 
         @Override
         public void connected(String reason) {
-            // todo: this is not getting called on reconnects (as well as 'disconnected'). shall we handle this in neptulon (which is likely?)
             Log.i(TAG, "Connected to NBusy server with reason: " + reason);
             client.jwtAuth(JWT_TOKEN, new JwtAuthCallback() {
                 @Override
                 public void success() {
                     Log.i(TAG, "Authenticated with NBusy server.");
+                    // todo: send queued messages to server and log the count
+                    db.getQueuedMessages(new DB.GetChatMessagesCallback() {
+                        @Override
+                        public void chatMessagesRetrieved(List<Message> msgs) {
+//                            client.sendMessages(new SendMsgsCallback() {
+//                                @Override
+//                                public void sentToServer() {
+//                                    // update in memory representation of messages
+//                                    final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
+//
+//                                    // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
+//                                    db.upsertMessages(new DB.UpsertMessagesCallback() {
+//                                        @Override
+//                                        public void messagesUpserted() {
+//                                            // finally, notify all listening views about the changes
+//                                            eventBus.post(new ChatsUpdatedEvent(chats));
+//                                        }
+//                                    }, msgs);
+//                                }
+//                            }, DataMaps.getTitanMessages(msgs));
+                        }
+                    });
                 }
 
                 @Override
@@ -64,7 +85,7 @@ public class Worker {
 
         @Override
         public void disconnected(String reason) {
-            Log.w(TAG, "Connection attempt or connection to NBusy server was shut down with reason: " + reason);
+            Log.w(TAG, "Connection attempt OR connection to NBusy server was shut down with reason: " + reason);
         }
     };
 

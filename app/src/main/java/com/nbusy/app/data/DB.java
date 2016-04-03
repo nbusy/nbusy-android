@@ -11,6 +11,8 @@ public interface DB {
 
     void getChatMessages(String chatId, GetChatMessagesCallback cb);
 
+    void getQueuedMessages(GetChatMessagesCallback cb);
+
     interface GetChatMessagesCallback {
         void chatMessagesRetrieved(List<Message> msgs);
     }

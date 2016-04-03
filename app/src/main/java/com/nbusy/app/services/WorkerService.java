@@ -20,7 +20,7 @@ public class WorkerService extends Service {
     private static final String TAG = WorkerService.class.getSimpleName();
     public static final String STARTED_BY = "StartedBy";
     public static final AtomicBoolean RUNNING = new AtomicBoolean();
-    private static final int STANDBY_TIME = 3 * 60 * 1000;
+    private static final int STANDBY_TIME = 3 * 5 * 1000;
     private final StopStandby stopStandby = new StopStandby();
     private final Worker worker = WorkerSingleton.getWorker();
     private int startId;

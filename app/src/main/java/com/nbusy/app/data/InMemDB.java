@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,6 +53,29 @@ public class InMemDB implements DB {
                             Arrays.asList(
                                     new Message(UUID.randomUUID().toString(), chatId, "Teoman Soygul", null, true, "Lorem ip sum my message...", new Date(), Message.Status.DELIVERED_TO_USER),
                                     new Message(UUID.randomUUID().toString(), chatId, "User ID: " + chatId, null, false, "Test test.", new Date(), Message.Status.DELIVERED_TO_USER)));
+                } else {
+                    msgs = new ArrayList<>();
+                }
+
+                cb.chatMessagesRetrieved(msgs);
+            }
+        });
+    }
+
+    @Override
+    public void getQueuedMessages(final GetChatMessagesCallback cb) {
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+
+        simulateDelay(new Function() {
+            @Override
+            public void execute() {
+                List<Message> msgs;
+                if (config.env != Config.Env.PRODUCTION) {
+                    msgs = new LinkedList<>(
+                            Collections.singletonList(
+                                    new Message(UUID.randomUUID().toString(), "1", "User ID: 1", null, false, "Test test.", new Date(), Message.Status.NEW)));
                 } else {
                     msgs = new ArrayList<>();
                 }
