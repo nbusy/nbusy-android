@@ -3,8 +3,8 @@ package com.nbusy.app.services;
 import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Binder;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.nbusy.app.data.Config;
@@ -91,27 +91,9 @@ public class WorkerService extends Service {
         Log.i(TAG, "destroyed");
     }
 
-    /*************************
-     * Local service binding *
-     *************************/
-
-    private final IBinder binder = new WorkerServiceBinder();
-
-    /**
-     * Returns an instance of this service so binding components can directly call public methods of this service.
-     */
-    public class WorkerServiceBinder extends Binder {
-        WorkerService getService() {
-            return WorkerService.this;
-        }
-    }
-
+    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        String startedBy = intent.getStringExtra(STARTED_BY);
-        Log.i(TAG, "Was bound to by: " + startedBy);
-
-        // allow binding to this local service directly so anyone can call public functions on this service directly
-        return binder;
+        return null;
     }
 }
