@@ -7,6 +7,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.nbusy.app.data.Config;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
 
@@ -20,17 +21,22 @@ public class WorkerService extends Service {
     private static final String TAG = WorkerService.class.getSimpleName();
     public static final String STARTED_BY = "StartedBy";
     public static final AtomicBoolean RUNNING = new AtomicBoolean();
-    private static final int STANDBY_TIME = 3 * 60 * 1000; // todo: on dev mode, make this 15 secs
+    private static final Config config = new Config();
+    private final int standbyTime;
     private final StopStandby stopStandby = new StopStandby();
     private final Worker worker = WorkerSingleton.getWorker();
     private int startId;
+
+    public WorkerService() {
+        standbyTime = config.env == Config.Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000; // 3 mins (prod) / 10 secs (non-prod)
+    }
 
     class StopStandby extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             while (worker.needConnection()) {
                 try {
-                    Thread.sleep(STANDBY_TIME);
+                    Thread.sleep(standbyTime);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

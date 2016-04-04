@@ -9,8 +9,8 @@ import com.nbusy.sdk.ClientImpl;
  * {@link Worker} single instance provider.
  */
 public class WorkerSingleton {
+    private static final Config config = new Config();
     private static Worker worker = null;
-    private static Config config = new Config();
 
     public static Worker getWorker() {
         if (worker == null) {
