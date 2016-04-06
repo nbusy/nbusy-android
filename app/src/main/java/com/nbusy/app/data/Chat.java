@@ -117,6 +117,6 @@ public final class Chat {
         uniqueMsgs.removeAll(updatedMsgs);
         msgBuilder.addAll(uniqueMsgs);
 
-        return new Chat(id, peerName, lastMessage, lastMessageSent, msgBuilder.build());
+        return new Chat(id, peerName, lastMessage, lastMessageSent, msgBuilder.build()); // todo: sort message by date here
     }
 }

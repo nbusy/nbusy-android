@@ -14,11 +14,11 @@ public interface Client {
 
     boolean isConnected();
 
-    void jwtAuth(String token, JwtAuthCallback cb);
+    boolean jwtAuth(String token, JwtAuthCallback cb);
 
-    void echo(String msg, EchoCallback cb);
+    boolean echo(String msg, EchoCallback cb);
 
-    void sendMessages(SendMsgsCallback cb, Message... msgs);
+    boolean sendMessages(SendMsgsCallback cb, Message... msgs);
 
     void close();
 }

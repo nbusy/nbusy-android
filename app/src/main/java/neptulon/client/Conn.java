@@ -29,6 +29,12 @@ public interface Conn {
     void middleware(Middleware mw);
 
     /**
+     * Registers a middleware to handle incoming requests on a specific route (JSON-RPC request method).
+     * This method simply registers given routes on a private {Router} instance.
+     */
+    void handleRequest(String route, Middleware mw);
+
+    /**
      * Connects to the given Neptulon server.
      *
      * @param cb Callback for connection/disconnection events.
@@ -43,7 +49,7 @@ public interface Conn {
     /**
      * Returns the remote network address.
      */
-    void remoteAddr();
+    String remoteAddr();
 
     /**
      * Sends a JSON-RPC request through the connection with an auto generated request ID.

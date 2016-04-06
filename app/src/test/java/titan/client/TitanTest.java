@@ -29,7 +29,7 @@ public class TitanTest {
         final CountDownLatch connCounter = new CountDownLatch(1);
         client.connect(new ConnCallbacksStub() {
             @Override
-            public void connected() {
+            public void connected(String reason) {
                 connCounter.countDown();
             }
         });

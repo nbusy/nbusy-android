@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
@@ -46,12 +47,37 @@ public class Worker {
         }
 
         @Override
-        public void connected() {
-            Log.i(TAG, "Connected to NBusy server.");
+        public void connected(String reason) {
+            Log.i(TAG, "Connected to NBusy server with reason: " + reason);
             client.jwtAuth(JWT_TOKEN, new JwtAuthCallback() {
                 @Override
                 public void success() {
                     Log.i(TAG, "Authenticated with NBusy server.");
+                    db.getQueuedMessages(new DB.GetChatMessagesCallback() {
+                        @Override
+                        public void chatMessagesRetrieved(final List<Message> msgs) {
+                            final Message[] msgsArray = msgs.toArray(new Message[msgs.size()]);
+                            client.sendMessages(new SendMsgsCallback() {
+                                @Override
+                                public void sentToServer() {
+                                    // update in memory representation of messages
+                                    final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
+
+                                    // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
+                                    db.upsertMessages(new DB.UpsertMessagesCallback() {
+                                        @Override
+                                        public void messagesUpserted() {
+                                            Log.i(TAG, "Sent queued messages to server: " + msgs.size());
+                                            // finally, notify all listening views about the changes
+                                            if (!chats.isEmpty()) {
+                                                eventBus.post(new ChatsUpdatedEvent(chats));
+                                            }
+                                        }
+                                    }, msgsArray);
+                                }
+                            }, DataMaps.getTitanMessages(msgsArray));
+                        }
+                    });
                 }
 
                 @Override
@@ -63,7 +89,7 @@ public class Worker {
 
         @Override
         public void disconnected(String reason) {
-            Log.w(TAG, "Failed to connect to NBusy server.");
+            Log.w(TAG, "Connection attempt OR connection to NBusy server was shut down with reason: " + reason);
         }
     };
 
@@ -163,7 +189,12 @@ public class Worker {
     }
 
     public void sendMessages(String chatId, String... msgs) {
-        sendMessages(userProfile.addNewOutgoingMessages(chatId, msgs).messages);
+        Optional<Chat.ChatAndNewMessages> cmOpt = userProfile.addNewOutgoingMessages(chatId, msgs);
+        if (!cmOpt.isPresent()) {
+            return;
+        }
+
+        sendMessages(cmOpt.get().messages);
     }
 
     public void sendMessages(Set<Message> msgs) {

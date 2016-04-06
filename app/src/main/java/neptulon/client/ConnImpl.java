@@ -10,11 +10,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
 import neptulon.client.callbacks.ConnCallback;
 import neptulon.client.callbacks.ResCallback;
+import neptulon.client.middleware.Router;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -34,11 +35,24 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final OkHttpClient client;
     private final List<Middleware> middleware = new CopyOnWriteArrayList<>();
     private final ConcurrentMap<String, ResCallback> resCallbacks = new ConcurrentHashMap<>();
-    private String ws_url;
+    private final String ws_url;
+    private final AtomicReference<State> state = new AtomicReference<>(State.CLOSED);
+    private final Router router = new Router();
+    private WebSocketCall wsConnectRequest;
     private WebSocket ws;
-    private AtomicBoolean connected = new AtomicBoolean();
-    private AtomicBoolean connecting = new AtomicBoolean();
     private ConnCallback connCallback;
+
+    private boolean firstConnection = true;
+    private final int retryLimit = 7;
+    private int retryDelay = 5; // seconds (x2 backoff for each retry)
+    private int retryCount = 0;
+
+    public enum State {
+        CONNECTING,
+        CONNECTED,
+        DISCONNECTED,
+        CLOSED
+    }
 
     /**
      * Initializes a new connection with given server URL.
@@ -54,6 +68,9 @@ public class ConnImpl implements Conn, WebSocketListener {
                 .writeTimeout(300, TimeUnit.SECONDS)
                 .readTimeout(300, TimeUnit.SECONDS)
                 .build();
+
+        this.middleware(new neptulon.client.middleware.Logger());
+        this.middleware(router);
     }
 
     /**
@@ -64,23 +81,49 @@ public class ConnImpl implements Conn, WebSocketListener {
         this("ws://10.0.2.2:3000");
     }
 
+    private void reconnect(String reason) {
+        State s = state.get();
+        if (s == State.CONNECTED || s == State.CONNECTING) {
+            return;
+        }
+        if (s == State.CLOSED || retryCount >= retryLimit) {
+            if (retryCount >= retryLimit) {
+                reason += ", retry limits reacted";
+            }
+            connCallback.disconnected(reason);
+            retryCount = 0;
+            return;
+        }
+
+        // try to reconnect
+        retryCount++;
+        connect(connCallback);
+
+        // todo: do this in a background thread with exponential backoff, though for this, we need a 3rd state called 'reconnecting'
+//                    timer.schedule(new TimerTask() {
+//                        @Override
+//                        public void run() {
+//                            // Your database code here
+//                        }
+//                    }, 2*60*1000);
+    }
+
     void send(Object obj) {
         if (obj == null) {
             throw new IllegalArgumentException("obj cannot be null");
         }
+        if (!isConnected()) {
+            throw new IllegalStateException("Not connected.");
+        }
 
         final String m = gson.toJson(obj);
         logger.info("Outgoing message: " + m);
-        new Thread(new Runnable() {
-            @Override public void run() {
-                try {
-                    ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    close();
-                }
-            }
-        }).start();
+        try {
+            ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
+        } catch (IOException e) {
+            e.printStackTrace();
+            close();
+        }
     }
 
     /***********************
@@ -108,46 +151,48 @@ public class ConnImpl implements Conn, WebSocketListener {
         middleware.add(mw);
     }
 
-    // todo: add default router
-    // handleRequest(method, .....) { if isClientConn... else exception } // same goes for go-client
+    @Override
+    public synchronized void handleRequest(String route, Middleware mw) {
+        router.request(route, mw);
+    }
 
     @Override
     public synchronized void connect(ConnCallback cb) {
         if (cb == null) {
             throw new IllegalArgumentException("callback cannot be null");
         }
-        if (connecting.get()) {
+        State s = state.get();
+        if (s == State.CONNECTED || s == State.CONNECTING) {
             return;
         }
 
         // enqueue this listener implementation to initiate the WebSocket connection
         connCallback = cb;
-        connecting.set(true);
-        WebSocketCall.create(client, new Request.Builder().url(ws_url).build()).enqueue(this);
+        state.set(State.CONNECTING);
+        wsConnectRequest = WebSocketCall.create(client, new Request.Builder().url(ws_url).build());
+        wsConnectRequest.enqueue(this);
     }
 
     @Override
-    public synchronized boolean isConnected() {
-        return connected.get();
+    public boolean isConnected() {
+        return state.get() == State.CONNECTED;
     }
 
     @Override
-    public synchronized void remoteAddr() {
-        if (!connected.get()) {
-            throw new IllegalStateException("Not connected.");
-        }
+    public String remoteAddr() {
+        return ws_url;
     }
 
     @Override
     public <T> void sendRequest(String method, T params, ResCallback cb) {
-        if (!connected.get()) {
-            throw new IllegalStateException("Not connected.");
-        }
         if (method == null || method.isEmpty()) {
             throw new IllegalArgumentException("method cannot be null or empty");
         }
         if (cb == null) {
             throw new IllegalArgumentException("callback cannot be null");
+        }
+        if (!isConnected()) {
+            throw new IllegalStateException("Not connected.");
         }
 
         String id = UUID.randomUUID().toString();
@@ -162,14 +207,17 @@ public class ConnImpl implements Conn, WebSocketListener {
     }
 
     @Override
-    public void close() {
-        if (!connected.getAndSet(false)) {
-            return;
+    public synchronized void close() {
+        State s = state.getAndSet(State.CLOSED);
+
+        // if connecting, cancel that
+        if (s == State.CONNECTING) {
+            wsConnectRequest.cancel();
         }
 
         try {
             ws.close(0, "");
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -181,18 +229,25 @@ public class ConnImpl implements Conn, WebSocketListener {
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
         ws = webSocket;
-        connecting.set(false);
-        connected.set(true);
+        state.set(State.CONNECTED);
         logger.info("Connected to server: " + ws_url);
-        connCallback.connected();
+
+        // only fire connected event once and not for reconnects
+        if (firstConnection) {
+            connCallback.connected("");
+            firstConnection = false;
+            return;
+        }
+
+        connCallback.connected("reconnected");
     }
 
     @Override
     public void onFailure(IOException e, Response response) {
-        connected.set(false);
+        state.set(State.DISCONNECTED);
         String reason = e.getMessage();
-        logger.warning("Connection closed with error: " + reason);
-        connCallback.disconnected(reason);
+        logger.info("Connection attempt failed, server: " + ws_url + ", reason: " + reason);
+        reconnect(reason);
     }
 
     @Override
@@ -218,7 +273,12 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void onClose(int code, String reason) {
-        connected.set(false);
-        logger.info("Connection closed to server: " + ws_url);
+        // if the user didn't manually close the connection, then server sent a close message
+        if (state.get() != State.CLOSED) {
+            state.set(State.DISCONNECTED);
+        }
+
+        logger.info("Connection closed to server: " + ws_url + ", with reason: " + reason);
+        reconnect(reason);
     }
 }

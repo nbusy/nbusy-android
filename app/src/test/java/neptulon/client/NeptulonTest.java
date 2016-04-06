@@ -35,7 +35,7 @@ public class NeptulonTest {
         final CountDownLatch connCounter = new CountDownLatch(1);
         conn.connect(new ConnCallback() {
             @Override
-            public void connected() {
+            public void connected(String reason) {
                 connCounter.countDown();
             }
 
