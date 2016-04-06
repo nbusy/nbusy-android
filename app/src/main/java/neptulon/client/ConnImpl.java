@@ -161,7 +161,8 @@ public class ConnImpl implements Conn, WebSocketListener {
         if (cb == null) {
             throw new IllegalArgumentException("callback cannot be null");
         }
-        if (isConnected()) {
+        State s = state.get();
+        if (s == State.CONNECTED || s == State.CONNECTING) {
             return;
         }
 
