@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
@@ -99,12 +100,12 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
             chatId = (String) arguments.get(ARG_ITEM_ID);
-            Chat chat = worker.userProfile.getChat(chatId);
-            if (chat.messages.size() == 0) {
+            Optional<Chat> chat = worker.userProfile.getChat(chatId);
+            if (chat.isPresent() && !chat.get().messages.isEmpty()) {
+                messageAdapter = new MessageListArrayAdapter(getActivity(), new ArrayList<>(chat.get().messages));
+            } else {
                 messageAdapter = new MessageListArrayAdapter(getActivity());
                 worker.getChatMessages(chatId);
-            } else {
-                messageAdapter = new MessageListArrayAdapter(getActivity(), new ArrayList<>(chat.messages));
             }
             setListAdapter(messageAdapter);
         }

@@ -1,5 +1,6 @@
 package com.nbusy.app.data;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
@@ -33,29 +34,27 @@ public class Profile {
         }
     }
 
-    public synchronized Chat getChat(String chatId) {
+    public synchronized Optional<Chat> getChat(String chatId) {
         if (chatId == null || chatId.isEmpty()) {
             throw new IllegalArgumentException("chatId cannot be null or empty");
         }
 
-        return chats.get(chatIDtoIndex.get(chatId));
-    }
-
-    private synchronized void setChat(String chatId, Chat chat) {
-        if (chatId == null || chatId.isEmpty()) {
-            throw new IllegalArgumentException("chatId cannot be null or empty");
-        }
-        if (chat == null) {
-            throw new IllegalArgumentException("chat cannot be null");
+        if (!chatIDtoIndex.containsKey(chatId)) {
+            return Optional.absent();
         }
 
-        chats.set(chatIDtoIndex.get(chatId), chat);
+        return Optional.of(chats.get(chatIDtoIndex.get(chatId)));
     }
 
-    public synchronized Chat.ChatAndNewMessages addNewOutgoingMessages(String chatId, String... msgs) {
-        Chat.ChatAndNewMessages chatAndMsgs = getChat(chatId).addNewOutgoingMessages(msgs);
+    public synchronized Optional<Chat.ChatAndNewMessages> addNewOutgoingMessages(String chatId, String... msgs) {
+        Optional<Chat> chat = getChat(chatId);
+        if (!chat.isPresent()) {
+            return Optional.absent();
+        }
+
+        Chat.ChatAndNewMessages chatAndMsgs = chat.get().addNewOutgoingMessages(msgs);
         setChat(chatId, chatAndMsgs.chat);
-        return chatAndMsgs;
+        return Optional.of(chatAndMsgs);
     }
 
     public Set<Chat> setMessageStatuses(Message.Status newStatus, Message... msgs) {
@@ -82,11 +81,27 @@ public class Profile {
             chatIDToMessages.put(msg.chatId, msg);
         }
         for (String chatId : chatIDToMessages.keySet()) {
-            Chat chat = getChat(chatId).upsertMessages(chatIDToMessages.get(chatId));
+            Optional<Chat> chatOpt = getChat(chatId);
+            if (!chatOpt.isPresent()) {
+                continue;
+            }
+
+            Chat chat = chatOpt.get().upsertMessages(chatIDToMessages.get(chatId));
             setChat(chatId, chat);
             upsertedChats.add(chat);
         }
 
         return upsertedChats;
+    }
+
+    private synchronized void setChat(String chatId, Chat chat) {
+        if (chatId == null || chatId.isEmpty()) {
+            throw new IllegalArgumentException("chatId cannot be null or empty");
+        }
+        if (chat == null) {
+            throw new IllegalArgumentException("chat cannot be null");
+        }
+
+        chats.set(chatIDtoIndex.get(chatId), chat);
     }
 }

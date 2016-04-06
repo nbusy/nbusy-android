@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
@@ -59,19 +60,18 @@ public class Worker {
                             client.sendMessages(new SendMsgsCallback() {
                                 @Override
                                 public void sentToServer() {
-                                    // update in memory representation of messages
-                                    // todo: Profile.upsertMessages will probably mess up chats that has 0 loaded messages in them!
-                                    final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
-
-                                    // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
-                                    db.upsertMessages(new DB.UpsertMessagesCallback() {
-                                        @Override
-                                        public void messagesUpserted() {
-                                            Log.i(TAG, "Sent queued messages to server: " + msgs.size());
-                                            // finally, notify all listening views about the changes
-                                            eventBus.post(new ChatsUpdatedEvent(chats));
-                                        }
-                                    }, msgsArray);
+//                                    // update in memory representation of messages
+//                                    final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
+//
+//                                    // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
+//                                    db.upsertMessages(new DB.UpsertMessagesCallback() {
+//                                        @Override
+//                                        public void messagesUpserted() {
+//                                            Log.i(TAG, "Sent queued messages to server: " + msgs.size());
+//                                            // finally, notify all listening views about the changes
+//                                            eventBus.post(new ChatsUpdatedEvent(chats));
+//                                        }
+//                                    }, msgsArray);
                                 }
                             }, DataMaps.getTitanMessages(msgsArray));
                         }
@@ -187,7 +187,12 @@ public class Worker {
     }
 
     public void sendMessages(String chatId, String... msgs) {
-        sendMessages(userProfile.addNewOutgoingMessages(chatId, msgs).messages);
+        Optional<Chat.ChatAndNewMessages> cmOpt = userProfile.addNewOutgoingMessages(chatId, msgs);
+        if (!cmOpt.isPresent()) {
+            return;
+        }
+
+        sendMessages(cmOpt.get().messages);
     }
 
     public void sendMessages(Set<Message> msgs) {

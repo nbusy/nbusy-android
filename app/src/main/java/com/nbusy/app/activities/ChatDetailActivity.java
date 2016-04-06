@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.google.common.base.Optional;
 import com.nbusy.app.R;
+import com.nbusy.app.data.Chat;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
 
@@ -43,7 +45,9 @@ public class ChatDetailActivity extends Activity {
 
         // Set activity title
         String chatId = getIntent().getStringExtra(ChatDetailFragment.ARG_ITEM_ID);
-        setTitle(worker.userProfile.getChat(chatId).peerName);
+        Optional<Chat> chat = worker.userProfile.getChat(chatId);
+        setTitle(chat.isPresent() ? chat.get().peerName : "New Chat");
+
 
         // create the detail fragment and add it to the activity using a fragment transaction.
         Bundle arguments = new Bundle();
