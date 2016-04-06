@@ -112,6 +112,9 @@ public class ConnImpl implements Conn, WebSocketListener {
         if (obj == null) {
             throw new IllegalArgumentException("obj cannot be null");
         }
+        if (!isConnected()) {
+            throw new IllegalStateException("Not connected.");
+        }
 
         final String m = gson.toJson(obj);
         logger.info("Outgoing message: " + m);
