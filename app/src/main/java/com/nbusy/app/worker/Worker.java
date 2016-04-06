@@ -60,18 +60,20 @@ public class Worker {
                             client.sendMessages(new SendMsgsCallback() {
                                 @Override
                                 public void sentToServer() {
-//                                    // update in memory representation of messages
-//                                    final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
-//
-//                                    // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
-//                                    db.upsertMessages(new DB.UpsertMessagesCallback() {
-//                                        @Override
-//                                        public void messagesUpserted() {
-//                                            Log.i(TAG, "Sent queued messages to server: " + msgs.size());
-//                                            // finally, notify all listening views about the changes
-//                                            eventBus.post(new ChatsUpdatedEvent(chats));
-//                                        }
-//                                    }, msgsArray);
+                                    // update in memory representation of messages
+                                    final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
+
+                                    // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
+                                    db.upsertMessages(new DB.UpsertMessagesCallback() {
+                                        @Override
+                                        public void messagesUpserted() {
+                                            Log.i(TAG, "Sent queued messages to server: " + msgs.size());
+                                            // finally, notify all listening views about the changes
+                                            if (!chats.isEmpty()) {
+                                                eventBus.post(new ChatsUpdatedEvent(chats));
+                                            }
+                                        }
+                                    }, msgsArray);
                                 }
                             }, DataMaps.getTitanMessages(msgsArray));
                         }
