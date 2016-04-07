@@ -27,7 +27,7 @@ RUN dpkg --add-architecture i386 && \
 RUN curl -L "${ANDROID_SDK_URL}" | tar --no-same-owner -xz -C /usr/local
 
 # Install Android SDK components
-RUN echo y | android update sdk --no-ui --all --filter "${ANDROID_COMPONENTS,GOOGLE_COMPONENTS,EMULATORS}"
+RUN echo y | android update sdk --no-ui --all --filter "${ANDROID_COMPONENTS},${GOOGLE_COMPONENTS},${EMULATORS}"
 
 # add project files and
 # ./gradlew build connectedCheck
