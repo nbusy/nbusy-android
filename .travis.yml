@@ -1,42 +1,38 @@
 language: android
-
 env:
   global:
-    - ADB_INSTALL_TIMEOUT=8 # minutes (2 minutes by default)
-
+  - ADB_INSTALL_TIMEOUT=8
 android:
   components:
-    # Use the latest revision of Android SDK Tools
-    - platform-tools
-    - tools
-
-    # The BuildTools version used to build the project
-    - build-tools-23.0.2
-
-    # The SDK version used to compile the project
-    - android-23
-
-    # Additional components
-    - extra-android-support
-    - extra-google-google_play_services
-    - extra-google-m2repository
-    - extra-android-m2repository
-    - addon-google_apis-google-23
-
-    # System image used to run emulator for tests
-    - sys-img-armeabi-v7a-addon-google_apis-google-23
-
+  - platform-tools
+  - tools
+  - build-tools-23.0.2
+  - android-23
+  - extra-android-support
+  - extra-google-google_play_services
+  - extra-google-m2repository
+  - extra-android-m2repository
+  - addon-google_apis-google-23
+  - sys-img-armeabi-v7a-addon-google_apis-google-23
 before_script:
-  # Emulator Management: Create, Start and Wait
-  - echo no | android create avd --force --name test --target "Google Inc.:Google APIs:23" --abi "google_apis/armeabi-v7a"
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
-
+- echo no | android create avd --force --name test --target "Google Inc.:Google APIs:23"
+  --abi "google_apis/armeabi-v7a"
+- emulator -avd test -no-skin -no-audio -no-window &
+- android-wait-for-emulator
+- adb shell input keyevent 82 &
+script:
+- "./gradlew build connectedCheck"
+- "./gradlew build assembleRelease"
 before_cache:
-  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-
+- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+deploy:
+  provider: releases
+  api_key:
+    secure: Uki/teY8Vg7ePG15/QGHdF3GondqBOLZTv5m52RkYxmi0cns2K/M9O0P6PW3nPk8uUWtQZOGv8wlDFC/HwMv60pgcPqnxgVjzrT2497Rmj9vQ6BWFHonXRFepYiAQXxlpAeUv6bltnYU1f1JiEKk4UcQzJ6gX5ZrAb+jhtxwVPo=
+  file: app/build/outputs/apk/app-release-unsigned.apk
+  on:
+    repo: nbusy/nbusy-android
