@@ -6,9 +6,9 @@ env:
 
 android:
   components:
-    # Use the latest revision of Android SDK Tools
-    - platform-tools
-    - tools
+    # The Android SDK Tools
+    - platform-tools-23.1
+    - tools-24.4.1
 
     # The BuildTools version used to build the project
     - build-tools-23.0.2
