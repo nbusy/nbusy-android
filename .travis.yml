@@ -24,14 +24,18 @@ android:
     - addon-google_apis-google-23
 
     # System image used to run emulator for tests
-    - sys-img-armeabi-v7a-addon-google_apis-google-23
+    # - sys-img-armeabi-v7a-addon-google_apis-google-23
 
-before_script:
-  # Emulator Management: Create, Start and Wait
-  - echo no | android create avd --force --name test --target "Google Inc.:Google APIs:23" --abi "google_apis/armeabi-v7a"
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
+# before_script:
+#   # Emulator Management: Create, Start and Wait
+#   - echo no | android create avd --force --name test --target "Google Inc.:Google APIs:23" --abi "google_apis/armeabi-v7a"
+#   - emulator -avd test -no-skin -no-audio -no-window &
+#   - android-wait-for-emulator
+#   - adb shell input keyevent 82 &
+
+script:
+  - ./gradlew build check # connectedCheck to enable emulator testing
+  - ./gradlew build assembleRelease
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
