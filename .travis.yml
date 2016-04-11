@@ -59,4 +59,5 @@ deploy:
   file: app/build/outputs/apk/app-release.apk
   skip_cleanup: true
   on:
+    repo: nbusy/nbusy-android
     tags: true
