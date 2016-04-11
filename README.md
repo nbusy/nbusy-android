@@ -18,6 +18,33 @@ Android client app communicates with:
   * Google+ middleware for registration and authentication.
   * Built on [Titan Framework](https://github.com/titan-x)
 
+## Docker
+
+To build and run the build in a Docker container:
+
+```bash
+docker build -t nbusy-android .
+docker run --name nbusy-android --rm nbusy-android
+```
+
+The --name flag gives our container a predictable name to make it easier to work with. The --rm flag tells docker to remove the container image when the build is done.
+
+One you're done, shut down the running container from another terminal window:
+
+```bash
+docker stop nbusy-android
+```
+
+If something goes wrong and you want to stop all containers and delete all containers & images:
+
+```bash
+# stop then delete all containers
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+# delete all images
+docker rmi $(docker images -q)
+```
+
 ## License
 
 [Apache License 2.0](LICENSE)
