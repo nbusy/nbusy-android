@@ -35,7 +35,8 @@ android:
 
 script:
   - ./gradlew build check # connectedCheck to enable emulator testing
-  - ./gradlew build assembleRelease
+  - ./gradlew assembleRelease
+  # - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=$KEYFILE -Pandroid.injected.signing.store.password=$STORE_PASSWORD -Pandroid.injected.signing.key.alias=$KEY_ALIAS -Pandroid.injected.signing.key.password=$KEY_PASSWORD
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
