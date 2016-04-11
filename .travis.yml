@@ -33,6 +33,8 @@ android:
 #   - android-wait-for-emulator
 #   - adb shell input keyevent 82 &
 
+before_install: 'openssl aes-256-cbc -K $encrypted_6a2ee1f3b7a8_key -iv $encrypted_6a2ee1f3b7a8_iv -in nbusy.keystore.enc -out nbusy.keystore -d'
+
 script:
   - ./gradlew build check # connectedCheck to enable emulator testing
   - ./gradlew assembleRelease
