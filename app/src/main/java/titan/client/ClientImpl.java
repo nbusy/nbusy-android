@@ -33,8 +33,8 @@ public class ClientImpl implements Client {
         this.conn = conn;
     }
 
-    public ClientImpl(String url) {
-        this(new ConnImpl(url));
+    public ClientImpl(String url, boolean async) {
+        this(new ConnImpl(url, async));
     }
 
     public ClientImpl() {

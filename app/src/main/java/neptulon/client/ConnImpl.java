@@ -38,6 +38,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final String ws_url;
     private final AtomicReference<State> state = new AtomicReference<>(State.CLOSED);
     private final Router router = new Router();
+    private final boolean async;
     private WebSocketCall wsConnectRequest;
     private WebSocket ws;
     private ConnCallback connCallback;
@@ -57,11 +58,12 @@ public class ConnImpl implements Conn, WebSocketListener {
     /**
      * Initializes a new connection with given server URL.
      */
-    public ConnImpl(String url) {
+    public ConnImpl(String url, boolean async) {
         if (url == null || url.isEmpty()) {
             throw new IllegalArgumentException("url cannot be null or empty");
         }
 
+        this.async = async;
         ws_url = url;
         client = new OkHttpClient.Builder()
                 .connectTimeout(45, TimeUnit.SECONDS)
@@ -78,7 +80,7 @@ public class ConnImpl implements Conn, WebSocketListener {
      * which connects to "ws://127.0.0.1:3000" on Android emulator host machine.
      */
     public ConnImpl() {
-        this("ws://10.0.2.2:3000");
+        this("ws://10.0.2.2:3000", false);
     }
 
     private void reconnect(String reason) {
@@ -118,6 +120,21 @@ public class ConnImpl implements Conn, WebSocketListener {
 
         final String m = gson.toJson(obj);
         logger.info("Outgoing message: " + m);
+
+        if (async) {
+            new Thread(new Runnable() {
+                @Override public void run() {
+                    try {
+                        ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        close();
+                    }
+                }
+            }).start();
+            return;
+        }
+
         try {
             ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
         } catch (IOException e) {

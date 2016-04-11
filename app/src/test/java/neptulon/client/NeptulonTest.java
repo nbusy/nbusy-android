@@ -26,7 +26,7 @@ public class NeptulonTest {
             return;
         }
 
-        Conn conn = new ConnImpl(WS_URL);
+        Conn conn = new ConnImpl(WS_URL, false);
         conn.middleware(new Logger());
         Router router = new Router();
         router.request("echo", new Echo());

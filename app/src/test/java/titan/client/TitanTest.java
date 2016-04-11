@@ -24,7 +24,7 @@ public class TitanTest {
             return;
         }
 
-        Client client = new ClientImpl(WS_URL);
+        Client client = new ClientImpl(WS_URL, false);
 
         final CountDownLatch connCounter = new CountDownLatch(1);
         client.connect(new ConnCallbacksStub() {
