@@ -35,13 +35,13 @@ android:
 
 before_install:
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
-    openssl aes-256-cbc -K $encrypted_6a2ee1f3b7a8_key -iv $encrypted_6a2ee1f3b7a8_iv -in nbusy.keystore.enc -out nbusy.keystore -d
+    openssl aes-256-cbc -K $encrypted_6a2ee1f3b7a8_key -iv $encrypted_6a2ee1f3b7a8_iv -in nbusy.keystore.enc -out nbusy.keystore -d;
     fi
 
 script:
   - ./gradlew build check # connectedCheck to enable emulator testing
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
-    ./gradlew assembleRelease -Pandroid.injected.signing.store.file=nbusy.keystore -Pandroid.injected.signing.store.password=$STORE_PASSWORD -Pandroid.injected.signing.key.alias=nbusy -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+    ./gradlew assembleRelease -Pandroid.injected.signing.store.file=nbusy.keystore -Pandroid.injected.signing.store.password=$STORE_PASSWORD -Pandroid.injected.signing.key.alias=nbusy -Pandroid.injected.signing.key.password=$KEY_PASSWORD;
     fi
 
 before_cache:
