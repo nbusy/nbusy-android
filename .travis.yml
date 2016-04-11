@@ -56,7 +56,7 @@ deploy:
   provider: releases
   api_key:
     secure: Uki/teY8Vg7ePG15/QGHdF3GondqBOLZTv5m52RkYxmi0cns2K/M9O0P6PW3nPk8uUWtQZOGv8wlDFC/HwMv60pgcPqnxgVjzrT2497Rmj9vQ6BWFHonXRFepYiAQXxlpAeUv6bltnYU1f1JiEKk4UcQzJ6gX5ZrAb+jhtxwVPo=
-  file: app/build/outputs/apk/app-release-unsigned.apk
+  file: app/build/outputs/apk/app-release.apk
   skip_cleanup: true
   on:
     tags: true
