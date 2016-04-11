@@ -76,11 +76,10 @@ public class InMemDB implements DB {
                     msgs = new LinkedList<>(
                             Collections.singletonList(
                                     new Message(UUID.randomUUID().toString(), "1", "User ID: 1", null, false, "Test test.", new Date(), Message.Status.NEW)));
+                    cb.chatMessagesRetrieved(msgs);
                 } else {
                     msgs = new ArrayList<>();
                 }
-
-                cb.chatMessagesRetrieved(msgs);
             }
         });
     }
