@@ -3,6 +3,7 @@ language: android
 env:
   global:
     - ADB_INSTALL_TIMEOUT=8 # minutes (2 minutes by default)
+  #  - secure:
 
 android:
   components:
@@ -38,7 +39,7 @@ before_install: 'openssl aes-256-cbc -K $encrypted_6a2ee1f3b7a8_key -iv $encrypt
 script:
   - ./gradlew build check # connectedCheck to enable emulator testing
   - ./gradlew assembleRelease
-  # - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=$KEYFILE -Pandroid.injected.signing.store.password=$STORE_PASSWORD -Pandroid.injected.signing.key.alias=$KEY_ALIAS -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+  # - ./gradlew assembleRelease -Pandroid.injected.signing.store.file=nbusy.keystore -Pandroid.injected.signing.store.password=$STORE_PASSWORD -Pandroid.injected.signing.key.alias=nbusy -Pandroid.injected.signing.key.password=$KEY_PASSWORD
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
