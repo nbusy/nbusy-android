@@ -18,4 +18,6 @@ public class ClientImpl extends titan.client.ClientImpl implements Client {
     public ClientImpl() {
         super();
     }
+
+    // todo: this sdk should have proper debug/production urls to connect to and provide easy connection to dev nbusy server in docker etc.
 }
