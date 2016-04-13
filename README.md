@@ -1,4 +1,4 @@
-# [![NBusy](http://soygul.com/nbusy/logo.png)](http://nbusy.com/)
+# [NBusy](http://nbusy.com/)
 
 [![Build Status](https://travis-ci.org/nbusy/nbusy-android.svg?branch=master)](https://travis-ci.org/nbusy/nbusy-android)
 
