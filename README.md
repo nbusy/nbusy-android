@@ -1,4 +1,4 @@
-# [NBusy](http://nbusy.com/)
+# NBusy Android
 
 [![Build Status](https://travis-ci.org/nbusy/nbusy-android.svg?branch=master)](https://travis-ci.org/nbusy/nbusy-android)
 
