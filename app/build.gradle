@@ -7,8 +7,8 @@ android {
         applicationId "com.nbusy.app"
         minSdkVersion 22
         targetSdkVersion 23
-        versionCode 9
-        versionName '0.9'
+        versionCode 10
+        versionName '0.10'
     }
     buildTypes {
         release {
