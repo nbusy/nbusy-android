@@ -38,7 +38,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         // profile (name, profile picture URL, etc) so you should not need to
         // make an additional call to personalize your application.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestIdToken(getString(R.string.server_client_id))
+                .requestIdToken("218602439235-feaql1qdttn67m35lgi0870jdmd361hn.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
 
