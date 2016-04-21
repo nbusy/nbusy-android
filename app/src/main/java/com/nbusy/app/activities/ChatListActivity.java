@@ -11,6 +11,8 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.nbusy.app.R;
+import com.nbusy.app.worker.Worker;
+import com.nbusy.app.worker.WorkerSingleton;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,6 +39,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     private static final String PROPERTY_APP_VERSION = "appVer";
     private static final String PROPERTY_REG_ID = "regId";
     private static final String SENDER_ID = "218602439235";
+    private final Worker worker = WorkerSingleton.getWorker();
     private final AtomicInteger msgId = new AtomicInteger();
     private GoogleCloudMessaging gcm;
     private String regId;
@@ -75,6 +78,12 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("just testing from Android simulator");
         sendGcmMessage("test 2");
         sendGcmMessage("test 3");
+
+        // show login dialog if user is not logged in
+//        if (worker.getLogin(...callback...))
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra("wow", "yeah");
+        startActivity(intent);
     }
 
     /**
