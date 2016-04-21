@@ -31,10 +31,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         setContentView(R.layout.activity_login);
 
         // Button click listeners
-//        findViewById(R.id.sign_in_button).setOnClickListener(this);
+        findViewById(R.id.login_button).setOnClickListener(this);
 
-
-        // [START configure_signin]
         // Request only the user's ID token, which can be used to identify the
         // user securely to your backend. This will contain the user's basic
         // profile (name, profile picture URL, etc) so you should not need to
@@ -43,7 +41,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 //                .requestIdToken(getString(R.string.server_client_id))
                 .requestEmail()
                 .build();
-        // [END configure_signin]
 
         // Build GoogleAPIClient with the Google Sign-In API and the above options.
         googleApiClient = new GoogleApiClient.Builder(this)
@@ -66,7 +63,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     @Override
                     public void onResult(Status status) {
                         Log.d(TAG, "signOut:onResult:" + status);
-                        updateUI(false);
                     }
                 });
     }
@@ -77,7 +73,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     @Override
                     public void onResult(Status status) {
                         Log.d(TAG, "revokeAccess:onResult:" + status);
-                        updateUI(false);
                     }
                 });
     }
@@ -87,7 +82,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_GET_TOKEN) {
-            // [START get_id_token]
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             Log.d(TAG, "onActivityResult:GET_TOKEN:success:" + result.getStatus().isSuccess());
 
@@ -95,36 +89,26 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 GoogleSignInAccount acct = result.getSignInAccount();
                 String idToken = acct.getIdToken();
 
-                // Show signed-in UI.
                 Log.d(TAG, "idToken:" + idToken);
-                updateUI(true);
-
                 // TODO(user): send token to server and validate server-side
             } else {
-                // Show signed-out UI.
-                updateUI(false);
+
             }
-            // [END get_id_token]
         }
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-        // be available.
+        // An unresolvable error has occurred and Google APIs (including Sign-In) will not be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
-    }
-
-    private void updateUI(boolean signedIn) {
-
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-//            case R.id.sign_in_button:
-//                getIdToken();
-//                break;
+            case R.id.login_button:
+                getIdToken();
+                break;
         }
     }
 }
