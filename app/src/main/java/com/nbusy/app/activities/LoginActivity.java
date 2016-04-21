@@ -38,7 +38,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         // profile (name, profile picture URL, etc) so you should not need to
         // make an additional call to personalize your application.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("218602439235-feaql1qdttn67m35lgi0870jdmd361hn.apps.googleusercontent.com")
+                .requestIdToken("218602439235-6g09g0ap6i8v25v3rel49rtqjcu9ppj0.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
 
@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         // consent screen will be shown here.
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(signInIntent, RC_GET_TOKEN);
+        Log.d(TAG, "getIDToken: starting to get id token");
     }
 
     private void signOut() {
