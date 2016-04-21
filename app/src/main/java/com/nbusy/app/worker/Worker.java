@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
-import titan.client.callbacks.JwtAuthCallback;
+import titan.client.callbacks.AuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
 
 /**
@@ -49,7 +49,7 @@ public class Worker {
         @Override
         public void connected(String reason) {
             Log.i(TAG, "Connected to NBusy server with reason: " + reason);
-            client.jwtAuth(JWT_TOKEN, new JwtAuthCallback() {
+            client.jwtAuth(JWT_TOKEN, new AuthCallback() {
                 @Override
                 public void success() {
                     Log.i(TAG, "Authenticated with NBusy server.");

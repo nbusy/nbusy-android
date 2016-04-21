@@ -10,10 +10,10 @@ import neptulon.client.ResCtx;
 import neptulon.client.callbacks.ResCallback;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
-import titan.client.callbacks.JwtAuthCallback;
+import titan.client.callbacks.AuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.EchoMessage;
-import titan.client.messages.JwtAuth;
+import titan.client.messages.TokenAuth;
 import titan.client.messages.Message;
 
 /**
@@ -77,7 +77,16 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public boolean jwtAuth(String token, final JwtAuthCallback cb) {
+    public boolean jwtAuth(String token, final AuthCallback cb) {
+        return tokenAuth(token, "auth.jwt", cb);
+    }
+
+    @Override
+    public boolean googleAuth(String token, final AuthCallback cb) {
+        return tokenAuth(token, "auth.google", cb);
+    }
+
+    private boolean tokenAuth(String token, String method, final AuthCallback cb) {
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("token cannot be null or empty");
         }
@@ -88,7 +97,7 @@ public class ClientImpl implements Client {
             return false;
         }
 
-        conn.sendRequest("auth.jwt", new JwtAuth(token), new ResCallback() {
+        conn.sendRequest(method, new TokenAuth(token), new ResCallback() {
             @Override
             public void callback(ResCtx ctx) {
                 String res = ctx.getResult(String.class);

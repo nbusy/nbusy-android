@@ -5,7 +5,7 @@ import org.junit.Test;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
-import titan.client.callbacks.JwtAuthCallback;
+import titan.client.callbacks.AuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.Message;
 
@@ -36,7 +36,7 @@ public class TitanTest {
         awaitThrows(connCounter);
 
         final CountDownLatch authCounter = new CountDownLatch(1);
-        client.jwtAuth(JWT_TOKEN, new JwtAuthCallback() {
+        client.jwtAuth(JWT_TOKEN, new AuthCallback() {
             @Override
             public void success() {
                 authCounter.countDown();
