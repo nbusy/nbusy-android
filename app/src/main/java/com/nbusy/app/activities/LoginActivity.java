@@ -15,6 +15,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.nbusy.app.R;
+import com.nbusy.app.worker.Worker;
+import com.nbusy.app.worker.WorkerSingleton;
 
 /**
  * Receive ID token for the current Google user.
@@ -22,6 +24,7 @@ import com.nbusy.app.R;
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     private static final String TAG = ChatDetailFragment.class.getSimpleName();
+    private final Worker worker = WorkerSingleton.getWorker();
     private static final int RC_GET_TOKEN = 9002;
     private GoogleApiClient googleApiClient;
 
@@ -91,6 +94,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 String idToken = acct.getIdToken();
 
                 Log.d(TAG, "idToken:" + idToken);
+                worker.googleAuth(idToken);
                 // TODO(user): send token to server and validate server-side
             } else {
 

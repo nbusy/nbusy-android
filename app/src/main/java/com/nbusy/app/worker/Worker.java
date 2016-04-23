@@ -52,7 +52,7 @@ public class Worker {
             client.jwtAuth(JWT_TOKEN, new AuthCallback() {
                 @Override
                 public void success() {
-                    Log.i(TAG, "Authenticated with NBusy server.");
+                    Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
                     db.getQueuedMessages(new DB.GetChatMessagesCallback() {
                         @Override
                         public void chatMessagesRetrieved(final List<Message> msgs) {
@@ -82,7 +82,7 @@ public class Worker {
 
                 @Override
                 public void fail() {
-                    Log.i(TAG, "Authentication failed with NBusy server.");
+                    Log.i(TAG, "Authentication failed with NBusy server using JWT auth.");
                 }
             });
         }
@@ -245,6 +245,24 @@ public class Worker {
                 }, DataMaps.getTitanMessages(msgs));
             }
         }, msgs);
+    }
+
+    public void googleAuth(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("token cannot be null or empty");
+        }
+
+        client.googleAuth(token, new AuthCallback() {
+            @Override
+            public void success() {
+                Log.i(TAG, "Authenticated with NBusy server using Google auth.");
+            }
+
+            @Override
+            public void fail() {
+                Log.i(TAG, "Authenticated with NBusy server using Google auth.");
+            }
+        });
     }
 
     /***********************
