@@ -23,7 +23,7 @@ import com.nbusy.app.worker.WorkerSingleton;
  */
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
-    private static final String TAG = ChatDetailFragment.class.getSimpleName();
+    private static final String TAG = LoginActivity.class.getSimpleName();
     private final Worker worker = WorkerSingleton.getWorker();
     private static final int RC_GET_TOKEN = 9002;
     private GoogleApiClient googleApiClient;
