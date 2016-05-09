@@ -11,7 +11,7 @@ ENV ANDROID_COMPONENTS platform-tools,tools,build-tools-23.0.3,android-23
 ENV GOOGLE_COMPONENTS extra-android-support,extra-google-google_play_services,extra-google-m2repository,extra-android-m2repository,addon-google_apis-google-23
 
 # System images used to run emulators for tests
-ENV EMULATORS sys-img-armeabi-v7a-addon-google_apis-google-23 # todo: Error: Ignoring unknown package filter 'sys-img-armeabi-v7a-addon-google_apis-google-23'
+ENV EMULATORS sys-img-armeabi-v7a-google_apis-23,sys-img-x86-google_apis-23,sys-img-x86_64-google_apis-23
 
 ENV ANDROID_HOME /usr/local/android-sdk-linux
 ENV ANDROID_SDK /usr/local/android-sdk-linux
@@ -27,7 +27,7 @@ RUN dpkg --add-architecture i386 && \
 RUN curl -L "${ANDROID_SDK_URL}" | tar --no-same-owner -xz -C /usr/local
 
 # Install Android SDK components
-RUN echo y | android update sdk --no-ui --all --filter "${ANDROID_COMPONENTS},${GOOGLE_COMPONENTS}"
+RUN echo y | android update sdk --no-ui --all --filter "${ANDROID_COMPONENTS},${GOOGLE_COMPONENTS},${EMULATORS}"
 
 # add project files and
 # ./gradlew build connectedCheck
