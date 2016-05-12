@@ -45,6 +45,23 @@ docker rm -f $(docker ps -a -q)
 docker rmi -f $(docker images -q)
 ```
 
+## Updating Gradle Wrapper
+
+Run the following command 2 times in a row:
+
+```bash
+./gradlew wrapper --gradle-distribution-url https://services.gradle.org/distributions/gradle-2.13-all.zip
+```
+
+and make sure that following files are updated:
+
+```
+gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties
+gradlew
+gradlew.bat
+```
+
 ## License
 
 [Apache License 2.0](LICENSE)
