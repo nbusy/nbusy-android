@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 
 import java.util.concurrent.Executor;
 
-public class UiThreadExecutor implements Executor {
+public class UIThreadExecutor implements Executor {
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override

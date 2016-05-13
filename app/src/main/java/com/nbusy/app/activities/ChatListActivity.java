@@ -18,20 +18,14 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * An activity representing a list of Chats. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link ChatDetailActivity} representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
+ * An activity representing a list of Chats. This activity has different presentations for handset and tablet-size devices. On
+ * handsets, the activity presents a list of items, which when touched, lead to a {@link ChatDetailActivity} representing
+ * item details. On tablets, the activity presents the list of items and item details side-by-side using two vertical panes.
  * <p/>
- * The activity makes heavy use of fragments. The list of items is a
- * {@link ChatListFragment} and the item details
+ * The activity makes heavy use of fragments. The list of items is a {@link ChatListFragment} and the item details
  * (if present) is a {@link ChatDetailFragment}.
  * <p/>
- * This activity also implements the required
- * {@link ChatListFragment.Callbacks} interface
- * to listen for item selections.
+ * This activity also implements the required {@link ChatListFragment.Callbacks} interface to listen for item selections.
  */
 public class ChatListActivity extends Activity implements ChatListFragment.Callbacks {
 

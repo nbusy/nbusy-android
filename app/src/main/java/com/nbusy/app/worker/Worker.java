@@ -119,7 +119,7 @@ public class Worker {
     }
 
     public Worker() {
-        this(new ClientImpl(), new AsyncEventBus(TAG, new UiThreadExecutor()), new InMemDB());
+        this(new ClientImpl(), new AsyncEventBus(TAG, new UIThreadExecutor()), new InMemDB());
     }
 
     public void destroy() {
