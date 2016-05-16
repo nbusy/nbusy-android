@@ -8,8 +8,12 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.google.common.eventbus.Subscribe;
+import com.nbusy.app.data.Chat;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * A list fragment representing a list of Chats. This fragment
@@ -23,6 +27,7 @@ import com.nbusy.app.worker.WorkerSingleton;
 public class ChatListFragment extends ListFragment {
 
     private final Worker worker = WorkerSingleton.getWorker();
+    private ChatListArrayAdapter chatAdapter;
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -62,7 +67,7 @@ public class ChatListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (worker.userProfile != null) {
-            setListAdapter(new ChatListArrayAdapter(getActivity(), worker.userProfile.chats));
+            setData(worker.userProfile.getChats());
         }
     }
 
@@ -128,7 +133,7 @@ public class ChatListFragment extends ListFragment {
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         if (callbacks != null) {
-            callbacks.onItemSelected(worker.userProfile.chats.get(position).id);
+            callbacks.onItemSelected(chatAdapter.getItem(position).id);
         }
     }
 
@@ -163,12 +168,17 @@ public class ChatListFragment extends ListFragment {
         activatedPosition = position;
     }
 
+    private synchronized void setData(Collection<Chat> chats) {
+        chatAdapter = new ChatListArrayAdapter(getActivity(), new ArrayList<>(chats));
+        setListAdapter(chatAdapter);
+    }
+
     /******************************
      * Worker Event Subscriptions *
      ******************************/
 
     @Subscribe
     public void userProfileRetrievedEventHandler(Worker.UserProfileRetrievedEvent e) {
-        setListAdapter(new ChatListArrayAdapter(getActivity(), e.profile.chats));
+        setData(e.profile.getChats());
     }
 }
