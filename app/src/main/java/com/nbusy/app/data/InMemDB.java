@@ -30,7 +30,7 @@ public class InMemDB implements DB {
                     chats.add(new Chat(UUID.randomUUID().toString(), "Chuck Norris", "This is my last-first message!", new Date()));
                 }
 
-                cb.profileRetrieved(new Profile(UUID.randomUUID().toString(), chats));
+                cb.profileRetrieved(new Profile(chats));
             }
         });
     }

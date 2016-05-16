@@ -14,21 +14,16 @@ import java.util.Set;
  * User profile including user information and chats.
  */
 public final class Profile {
-    public final String userId;
 
     // todo: user sorted map by last message time
     // todo: use a map that does not accept dupe keys or values
     private final HashMap<String, Chat> chats = new HashMap<>(); // chat ID -> chat
 
-    public Profile(String userId, List<Chat> chats) {
-        if (userId == null || userId.isEmpty()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
-        }
+    public Profile(List<Chat> chats) {
         if (chats == null) {
             throw new IllegalArgumentException("chats cannot be null");
         }
 
-        this.userId = userId;
         for (Chat chat : chats) {
             this.chats.put(chat.id, chat);
         }
