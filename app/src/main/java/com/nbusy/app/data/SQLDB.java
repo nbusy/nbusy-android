@@ -7,17 +7,27 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class SQLDB extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 2;
-    private static final String DICTIONARY_TABLE_NAME = "dictionary";
-    private static final String DICTIONARY_TABLE_CREATE = "CREATE TABLE " + DICTIONARY_TABLE_NAME + " ( wow TEXT, ywH TEXT);";
+    private static final String TAG = SQLDB.class.getSimpleName();
+    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "nbusy";
+    private SQLiteDatabase db;
 
     public SQLDB(Context context) {
-        super(context, null /* null name for in mem db */, null, DATABASE_VERSION);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(DICTIONARY_TABLE_CREATE);
+        this.db = db;
+
+        // todo: https://github.com/android/platform_development/blob/master/samples/NotePad/src/com/example/android/notepad/NotePadProvider.java
+//        db.execSQL("CREATE TABLE " + NotePad.Notes.TABLE_NAME + " ("
+//                + NotePad.Notes._ID + " INTEGER PRIMARY KEY,"
+//                + NotePad.Notes.COLUMN_NAME_TITLE + " TEXT,"
+//                + NotePad.Notes.COLUMN_NAME_NOTE + " TEXT,"
+//                + NotePad.Notes.COLUMN_NAME_CREATE_DATE + " INTEGER,"
+//                + NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE + " INTEGER"
+//                + ");");
     }
 
     @Override
