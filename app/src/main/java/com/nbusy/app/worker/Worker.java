@@ -109,6 +109,8 @@ public class Worker {
         this.eventBus = eventBus;
         this.db = db;
         client.connect(connCallbacks);
+
+        // todo: shall we always call this?
         db.getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile up) {
