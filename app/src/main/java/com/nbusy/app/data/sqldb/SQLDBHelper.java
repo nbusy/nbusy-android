@@ -1,25 +1,22 @@
-package com.nbusy.app.data;
+package com.nbusy.app.data.sqldb;
 
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class SQLDB extends SQLiteOpenHelper {
+public class SQLDBHelper extends SQLiteOpenHelper {
 
-    private static final String TAG = SQLDB.class.getSimpleName();
-    private static final int DATABASE_VERSION = 1;
+    private static final String TAG = SQLDBHelper.class.getSimpleName();
+    private static final int DATABASE_VERSION = 1; // increment this whenever schema changes
     private static final String DATABASE_NAME = "nbusy";
-    private SQLiteDatabase db;
 
-    public SQLDB(Context context) {
+    public SQLDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        this.db = db;
-
         // todo: https://github.com/android/platform_development/blob/master/samples/NotePad/src/com/example/android/notepad/NotePadProvider.java
 //        db.execSQL("CREATE TABLE " + NotePad.Notes.TABLE_NAME + " ("
 //                + NotePad.Notes._ID + " INTEGER PRIMARY KEY,"
