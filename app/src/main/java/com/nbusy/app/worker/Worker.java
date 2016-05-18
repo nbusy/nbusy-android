@@ -8,6 +8,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+import com.nbusy.app.activities.LoginActivity;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMaps;
@@ -124,9 +125,7 @@ public class Worker {
 
             @Override
             public void error() {
-                // todo: we need to sho the login dialog, if there are any active activities (contexts)
-//                Intent intent = new Intent(this, LoginActivity.class);
-//                startActivity(intent);
+                startLogin();
             }
         });
     }
@@ -178,6 +177,21 @@ public class Worker {
      */
     public boolean needConnection() {
         return !subscribers.isEmpty(); // todo: or there are ongoing operations or queued operations or standby timer is still running
+    }
+
+    private void startLogin() {
+        if (subscribers.size() == 0) {
+            return;
+        }
+
+        Object o = subscribers.get(subscribers.size() - 1);
+        if (!(o instanceof Context)) {
+            return;
+        }
+
+        Context ctx = (Context)o;
+        Intent intent = new Intent(ctx, LoginActivity.class);
+        ctx.startActivity(intent);
     }
 
     /************************
