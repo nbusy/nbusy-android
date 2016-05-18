@@ -41,7 +41,7 @@ public class Worker {
     private final EventBus eventBus;
     private final DB db;
     private final AtomicBoolean loginNeeded = new AtomicBoolean(false);
-    public Profile userProfile;
+    public Profile userProfile; // todo: this needs to be atomic now
     private ConnCallbacks connCallbacks = new ConnCallbacks() {
         @Override
         public void messagesReceived(titan.client.messages.Message... msgs) {
