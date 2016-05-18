@@ -110,14 +110,15 @@ public class Worker {
         this.db = db;
         client.connect(connCallbacks);
 
-        // todo: shall we always call this?
-        db.getProfile(new DB.GetProfileCallback() {
-            @Override
-            public void profileRetrieved(Profile up) {
-                userProfile = up;
-                eventBus.post(new UserProfileRetrievedEvent(userProfile));
-            }
-        });
+        if (userProfile == null) {
+            db.getProfile(new DB.GetProfileCallback() {
+                @Override
+                public void profileRetrieved(Profile up) {
+                    userProfile = up;
+                    eventBus.post(new UserProfileRetrievedEvent(userProfile));
+                }
+            });
+        }
     }
 
     public Worker() {
