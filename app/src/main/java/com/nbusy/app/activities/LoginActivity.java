@@ -63,17 +63,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         if (requestCode == RC_GET_TOKEN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            Log.d(TAG, "onActivityResult:GET_TOKEN:success:" + result.getStatus().isSuccess());
+            Log.d(TAG, "onActivityResult: GET_TOKEN: is success: " + result.getStatus().isSuccess());
 
             if (result.isSuccess()) {
                 GoogleSignInAccount acct = result.getSignInAccount();
                 String idToken = acct.getIdToken();
 
-                Log.d(TAG, "idToken:" + idToken);
+                Log.d(TAG, "idToken: " + idToken);
                 worker.googleAuth(idToken);
-                // TODO(user): send token to server and validate server-side
             } else {
-
+                // todo: show a toast notification and ask user to retry
             }
         }
     }
