@@ -118,6 +118,7 @@ public class Worker {
             @Override
             public void profileRetrieved(Profile up) {
                 userProfile = up;
+                client.connect(connCallbacks);
                 eventBus.post(new UserProfileRetrievedEvent(userProfile));
             }
         });
