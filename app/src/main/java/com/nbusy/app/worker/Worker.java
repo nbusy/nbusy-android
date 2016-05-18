@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import titan.client.callbacks.AuthCallback;
 import titan.client.callbacks.ConnCallbacks;
@@ -39,6 +40,7 @@ public class Worker {
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
+    private final AtomicBoolean loginNeeded = new AtomicBoolean(false);
     public Profile userProfile;
     private ConnCallbacks connCallbacks = new ConnCallbacks() {
         @Override
@@ -125,7 +127,7 @@ public class Worker {
 
             @Override
             public void error() {
-                startLogin();
+                loginNeeded.set(true);
             }
         });
     }
@@ -164,6 +166,11 @@ public class Worker {
 
         subscribers.add(o);
         eventBus.register(o);
+
+        if (loginNeeded.getAndSet(false)) {
+            Intent intent = new Intent(c, LoginActivity.class);
+            c.startActivity(intent);
+        }
     }
 
     public void unregister(Object o) {
@@ -177,21 +184,6 @@ public class Worker {
      */
     public boolean needConnection() {
         return !subscribers.isEmpty(); // todo: or there are ongoing operations or queued operations or standby timer is still running
-    }
-
-    private void startLogin() {
-        if (subscribers.size() == 0) {
-            return;
-        }
-
-        Object o = subscribers.get(subscribers.size() - 1);
-        if (!(o instanceof Context)) {
-            return;
-        }
-
-        Context ctx = (Context)o;
-        Intent intent = new Intent(ctx, LoginActivity.class);
-        ctx.startActivity(intent);
     }
 
     /************************
