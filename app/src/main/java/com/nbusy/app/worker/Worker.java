@@ -34,7 +34,6 @@ import titan.client.callbacks.SendMsgsCallback;
  */
 public class Worker {
     private static final String TAG = Worker.class.getSimpleName();
-    private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA";
     private final List<Object> subscribers = new CopyOnWriteArrayList<>();
     private final Client client;
     private final EventBus eventBus;
@@ -49,7 +48,7 @@ public class Worker {
         @Override
         public void connected(String reason) {
             Log.i(TAG, "Connected to NBusy server with reason: " + reason);
-            client.jwtAuth(JWT_TOKEN, new AuthCallback() {
+            client.jwtAuth(userProfile.JWTToken, new AuthCallback() {
                 @Override
                 public void success() {
                     Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
@@ -104,21 +103,24 @@ public class Worker {
             throw new IllegalArgumentException("db cannot be null ");
         }
 
-        Log.i(TAG, "Instance created.");
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
-        client.connect(connCallbacks);
 
-        if (userProfile == null) {
-            db.getProfile(new DB.GetProfileCallback() {
-                @Override
-                public void profileRetrieved(Profile up) {
-                    userProfile = up;
-                    eventBus.post(new UserProfileRetrievedEvent(userProfile));
-                }
-            });
+        Log.i(TAG, "Instance created.");
+
+        if (userProfile != null) {
+            client.connect(connCallbacks);
+            return;
         }
+
+        db.getProfile(new DB.GetProfileCallback() {
+            @Override
+            public void profileRetrieved(Profile up) {
+                userProfile = up;
+                eventBus.post(new UserProfileRetrievedEvent(userProfile));
+            }
+        });
     }
 
     public Worker() {
