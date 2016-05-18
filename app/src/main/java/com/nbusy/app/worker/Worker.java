@@ -23,9 +23,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import titan.client.callbacks.AuthCallback;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
-import titan.client.callbacks.AuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
 
 /**
@@ -116,10 +116,17 @@ public class Worker {
 
         db.getProfile(new DB.GetProfileCallback() {
             @Override
-            public void profileRetrieved(Profile up) {
-                userProfile = up;
+            public void profileRetrieved(Profile prof) {
+                userProfile = prof;
                 client.connect(connCallbacks);
                 eventBus.post(new UserProfileRetrievedEvent(userProfile));
+            }
+
+            @Override
+            public void error() {
+                // todo: we need to sho the login dialog, if there are any active activities (contexts)
+//                Intent intent = new Intent(this, LoginActivity.class);
+//                startActivity(intent);
             }
         });
     }

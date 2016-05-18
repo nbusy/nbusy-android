@@ -72,12 +72,6 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("just testing from Android simulator");
         sendGcmMessage("test 2");
         sendGcmMessage("test 3");
-
-        // show login dialog if user is not logged in
-//        if (profile.loggedIn == true || worker.getLogin(...callback...))
-//        Intent intent = new Intent(this, LoginActivity.class);
-//        intent.putExtra("wow", "yeah");
-//        startActivity(intent);
     }
 
     /**
