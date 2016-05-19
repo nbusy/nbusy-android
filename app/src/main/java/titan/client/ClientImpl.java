@@ -95,10 +95,10 @@ public class ClientImpl implements Client {
             @Override
             public void callback(ResCtx ctx) {
                 GoogleAuthResponse res = ctx.getResult(GoogleAuthResponse.class);
-                if (res == null) {  // todo: check ctx.isSuccess() rather and pass in error response to fail
-                    cb.fail();
-                } else {
+                if (ctx.isSuccess) {
                     cb.success(res);
+                } else {
+                    cb.fail(ctx.errorCode, ctx.errorMessage);
                 }
             }
         });

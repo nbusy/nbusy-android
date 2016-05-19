@@ -281,8 +281,8 @@ public class Worker {
             }
 
             @Override
-            public void fail() {
-                Log.i(TAG, "Authenticated with NBusy server using Google auth.");
+            public void fail(int code, String message) {
+                Log.i(TAG, "Failed to authenticate with NBusy server using Google auth: " + code + " : " + message);
             }
         });
     }

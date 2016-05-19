@@ -4,5 +4,5 @@ import titan.client.responses.GoogleAuthResponse;
 
 public interface GoogleAuthCallback {
     void success(GoogleAuthResponse res);
-    void fail();
+    void fail(int code, String message);
 }
