@@ -8,6 +8,7 @@ import neptulon.client.Conn;
 import neptulon.client.ConnImpl;
 import neptulon.client.ResCtx;
 import neptulon.client.callbacks.ResCallback;
+import titan.client.callbacks.GoogleAuthCallback;
 import titan.client.middleware.RecvMsgsMiddleware;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
@@ -16,6 +17,7 @@ import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.EchoMessage;
 import titan.client.messages.TokenMessage;
 import titan.client.messages.MsgMessage;
+import titan.client.responses.GoogleAuthResponse;
 
 /**
  * Titan client implementation: https://github.com/titan-x/titan
@@ -78,16 +80,7 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public boolean jwtAuth(String token, final JWTAuthCallback cb) {
-        return tokenAuth(token, "auth.jwt", cb);
-    }
-
-    @Override
-    public boolean googleAuth(String token, final JWTAuthCallback cb) {
-        return tokenAuth(token, "auth.google", cb);
-    }
-
-    private boolean tokenAuth(String token, String method, final JWTAuthCallback cb) {
+    public boolean googleAuth(String token, final GoogleAuthCallback cb) {
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("token cannot be null or empty");
         }
@@ -98,7 +91,33 @@ public class ClientImpl implements Client {
             return false;
         }
 
-        conn.sendRequest(method, new TokenMessage(token), new ResCallback() {
+        conn.sendRequest( "auth.google", new TokenMessage(token), new ResCallback() {
+            @Override
+            public void callback(ResCtx ctx) {
+                GoogleAuthResponse res = ctx.getResult(GoogleAuthResponse.class);
+                if (res == null) {  // todo: check ctx.isSuccess() rather and pass in error response to fail
+                    cb.fail();
+                } else {
+                    cb.success(res);
+                }
+            }
+        });
+        return true;
+    }
+
+    @Override
+    public boolean jwtAuth(String token, final JWTAuthCallback cb) {
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("token cannot be null or empty");
+        }
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+        if (!ensureConn()) {
+            return false;
+        }
+
+        conn.sendRequest("auth.jwt", new TokenMessage(token), new ResCallback() {
             @Override
             public void callback(ResCtx ctx) {
                 String res = ctx.getResult(String.class);

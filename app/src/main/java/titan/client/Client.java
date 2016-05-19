@@ -2,6 +2,7 @@ package titan.client;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
+import titan.client.callbacks.GoogleAuthCallback;
 import titan.client.callbacks.JWTAuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
@@ -14,9 +15,9 @@ public interface Client {
 
     boolean isConnected();
 
-    boolean jwtAuth(String token, JWTAuthCallback cb);
+    boolean googleAuth(String token, GoogleAuthCallback cb);
 
-    boolean googleAuth(String token, JWTAuthCallback cb);
+    boolean jwtAuth(String token, JWTAuthCallback cb);
 
     boolean echo(String msg, EchoCallback cb);
 
