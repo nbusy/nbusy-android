@@ -25,10 +25,11 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import titan.client.callbacks.AuthCallback;
+import titan.client.callbacks.JWTAuthCallback;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.SendMsgsCallback;
+import titan.client.messages.MsgMessage;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -44,14 +45,14 @@ public class Worker {
     public Profile userProfile; // todo: this needs to be atomic now
     private ConnCallbacks connCallbacks = new ConnCallbacks() {
         @Override
-        public void messagesReceived(titan.client.messages.Message... msgs) {
+        public void messagesReceived(MsgMessage... msgs) {
             receiveMessages(msgs);
         }
 
         @Override
         public void connected(String reason) {
             Log.i(TAG, "Connected to NBusy server with reason: " + reason);
-            client.jwtAuth(userProfile.JWTToken, new AuthCallback() {
+            client.jwtAuth(userProfile.JWTToken, new JWTAuthCallback() {
                 @Override
                 public void success() {
                     Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
@@ -190,7 +191,7 @@ public class Worker {
      * Server Communication *
      ************************/
 
-    private void receiveMessages(titan.client.messages.Message... msgs) {
+    private void receiveMessages(MsgMessage... msgs) {
         if (msgs == null || msgs.length == 0) {
             throw new IllegalArgumentException("messages cannot be null or empty");
         }
@@ -232,7 +233,7 @@ public class Worker {
                 @Override
                 public void echoResponse(String msg) {
                     eventBus.post(new ChatsUpdatedEvent(userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
-                    receiveMessages(new titan.client.messages.Message(m.chatId, "echo", null, m.sent, msg));
+                    receiveMessages(new MsgMessage(m.chatId, "echo", null, m.sent, msg));
                 }
             });
             return;
@@ -271,7 +272,7 @@ public class Worker {
             throw new IllegalArgumentException("token cannot be null or empty");
         }
 
-        client.googleAuth(token, new AuthCallback() {
+        client.googleAuth(token, new JWTAuthCallback() {
             @Override
             public void success() {
                 Log.i(TAG, "Authenticated with NBusy server using Google auth.");

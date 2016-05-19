@@ -5,9 +5,9 @@ import org.junit.Test;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
-import titan.client.callbacks.AuthCallback;
+import titan.client.callbacks.JWTAuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
-import titan.client.messages.Message;
+import titan.client.messages.MsgMessage;
 
 import static neptulon.client.Utils.JWT_TOKEN;
 import static neptulon.client.Utils.WS_URL;
@@ -36,7 +36,7 @@ public class TitanTest {
         awaitThrows(connCounter);
 
         final CountDownLatch authCounter = new CountDownLatch(1);
-        client.jwtAuth(JWT_TOKEN, new AuthCallback() {
+        client.jwtAuth(JWT_TOKEN, new JWTAuthCallback() {
             @Override
             public void success() {
                 authCounter.countDown();
@@ -56,7 +56,7 @@ public class TitanTest {
                 System.out.println("Received 'send' response: message delivered to server.");
                 msgCounter.countDown();
             }
-        }, new Message("1", null, "2", new Date(), "Hello from Titan client!"));
+        }, new MsgMessage("1", null, "2", new Date(), "Hello from Titan client!"));
         awaitThrows(msgCounter);
 
         client.close();

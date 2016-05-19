@@ -1,13 +1,13 @@
 package titan.client.responses;
 
-public class GoogleAuth {
+public class GoogleAuthResponse {
     public final String ID;
     public final String JWTToken;
     public final String Name;
     public final String Email;
     public byte[] Picture;
 
-    public GoogleAuth(String id, String jwtToken, String name, String email) {
+    public GoogleAuthResponse(String id, String jwtToken, String name, String email) {
         if (id == null || id.isEmpty()) {
             throw new IllegalArgumentException("id cannot be null or empty");
         }

@@ -1,11 +1,11 @@
 package titan.client;
 
 import titan.client.callbacks.ConnCallbacks;
-import titan.client.messages.Message;
+import titan.client.messages.MsgMessage;
 
 public class ConnCallbacksStub implements ConnCallbacks {
     @Override
-    public void messagesReceived(Message[] msgs) {
+    public void messagesReceived(MsgMessage[] msgs) {
 
     }
 

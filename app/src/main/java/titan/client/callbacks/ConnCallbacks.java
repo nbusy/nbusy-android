@@ -1,8 +1,8 @@
 package titan.client.callbacks;
 
 import neptulon.client.callbacks.ConnCallback;
-import titan.client.messages.Message;
+import titan.client.messages.MsgMessage;
 
 public interface ConnCallbacks extends ConnCallback {
-    void messagesReceived(Message... msgs);
+    void messagesReceived(MsgMessage... msgs);
 }

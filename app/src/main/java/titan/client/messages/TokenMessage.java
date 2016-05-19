@@ -1,9 +1,9 @@
 package titan.client.messages;
 
-public class TokenAuth {
+public class TokenMessage {
     public final String token;
 
-    public TokenAuth(String token) {
+    public TokenMessage(String token) {
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("token cannot be null or empty");
         }

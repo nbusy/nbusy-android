@@ -1,10 +1,9 @@
-package titan.client;
+package titan.client.Middleware;
 
 import neptulon.client.Middleware;
 import neptulon.client.ReqCtx;
-import neptulon.client.Response;
 import titan.client.callbacks.ConnCallbacks;
-import titan.client.messages.Message;
+import titan.client.messages.MsgMessage;
 
 /**
  * Incoming messages handler middleware.
@@ -18,7 +17,7 @@ public class RecvMsgsMiddleware implements Middleware {
 
     @Override
     public void middleware(ReqCtx ctx) {
-        Message[] msgs = ctx.getParams(Message[].class);
+        MsgMessage[] msgs = ctx.getParams(MsgMessage[].class);
         try {
             cbs.messagesReceived(msgs);
             ctx.setResponse("ACK");
