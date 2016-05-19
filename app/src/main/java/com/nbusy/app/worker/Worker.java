@@ -25,11 +25,13 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import titan.client.callbacks.GoogleAuthCallback;
 import titan.client.callbacks.JWTAuthCallback;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
+import titan.client.responses.GoogleAuthResponse;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -272,9 +274,9 @@ public class Worker {
             throw new IllegalArgumentException("token cannot be null or empty");
         }
 
-        client.googleAuth(token, new JWTAuthCallback() {
+        client.googleAuth(token, new GoogleAuthCallback() {
             @Override
-            public void success() {
+            public void success(GoogleAuthResponse res) {
                 Log.i(TAG, "Authenticated with NBusy server using Google auth.");
             }
 
