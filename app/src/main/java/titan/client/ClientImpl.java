@@ -8,7 +8,7 @@ import neptulon.client.Conn;
 import neptulon.client.ConnImpl;
 import neptulon.client.ResCtx;
 import neptulon.client.callbacks.ResCallback;
-import titan.client.Middleware.RecvMsgsMiddleware;
+import titan.client.middleware.RecvMsgsMiddleware;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.JWTAuthCallback;

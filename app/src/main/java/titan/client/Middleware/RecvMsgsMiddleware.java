@@ -1,4 +1,4 @@
-package titan.client.Middleware;
+package titan.client.middleware;
 
 import neptulon.client.Middleware;
 import neptulon.client.ReqCtx;
