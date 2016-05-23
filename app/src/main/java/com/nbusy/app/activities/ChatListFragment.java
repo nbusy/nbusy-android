@@ -67,7 +67,7 @@ public class ChatListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (worker.userProfile != null) {
-            setData(worker.userProfile.getChats());
+            setData(worker.userProfile.get().getChats());
         }
     }
 

@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import titan.client.callbacks.GoogleAuthCallback;
 import titan.client.callbacks.JWTAuthCallback;
@@ -44,7 +45,7 @@ public class Worker {
     private final EventBus eventBus;
     private final DB db;
     private final AtomicBoolean loginNeeded = new AtomicBoolean(false);
-    public Profile userProfile; // todo: this needs to be atomic now
+    public final AtomicReference<Profile> userProfile = new AtomicReference<>();
     private ConnCallbacks connCallbacks = new ConnCallbacks() {
         @Override
         public void messagesReceived(MsgMessage... msgs) {
@@ -54,7 +55,11 @@ public class Worker {
         @Override
         public void connected(String reason) {
             Log.i(TAG, "Connected to NBusy server with reason: " + reason);
-            client.jwtAuth(userProfile.JWTToken, new JWTAuthCallback() {
+            if (userProfile.get() == null) {
+                return;
+            }
+
+            client.jwtAuth(userProfile.get().JWTToken, new JWTAuthCallback() {
                 @Override
                 public void success() {
                     Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
@@ -66,7 +71,7 @@ public class Worker {
                                 @Override
                                 public void sentToServer() {
                                     // update in memory representation of messages
-                                    final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
+                                    final Set<Chat> chats = userProfile.get().setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
 
                                     // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
                                     db.upsertMessages(new DB.UpsertMessagesCallback() {
@@ -123,9 +128,9 @@ public class Worker {
         db.getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
-                userProfile = prof;
+                userProfile.set(prof);
                 client.connect(connCallbacks);
-                eventBus.post(new UserProfileRetrievedEvent(userProfile));
+                eventBus.post(new UserProfileRetrievedEvent(prof));
             }
 
             @Override
@@ -199,7 +204,7 @@ public class Worker {
         }
 
         final Message[] nbusyMsgs = DataMaps.getNBusyMessages(msgs);
-        final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
+        final Set<Chat> chats = userProfile.get().upsertMessages(nbusyMsgs);
         db.upsertMessages(new DB.UpsertMessagesCallback() {
             @Override
             public void messagesUpserted() {
@@ -211,7 +216,7 @@ public class Worker {
     }
 
     public void sendMessages(String chatId, String... msgs) {
-        Optional<Chat.ChatAndNewMessages> cmOpt = userProfile.addNewOutgoingMessages(chatId, msgs);
+        Optional<Chat.ChatAndNewMessages> cmOpt = userProfile.get().addNewOutgoingMessages(chatId, msgs);
         if (!cmOpt.isPresent()) {
             return;
         }
@@ -234,7 +239,7 @@ public class Worker {
             client.echo(m.body, new EchoCallback() {
                 @Override
                 public void echoResponse(String msg) {
-                    eventBus.post(new ChatsUpdatedEvent(userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
+                    eventBus.post(new ChatsUpdatedEvent(userProfile.get().setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
                     receiveMessages(new MsgMessage(m.chatId, "echo", null, m.sent, msg));
                 }
             });
@@ -242,7 +247,7 @@ public class Worker {
         }
 
         // update in memory user profile with messages in case any of them are new, and notify all listener about this state change
-        Set<Chat> chats = userProfile.upsertMessages(msgs);
+        Set<Chat> chats = userProfile.get().upsertMessages(msgs);
         eventBus.post(new ChatsUpdatedEvent(chats));
 
         // persist messages in the database with Status = NEW
@@ -253,7 +258,7 @@ public class Worker {
                     @Override
                     public void sentToServer() {
                         // update in memory representation of messages
-                        final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
+                        final Set<Chat> chats = userProfile.get().setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
 
                         // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
                         db.upsertMessages(new DB.UpsertMessagesCallback() {
@@ -269,12 +274,12 @@ public class Worker {
         }, msgs);
     }
 
-    public void googleAuth(String token) {
+    public boolean googleAuth(String token) {
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("token cannot be null or empty");
         }
 
-        client.googleAuth(token, new GoogleAuthCallback() {
+        return client.googleAuth(token, new GoogleAuthCallback() {
             @Override
             public void success(GoogleAuthResponse res) {
                 Log.i(TAG, "Authenticated with NBusy server using Google auth.");
@@ -303,7 +308,7 @@ public class Worker {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
                 if (msgs.size() != 0) {
-                    eventBus.post(new ChatsUpdatedEvent(userProfile.upsertMessages(msgs)));
+                    eventBus.post(new ChatsUpdatedEvent(userProfile.get().upsertMessages(msgs)));
                 }
             }
         });

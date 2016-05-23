@@ -45,7 +45,7 @@ public class ChatDetailActivity extends Activity {
 
         // Set activity title
         String chatId = getIntent().getStringExtra(ChatDetailFragment.ARG_ITEM_ID);
-        Optional<Chat> chat = worker.userProfile.getChat(chatId);
+        Optional<Chat> chat = worker.userProfile.get().getChat(chatId);
         setTitle(chat.isPresent() ? chat.get().peerName : "New Chat");
 
 

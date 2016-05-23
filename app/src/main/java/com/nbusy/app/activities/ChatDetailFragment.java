@@ -100,7 +100,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
             chatId = (String) arguments.get(ARG_ITEM_ID);
-            Optional<Chat> chat = worker.userProfile.getChat(chatId);
+            Optional<Chat> chat = worker.userProfile.get().getChat(chatId);
             if (chat.isPresent() && !chat.get().messages.isEmpty()) {
                 messageAdapter = new MessageListArrayAdapter(getActivity(), new ArrayList<>(chat.get().messages));
             } else {
