@@ -120,7 +120,7 @@ public class Worker {
 
         Log.i(TAG, "Instance created.");
 
-        if (userProfile != null) {
+        if (userProfile.get() != null) {
             client.connect(connCallbacks);
             return;
         }
