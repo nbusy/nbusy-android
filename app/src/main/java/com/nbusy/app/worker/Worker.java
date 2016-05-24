@@ -129,8 +129,9 @@ public class Worker {
 
             @Override
             public void error() {
+                // no profile stored so display login activity
                 Intent intent = new Intent(appContext, LoginActivity.class);
-                appContext.startActivity(intent);
+                appContext.startActivity(intent); // todo: what happens when service starts before user logs in?
             }
         });
 
