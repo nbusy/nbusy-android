@@ -24,9 +24,10 @@ android {
         abortOnError false
         warning 'InvalidPackage' // hack: due to okio (okhttp dependency)
     }
-//    adbOptions {
-//        timeOutInMs 500000 // 500 seconds in ms. // HACK: Possible fix for Travis timeout (probably requires update to android gradle to 2+ too): https://code.google.com/p/android/issues/detail?id=189764&q=label%3APriority-Medium&colspec=ID%20Type%20Status%20Owner%20Summary%20Stars
-//    }
+    adbOptions { // (Optional) This enables long timeouts required on slow environments, e.g. Travis
+        timeOutInMs 5 * 60 * 1000  // 5 minutes
+        installOptions "-d","-t"
+    }
     productFlavors {
     }
 }
