@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import titan.client.callbacks.GoogleAuthCallback;
@@ -44,8 +43,10 @@ public class Worker {
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
-    private final AtomicBoolean loginNeeded = new AtomicBoolean(false);
+    private final Context appContext = null;
     public final AtomicReference<Profile> userProfile = new AtomicReference<>();
+
+    // todo: make this into a separate class with proper dep injection
     private ConnCallbacks connCallbacks = new ConnCallbacks() {
         @Override
         public void messagesReceived(MsgMessage... msgs) {
@@ -56,7 +57,7 @@ public class Worker {
         public void connected(String reason) {
             Log.i(TAG, "Connected to NBusy server with reason: " + reason);
             if (userProfile.get() == null) {
-                return;
+                throw new NullPointerException("userProfile is cannot be null while calling connect(...)");
             }
 
             client.jwtAuth(userProfile.get().JWTToken, new JWTAuthCallback() {
@@ -118,13 +119,6 @@ public class Worker {
         this.eventBus = eventBus;
         this.db = db;
 
-        Log.i(TAG, "Instance created.");
-
-        if (userProfile.get() != null) {
-            client.connect(connCallbacks);
-            return;
-        }
-
         db.getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
@@ -135,9 +129,12 @@ public class Worker {
 
             @Override
             public void error() {
-                loginNeeded.set(true);
+                Intent intent = new Intent(appContext, LoginActivity.class);
+                appContext.startActivity(intent);
             }
         });
+
+        Log.i(TAG, "initialized");
     }
 
     public Worker() {
@@ -174,11 +171,6 @@ public class Worker {
 
         subscribers.add(o);
         eventBus.register(o);
-
-        if (loginNeeded.getAndSet(false)) {
-            Intent intent = new Intent(c, LoginActivity.class);
-            c.startActivity(intent);
-        }
     }
 
     public void unregister(Object o) {
