@@ -18,20 +18,6 @@ public class EventBus extends com.google.common.eventbus.EventBus {
             throw new IllegalArgumentException("object cannot be null");
         }
 
-        // todo: instead of below, publish SubscriberRegisteredEvent
-
-        // a view is attaching to event bus so we need to ensure connectivity
-//        if (!client.isConnected()) {
-//            client.connect(connCallbacks);
-//        }
-
-        // start the worker service if not running
-//        if (!WorkerService.RUNNING.get()) {
-//            Intent serviceIntent = new Intent(c, WorkerService.class);
-//            serviceIntent.putExtra(WorkerService.STARTED_BY, o.getClass().getSimpleName());
-//            c.startService(serviceIntent);
-//        }
-
         subscribers.add(o);
         super.register(o);
     }

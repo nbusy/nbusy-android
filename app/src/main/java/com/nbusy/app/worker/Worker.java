@@ -44,7 +44,6 @@ public class Worker {
     private final Context appContext = null;
     public final AtomicReference<Profile> userProfile = new AtomicReference<>();
 
-    // todo: make this into a separate class with proper dep injection
     private ConnCallbacks connCallbacks = new ConnCallbacks() {
         @Override
         public void messagesReceived(MsgMessage... msgs) {
