@@ -6,8 +6,6 @@ import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.eventbus.AsyncEventBus;
-import com.google.common.eventbus.EventBus;
 import com.nbusy.app.activities.LoginActivity;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
@@ -16,19 +14,19 @@ import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
 import com.nbusy.app.services.WorkerService;
+import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
-import titan.client.callbacks.GoogleAuthCallback;
-import titan.client.callbacks.JWTAuthCallback;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
+import titan.client.callbacks.GoogleAuthCallback;
+import titan.client.callbacks.JWTAuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
 import titan.client.responses.GoogleAuthResponse;
@@ -39,7 +37,6 @@ import titan.client.responses.GoogleAuthResponse;
  */
 public class Worker {
     private static final String TAG = Worker.class.getSimpleName();
-    private final List<Object> subscribers = new CopyOnWriteArrayList<>();
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
@@ -139,7 +136,7 @@ public class Worker {
     }
 
     public Worker() {
-        this(new ClientImpl(), new AsyncEventBus(TAG, new UIThreadExecutor()), new InMemDB());
+        this(new ClientImpl(), new EventBus(), new InMemDB());
     }
 
     public void destroy() {
@@ -170,12 +167,10 @@ public class Worker {
             c.startService(serviceIntent);
         }
 
-        subscribers.add(o);
         eventBus.register(o);
     }
 
     public void unregister(Object o) {
-        subscribers.remove(o);
         eventBus.unregister(o);
         // todo: start 3 min standBy timer here in case a view wants to register again or we're in a brief limbo state
     }
@@ -184,7 +179,7 @@ public class Worker {
      * Whether worker needs an active connection to server.
      */
     public boolean needConnection() {
-        return !subscribers.isEmpty(); // todo: or there are ongoing operations or queued operations or standby timer is still running
+        return eventBus.haveSubscribers(); // todo: or there are ongoing operations or queued operations or standby timer is still running
     }
 
     /************************

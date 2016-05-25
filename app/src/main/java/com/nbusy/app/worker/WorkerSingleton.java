@@ -1,8 +1,8 @@
 package com.nbusy.app.worker;
 
-import com.google.common.eventbus.AsyncEventBus;
 import com.nbusy.app.data.Config;
 import com.nbusy.app.data.InMemDB;
+import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.sdk.ClientImpl;
 
 /**
@@ -17,7 +17,7 @@ public class WorkerSingleton {
             if (config.env != Config.Env.PRODUCTION) {
                 worker = new Worker();
             } else {
-                worker = new Worker(new ClientImpl(config.serverUrl, true), new AsyncEventBus(Worker.class.getSimpleName(), new UIThreadExecutor()), new InMemDB());
+                worker = new Worker(new ClientImpl(config.serverUrl, true), new EventBus(), new InMemDB());
             }
         }
 
