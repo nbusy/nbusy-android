@@ -1,11 +1,11 @@
-package titan.client;
+package com.nbusy.app.worker;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.messages.MsgMessage;
 
-public class ConnCallbacksStub implements ConnCallbacks {
+public class ConnManager implements ConnCallbacks {
     @Override
-    public void messagesReceived(MsgMessage[] msgs) {
+    public void messagesReceived(MsgMessage... msgs) {
 
     }
 

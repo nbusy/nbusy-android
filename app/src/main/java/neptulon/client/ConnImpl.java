@@ -232,6 +232,10 @@ public class ConnImpl implements Conn, WebSocketListener {
             wsConnectRequest.cancel();
         }
 
+        if (!isConnected()) {
+            return;
+        }
+
         try {
             ws.close(0, "");
         } catch (Exception e) {

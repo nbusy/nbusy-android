@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.eventbus.AsyncEventBus;
-import com.google.common.eventbus.EventBus;
+import com.nbusy.app.activities.LoginActivity;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMaps;
@@ -15,18 +13,24 @@ import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
 import com.nbusy.app.services.WorkerService;
+import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
+import com.nbusy.app.worker.eventbus.EventBus;
+import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
-import titan.client.callbacks.JwtAuthCallback;
+import titan.client.callbacks.GoogleAuthCallback;
+import titan.client.callbacks.JWTAuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
+import titan.client.messages.MsgMessage;
+import titan.client.responses.GoogleAuthResponse;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -34,25 +38,29 @@ import titan.client.callbacks.SendMsgsCallback;
  */
 public class Worker {
     private static final String TAG = Worker.class.getSimpleName();
-    private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA";
-    private final List<Object> subscribers = new CopyOnWriteArrayList<>();
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
-    public Profile userProfile;
+    private final Context appContext = null;
+    public final AtomicReference<Profile> userProfile = new AtomicReference<>();
+
     private ConnCallbacks connCallbacks = new ConnCallbacks() {
         @Override
-        public void messagesReceived(titan.client.messages.Message... msgs) {
+        public void messagesReceived(MsgMessage... msgs) {
             receiveMessages(msgs);
         }
 
         @Override
         public void connected(String reason) {
             Log.i(TAG, "Connected to NBusy server with reason: " + reason);
-            client.jwtAuth(JWT_TOKEN, new JwtAuthCallback() {
+            if (userProfile.get() == null) {
+                throw new NullPointerException("userProfile is cannot be null while calling connect(...)");
+            }
+
+            client.jwtAuth(userProfile.get().JWTToken, new JWTAuthCallback() {
                 @Override
                 public void success() {
-                    Log.i(TAG, "Authenticated with NBusy server.");
+                    Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
                     db.getQueuedMessages(new DB.GetChatMessagesCallback() {
                         @Override
                         public void chatMessagesRetrieved(final List<Message> msgs) {
@@ -61,7 +69,7 @@ public class Worker {
                                 @Override
                                 public void sentToServer() {
                                     // update in memory representation of messages
-                                    final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
+                                    final Set<Chat> chats = userProfile.get().setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
 
                                     // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
                                     db.upsertMessages(new DB.UpsertMessagesCallback() {
@@ -82,7 +90,7 @@ public class Worker {
 
                 @Override
                 public void fail() {
-                    Log.i(TAG, "Authentication failed with NBusy server.");
+                    Log.i(TAG, "Authentication failed with NBusy server using JWT auth.");
                 }
             });
         }
@@ -104,22 +112,31 @@ public class Worker {
             throw new IllegalArgumentException("db cannot be null ");
         }
 
-        Log.i(TAG, "Instance created.");
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
-        client.connect(connCallbacks);
+
         db.getProfile(new DB.GetProfileCallback() {
             @Override
-            public void profileRetrieved(Profile up) {
-                userProfile = up;
-                eventBus.post(new UserProfileRetrievedEvent(userProfile));
+            public void profileRetrieved(Profile prof) {
+                userProfile.set(prof);
+                client.connect(connCallbacks);
+                eventBus.post(new UserProfileRetrievedEvent(prof));
+            }
+
+            @Override
+            public void error() {
+                // no profile stored so display login activity
+                Intent intent = new Intent(appContext, LoginActivity.class);
+                appContext.startActivity(intent); // todo: what happens when service starts before user logs in?
             }
         });
+
+        Log.i(TAG, "initialized");
     }
 
     public Worker() {
-        this(new ClientImpl(), new AsyncEventBus(TAG, new UiThreadExecutor()), new InMemDB());
+        this(new ClientImpl(), new EventBus(), new InMemDB());
     }
 
     public void destroy() {
@@ -139,7 +156,7 @@ public class Worker {
         }
 
         // a view is attaching to event bus so we need to ensure connectivity
-        if (!client.isConnected()) {
+        if (!client.isConnected() && userProfile.get() != null) {
             client.connect(connCallbacks);
         }
 
@@ -150,12 +167,10 @@ public class Worker {
             c.startService(serviceIntent);
         }
 
-        subscribers.add(o);
         eventBus.register(o);
     }
 
     public void unregister(Object o) {
-        subscribers.remove(o);
         eventBus.unregister(o);
         // todo: start 3 min standBy timer here in case a view wants to register again or we're in a brief limbo state
     }
@@ -164,20 +179,20 @@ public class Worker {
      * Whether worker needs an active connection to server.
      */
     public boolean needConnection() {
-        return !subscribers.isEmpty(); // todo: or there are ongoing operations or queued operations or standby timer is still running
+        return eventBus.haveSubscribers(); // todo: or there are ongoing operations or queued operations or standby timer is still running
     }
 
     /************************
      * Server Communication *
      ************************/
 
-    private void receiveMessages(titan.client.messages.Message... msgs) {
+    private void receiveMessages(MsgMessage... msgs) {
         if (msgs == null || msgs.length == 0) {
             throw new IllegalArgumentException("messages cannot be null or empty");
         }
 
         final Message[] nbusyMsgs = DataMaps.getNBusyMessages(msgs);
-        final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
+        final Set<Chat> chats = userProfile.get().upsertMessages(nbusyMsgs);
         db.upsertMessages(new DB.UpsertMessagesCallback() {
             @Override
             public void messagesUpserted() {
@@ -189,7 +204,7 @@ public class Worker {
     }
 
     public void sendMessages(String chatId, String... msgs) {
-        Optional<Chat.ChatAndNewMessages> cmOpt = userProfile.addNewOutgoingMessages(chatId, msgs);
+        Optional<Chat.ChatAndNewMessages> cmOpt = userProfile.get().addNewOutgoingMessages(chatId, msgs);
         if (!cmOpt.isPresent()) {
             return;
         }
@@ -212,15 +227,15 @@ public class Worker {
             client.echo(m.body, new EchoCallback() {
                 @Override
                 public void echoResponse(String msg) {
-                    eventBus.post(new ChatsUpdatedEvent(userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
-                    receiveMessages(new titan.client.messages.Message(m.chatId, "echo", null, m.sent, msg));
+                    eventBus.post(new ChatsUpdatedEvent(userProfile.get().setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
+                    receiveMessages(new MsgMessage(m.chatId, "echo", null, m.sent, msg));
                 }
             });
             return;
         }
 
         // update in memory user profile with messages in case any of them are new, and notify all listener about this state change
-        Set<Chat> chats = userProfile.upsertMessages(msgs);
+        Set<Chat> chats = userProfile.get().upsertMessages(msgs);
         eventBus.post(new ChatsUpdatedEvent(chats));
 
         // persist messages in the database with Status = NEW
@@ -231,7 +246,7 @@ public class Worker {
                     @Override
                     public void sentToServer() {
                         // update in memory representation of messages
-                        final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
+                        final Set<Chat> chats = userProfile.get().setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
 
                         // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
                         db.upsertMessages(new DB.UpsertMessagesCallback() {
@@ -245,6 +260,24 @@ public class Worker {
                 }, DataMaps.getTitanMessages(msgs));
             }
         }, msgs);
+    }
+
+    public boolean googleAuth(String token) {
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("token cannot be null or empty");
+        }
+
+        return client.googleAuth(token, new GoogleAuthCallback() {
+            @Override
+            public void success(GoogleAuthResponse res) {
+                Log.i(TAG, "Authenticated with NBusy server using Google auth.");
+            }
+
+            @Override
+            public void fail(int code, String message) {
+                Log.i(TAG, "Failed to authenticate with NBusy server using Google auth: " + code + " : " + message);
+            }
+        });
     }
 
     /***********************
@@ -263,39 +296,9 @@ public class Worker {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
                 if (msgs.size() != 0) {
-                    eventBus.post(new ChatsUpdatedEvent(userProfile.upsertMessages(msgs)));
+                    eventBus.post(new ChatsUpdatedEvent(userProfile.get().upsertMessages(msgs)));
                 }
             }
         });
-    }
-
-    /*****************
-     * Event Objects *
-     *****************/
-
-    public class UserProfileRetrievedEvent {
-        public final Profile profile;
-
-        public UserProfileRetrievedEvent(Profile profile) {
-            if (profile == null) {
-                throw new IllegalArgumentException("profile cannot be null");
-            }
-            this.profile = profile;
-        }
-    }
-
-    public class ChatsUpdatedEvent {
-        public final Set<Chat> chats;
-
-        public ChatsUpdatedEvent(Chat... chats) {
-            this(ImmutableSet.copyOf(chats));
-        }
-
-        public ChatsUpdatedEvent(Set<Chat> chats) {
-            if (chats == null || chats.isEmpty()) {
-                throw new IllegalArgumentException("chats cannot be null or empty");
-            }
-            this.chats = chats;
-        }
     }
 }

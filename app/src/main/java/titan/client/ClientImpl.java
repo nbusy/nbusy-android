@@ -8,13 +8,16 @@ import neptulon.client.Conn;
 import neptulon.client.ConnImpl;
 import neptulon.client.ResCtx;
 import neptulon.client.callbacks.ResCallback;
+import titan.client.callbacks.GoogleAuthCallback;
+import titan.client.middleware.RecvMsgsMiddleware;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
-import titan.client.callbacks.JwtAuthCallback;
+import titan.client.callbacks.JWTAuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.EchoMessage;
-import titan.client.messages.JwtAuth;
-import titan.client.messages.Message;
+import titan.client.messages.TokenMessage;
+import titan.client.messages.MsgMessage;
+import titan.client.responses.GoogleAuthResponse;
 
 /**
  * Titan client implementation: https://github.com/titan-x/titan
@@ -77,7 +80,7 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public boolean jwtAuth(String token, final JwtAuthCallback cb) {
+    public boolean googleAuth(String token, final GoogleAuthCallback cb) {
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("token cannot be null or empty");
         }
@@ -88,7 +91,33 @@ public class ClientImpl implements Client {
             return false;
         }
 
-        conn.sendRequest("auth.jwt", new JwtAuth(token), new ResCallback() {
+        conn.sendRequest( "auth.google", new TokenMessage(token), new ResCallback() {
+            @Override
+            public void callback(ResCtx ctx) {
+                GoogleAuthResponse res = ctx.getResult(GoogleAuthResponse.class);
+                if (ctx.isSuccess) {
+                    cb.success(res);
+                } else {
+                    cb.fail(ctx.errorCode, ctx.errorMessage);
+                }
+            }
+        });
+        return true;
+    }
+
+    @Override
+    public boolean jwtAuth(String token, final JWTAuthCallback cb) {
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("token cannot be null or empty");
+        }
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+        if (!ensureConn()) {
+            return false;
+        }
+
+        conn.sendRequest("auth.jwt", new TokenMessage(token), new ResCallback() {
             @Override
             public void callback(ResCtx ctx) {
                 String res = ctx.getResult(String.class);
@@ -128,7 +157,7 @@ public class ClientImpl implements Client {
     // todo2: we should set from,date fields for each message ourselves or expect an OutMessage class instead (bonus, variadic!)
 
     @Override
-    public boolean sendMessages(final SendMsgsCallback cb, Message... msgs) {
+    public boolean sendMessages(final SendMsgsCallback cb, MsgMessage... msgs) {
         if (cb == null) {
             throw new IllegalArgumentException("callback cannot be null");
         }

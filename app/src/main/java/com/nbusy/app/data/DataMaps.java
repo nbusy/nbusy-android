@@ -1,18 +1,20 @@
 package com.nbusy.app.data;
 
+import titan.client.messages.MsgMessage;
+
 public class DataMaps {
 
-    public static titan.client.messages.Message[] getTitanMessages(com.nbusy.app.data.Message... msgs) {
-        titan.client.messages.Message[] titanMsgs = new titan.client.messages.Message[msgs.length];
+    public static MsgMessage[] getTitanMessages(com.nbusy.app.data.Message... msgs) {
+        MsgMessage[] titanMsgs = new MsgMessage[msgs.length];
 
         for (int i = 0; i < msgs.length; i++) {
-            titanMsgs[i] = new titan.client.messages.Message(msgs[i].chatId, null, msgs[i].to, msgs[i].sent, msgs[i].body);
+            titanMsgs[i] = new MsgMessage(msgs[i].chatId, null, msgs[i].to, msgs[i].sent, msgs[i].body);
         }
 
         return titanMsgs;
     }
 
-    public static Message[] getNBusyMessages(titan.client.messages.Message... msgs) {
+    public static Message[] getNBusyMessages(MsgMessage... msgs) {
         Message[] nbusyMsgs = new Message[msgs.length];
 
         for (int i = 0; i < msgs.length; i++) {

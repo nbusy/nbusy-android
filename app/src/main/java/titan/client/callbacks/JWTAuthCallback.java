@@ -1,6 +1,6 @@
 package titan.client.callbacks;
 
-public interface JwtAuthCallback {
+public interface JWTAuthCallback {
     void success();
     void fail();
 }

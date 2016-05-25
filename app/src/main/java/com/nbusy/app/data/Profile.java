@@ -4,33 +4,51 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * User profile including user information and chats.
  */
-public class Profile {
-    private final Map<String, Integer> chatIDtoIndex = new HashMap<>(); // chat ID -> chat[index]
+public final class Profile {
 
-    public final String userId;
-    public final List<Chat> chats; // todo: use a map that does not accept dupes
+    // todo: user sorted map by last message time
+    // todo: use a map that does not accept dupe keys or values
+    private final HashMap<String, Chat> chats = new HashMap<>(); // chat ID -> chat
 
-    public Profile(String userId, List<Chat> chats) {
-        if (userId == null || userId.isEmpty()) {
-            throw new IllegalArgumentException("userId cannot be null or empty");
+    public final String ID;
+    public final String JWTToken;
+    public final String Name;
+    public final String Email;
+    public byte[] Picture;
+
+    public Profile(String id, String jwtToken, String email,  String name, List<Chat> chats) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("id cannot be null or empty");
+        }
+        if (jwtToken == null || jwtToken.isEmpty()) {
+            throw new IllegalArgumentException("jwtToken cannot be null or empty");
+        }
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("email cannot be null or empty");
+        }
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("name cannot be null or empty");
         }
         if (chats == null) {
             throw new IllegalArgumentException("chats cannot be null");
         }
 
-        this.userId = userId;
-        this.chats = chats;
-        for (int i = 0; i < chats.size(); i++) {
-            chatIDtoIndex.put(chats.get(i).id, i);
+        this.ID = id;
+        this.JWTToken = jwtToken;
+        this.Email = email;
+        this.Name = name;
+
+        for (Chat chat : chats) {
+            this.chats.put(chat.id, chat);
         }
     }
 
@@ -39,11 +57,15 @@ public class Profile {
             throw new IllegalArgumentException("chatId cannot be null or empty");
         }
 
-        if (!chatIDtoIndex.containsKey(chatId)) {
+        if (!chats.containsKey(chatId)) {
             return Optional.absent();
         }
 
-        return Optional.of(chats.get(chatIDtoIndex.get(chatId)));
+        return Optional.of(chats.get(chatId));
+    }
+
+    public synchronized Collection<Chat> getChats() {
+        return this.chats.values();
     }
 
     public synchronized Optional<Chat.ChatAndNewMessages> addNewOutgoingMessages(String chatId, String... msgs) {
@@ -53,7 +75,7 @@ public class Profile {
         }
 
         Chat.ChatAndNewMessages chatAndMsgs = chat.get().addNewOutgoingMessages(msgs);
-        setChat(chatId, chatAndMsgs.chat);
+        updateChat(chatAndMsgs.chat);
         return Optional.of(chatAndMsgs);
     }
 
@@ -87,21 +109,21 @@ public class Profile {
             }
 
             Chat chat = chatOpt.get().upsertMessages(chatIDToMessages.get(chatId));
-            setChat(chatId, chat);
+            updateChat(chat);
             upsertedChats.add(chat);
         }
 
         return upsertedChats;
     }
 
-    private synchronized void setChat(String chatId, Chat chat) {
-        if (chatId == null || chatId.isEmpty()) {
-            throw new IllegalArgumentException("chatId cannot be null or empty");
-        }
+    private synchronized void updateChat(Chat chat) {
         if (chat == null) {
             throw new IllegalArgumentException("chat cannot be null");
         }
+        if (chat.id == null || chat.id.isEmpty()) {
+            throw new IllegalArgumentException("chat.id cannot be null or empty");
+        }
 
-        chats.set(chatIDtoIndex.get(chatId), chat);
+        this.chats.put(chat.id, chat);
     }
 }

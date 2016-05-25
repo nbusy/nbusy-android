@@ -5,14 +5,14 @@ import java.util.Date;
 /**
  * Single message in a chat.
  */
-public class Message {
+public class MsgMessage {
     public final String chatId;
     public final String from;
     public final String to;
     public final Date time;
     public final String message;
 
-    public Message(String chatId, String from, String to, Date time, String message) {
+    public MsgMessage(String chatId, String from, String to, Date time, String message) {
         if (chatId == null || chatId.isEmpty()) {
             throw new IllegalArgumentException("chatId cannot be null or empty");
         }

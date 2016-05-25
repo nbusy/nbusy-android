@@ -7,7 +7,6 @@ import java.util.concurrent.TimeoutException;
 
 import neptulon.client.callbacks.ConnCallback;
 import neptulon.client.callbacks.ResCallback;
-import neptulon.client.middleware.Echo;
 import neptulon.client.middleware.Logger;
 import neptulon.client.middleware.Router;
 import titan.client.messages.EchoMessage;
@@ -29,7 +28,7 @@ public class NeptulonTest {
         Conn conn = new ConnImpl(WS_URL, false);
         conn.middleware(new Logger());
         Router router = new Router();
-        router.request("echo", new Echo());
+        router.request("echo", new neptulon.client.middleware.Echo());
         conn.middleware(router);
 
         final CountDownLatch connCounter = new CountDownLatch(1);

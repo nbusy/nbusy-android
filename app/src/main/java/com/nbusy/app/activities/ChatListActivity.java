@@ -11,25 +11,21 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.nbusy.app.R;
+import com.nbusy.app.worker.Worker;
+import com.nbusy.app.worker.WorkerSingleton;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * An activity representing a list of Chats. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link ChatDetailActivity} representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
+ * An activity representing a list of Chats. This activity has different presentations for handset and tablet-size devices. On
+ * handsets, the activity presents a list of items, which when touched, lead to a {@link ChatDetailActivity} representing
+ * item details. On tablets, the activity presents the list of items and item details side-by-side using two vertical panes.
  * <p/>
- * The activity makes heavy use of fragments. The list of items is a
- * {@link ChatListFragment} and the item details
+ * The activity makes heavy use of fragments. The list of items is a {@link ChatListFragment} and the item details
  * (if present) is a {@link ChatDetailFragment}.
  * <p/>
- * This activity also implements the required
- * {@link ChatListFragment.Callbacks} interface
- * to listen for item selections.
+ * This activity also implements the required {@link ChatListFragment.Callbacks} interface to listen for item selections.
  */
 public class ChatListActivity extends Activity implements ChatListFragment.Callbacks {
 
@@ -37,6 +33,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     private static final String PROPERTY_APP_VERSION = "appVer";
     private static final String PROPERTY_REG_ID = "regId";
     private static final String SENDER_ID = "218602439235";
+    private final Worker worker = WorkerSingleton.getWorker();
     private final AtomicInteger msgId = new AtomicInteger();
     private GoogleCloudMessaging gcm;
     private String regId;

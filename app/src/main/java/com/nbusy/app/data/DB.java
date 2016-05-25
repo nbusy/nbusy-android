@@ -7,6 +7,7 @@ public interface DB {
 
     interface GetProfileCallback {
         void profileRetrieved(Profile userProfile);
+        void error();
     }
 
     void getChatMessages(String chatId, GetChatMessagesCallback cb);
