@@ -156,7 +156,7 @@ public class Worker {
         }
 
         // a view is attaching to event bus so we need to ensure connectivity
-        if (!client.isConnected()) {
+        if (!client.isConnected() && userProfile.get() != null) {
             client.connect(connCallbacks);
         }
 
