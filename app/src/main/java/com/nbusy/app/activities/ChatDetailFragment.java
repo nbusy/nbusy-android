@@ -16,6 +16,7 @@ import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
+import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -161,7 +162,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
      ******************************/
 
     @Subscribe
-    public synchronized void chatUpdatedEventHandler(Worker.ChatsUpdatedEvent e) {
+    public synchronized void chatUpdatedEventHandler(ChatsUpdatedEvent e) {
         for (Chat chat : e.chats) {
             if (Objects.equals(chat.id, chatId)) {
                 setData(chat);

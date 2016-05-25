@@ -11,6 +11,7 @@ import com.google.common.eventbus.Subscribe;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.WorkerSingleton;
+import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -178,7 +179,7 @@ public class ChatListFragment extends ListFragment {
      ******************************/
 
     @Subscribe
-    public void userProfileRetrievedEventHandler(Worker.UserProfileRetrievedEvent e) {
+    public void userProfileRetrievedEventHandler(UserProfileRetrievedEvent e) {
         setData(e.profile.getChats());
     }
 }
