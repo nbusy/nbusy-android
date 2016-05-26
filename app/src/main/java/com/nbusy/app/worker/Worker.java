@@ -24,10 +24,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.GoogleAuthCallback;
-import titan.client.callbacks.JWTAuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
 import titan.client.responses.GoogleAuthResponse;
@@ -43,63 +41,6 @@ public class Worker {
     private final DB db;
     private final Context appContext = null;
     public final AtomicReference<Profile> userProfile = new AtomicReference<>();
-
-    private ConnCallbacks connCallbacks = new ConnCallbacks() {
-        @Override
-        public void messagesReceived(MsgMessage... msgs) {
-            receiveMessages(msgs);
-        }
-
-        @Override
-        public void connected(String reason) {
-            Log.i(TAG, "Connected to NBusy server with reason: " + reason);
-            if (userProfile.get() == null) {
-                throw new NullPointerException("userProfile is cannot be null while calling connect(...)");
-            }
-
-            client.jwtAuth(userProfile.get().JWTToken, new JWTAuthCallback() {
-                @Override
-                public void success() {
-                    Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
-                    db.getQueuedMessages(new DB.GetChatMessagesCallback() {
-                        @Override
-                        public void chatMessagesRetrieved(final List<Message> msgs) {
-                            final Message[] msgsArray = msgs.toArray(new Message[msgs.size()]);
-                            client.sendMessages(new SendMsgsCallback() {
-                                @Override
-                                public void sentToServer() {
-                                    // update in memory representation of messages
-                                    final Set<Chat> chats = userProfile.get().setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
-
-                                    // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
-                                    db.upsertMessages(new DB.UpsertMessagesCallback() {
-                                        @Override
-                                        public void messagesUpserted() {
-                                            Log.i(TAG, "Sent queued messages to server: " + msgs.size());
-                                            // finally, notify all listening views about the changes
-                                            if (!chats.isEmpty()) {
-                                                eventBus.post(new ChatsUpdatedEvent(chats));
-                                            }
-                                        }
-                                    }, msgsArray);
-                                }
-                            }, DataMap.getTitanMessages(msgsArray));
-                        }
-                    });
-                }
-
-                @Override
-                public void fail() {
-                    Log.i(TAG, "Authentication failed with NBusy server using JWT auth.");
-                }
-            });
-        }
-
-        @Override
-        public void disconnected(String reason) {
-            Log.w(TAG, "Connection attempt OR connection to NBusy server was shut down with reason: " + reason);
-        }
-    };
 
     public Worker(final Client client, final EventBus eventBus, DB db) {
         if (client == null) {
@@ -120,7 +61,7 @@ public class Worker {
             @Override
             public void profileRetrieved(Profile prof) {
                 userProfile.set(prof);
-                client.connect(connCallbacks);
+//                client.connect(connCallbacks);
                 eventBus.post(new UserProfileRetrievedEvent(prof));
             }
 
@@ -133,10 +74,6 @@ public class Worker {
         });
 
         Log.i(TAG, "initialized");
-    }
-
-    public Worker() {
-        this(new ClientImpl(), new EventBus(), new InMemDB());
     }
 
     public void destroy() {
@@ -157,7 +94,7 @@ public class Worker {
 
         // a view is attaching to event bus so we need to ensure connectivity
         if (!client.isConnected() && userProfile.get() != null) {
-            client.connect(connCallbacks);
+//            client.connect(connCallbacks);
         }
 
         // start the worker service if not running

@@ -20,6 +20,10 @@ import titan.client.callbacks.JWTAuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
 
+/**
+ * Manages connection to the NBusy servers.
+ * Also manages connection lifecycle events like sending queued messages on reconnect, etc.
+ */
 public class ConnManager implements ConnCallbacks {
     private static final String TAG = ConnManager.class.getSimpleName();
     private final Client client;

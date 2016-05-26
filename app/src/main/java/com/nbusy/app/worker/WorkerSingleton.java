@@ -15,7 +15,7 @@ public class WorkerSingleton {
     public static Worker getWorker() {
         if (worker == null) {
             if (config.env != Config.Env.PRODUCTION) {
-                worker = new Worker();
+                worker = new Worker(new ClientImpl(), new EventBus(), new InMemDB());
             } else {
                 worker = new Worker(new ClientImpl(config.serverUrl, true), new EventBus(), new InMemDB());
             }
