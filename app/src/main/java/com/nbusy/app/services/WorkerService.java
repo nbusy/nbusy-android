@@ -7,9 +7,9 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.data.Config;
 import com.nbusy.app.worker.Worker;
-import com.nbusy.app.worker.WorkerSingleton;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -24,7 +24,7 @@ public class WorkerService extends Service {
     private static final Config config = new Config();
     private final int standbyTime;
     private final StopStandby stopStandby = new StopStandby();
-    private final Worker worker = WorkerSingleton.getWorker();
+    private final Worker worker = InstanceProvider.getWorker();
     private int startId;
 
     public WorkerService() {
@@ -86,7 +86,7 @@ public class WorkerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        WorkerSingleton.destroyWorker();
+        worker.destroy();
         RUNNING.set(false);
         Log.i(TAG, "destroyed");
     }

@@ -7,10 +7,10 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.google.common.base.Optional;
+import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.worker.Worker;
-import com.nbusy.app.worker.WorkerSingleton;
 
 /**
  * An activity representing a single Chat detail screen. This
@@ -23,7 +23,7 @@ import com.nbusy.app.worker.WorkerSingleton;
  */
 public class ChatDetailActivity extends Activity {
 
-    private final Worker worker = WorkerSingleton.getWorker();
+    private final Worker worker = InstanceProvider.getWorker();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -8,9 +8,9 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.google.common.eventbus.Subscribe;
+import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.worker.Worker;
-import com.nbusy.app.worker.WorkerSingleton;
 import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.Collection;
  */
 public class ChatListFragment extends ListFragment {
 
-    private final Worker worker = WorkerSingleton.getWorker();
+    private final Worker worker = InstanceProvider.getWorker();
     private ChatListArrayAdapter chatAdapter;
 
     /**
