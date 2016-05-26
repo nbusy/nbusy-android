@@ -8,7 +8,7 @@ import com.google.common.base.Optional;
 import com.nbusy.app.activities.LoginActivity;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
-import com.nbusy.app.data.DataMaps;
+import com.nbusy.app.data.DataMap;
 import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
@@ -83,7 +83,7 @@ public class Worker {
                                         }
                                     }, msgsArray);
                                 }
-                            }, DataMaps.getTitanMessages(msgsArray));
+                            }, DataMap.getTitanMessages(msgsArray));
                         }
                     });
                 }
@@ -191,7 +191,7 @@ public class Worker {
             throw new IllegalArgumentException("messages cannot be null or empty");
         }
 
-        final Message[] nbusyMsgs = DataMaps.getNBusyMessages(msgs);
+        final Message[] nbusyMsgs = DataMap.getNBusyMessages(msgs);
         final Set<Chat> chats = userProfile.get().upsertMessages(nbusyMsgs);
         db.upsertMessages(new DB.UpsertMessagesCallback() {
             @Override
@@ -257,7 +257,7 @@ public class Worker {
                             }
                         }, msgs);
                     }
-                }, DataMaps.getTitanMessages(msgs));
+                }, DataMap.getTitanMessages(msgs));
             }
         }, msgs);
     }

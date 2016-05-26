@@ -1,21 +1,103 @@
 package com.nbusy.app.worker;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.nbusy.app.data.Chat;
+import com.nbusy.app.data.DB;
+import com.nbusy.app.data.DataMap;
+import com.nbusy.app.data.Message;
+import com.nbusy.app.data.Profile;
+import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
+import com.nbusy.app.worker.eventbus.EventBus;
+import com.nbusy.sdk.Client;
+
+import java.util.List;
+import java.util.Set;
+
 import titan.client.callbacks.ConnCallbacks;
+import titan.client.callbacks.JWTAuthCallback;
+import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
 
 public class ConnManager implements ConnCallbacks {
-    @Override
-    public void messagesReceived(MsgMessage... msgs) {
+    private static final String TAG = ConnManager.class.getSimpleName();
+    private final Client client;
+    private final EventBus eventBus;
+    private final DB db;
+    private final Context appContext;
+    private final Profile userProfile;
 
+    public ConnManager(Client client, EventBus eventBus, DB db, Context appContext, Profile userProfile) {
+        this.client = client;
+        this.eventBus = eventBus;
+        this.db = db;
+        this.appContext = appContext;
+        this.userProfile = userProfile;
     }
 
     @Override
     public void connected(String reason) {
+        Log.i(TAG, "Connected to NBusy server with reason: " + reason);
 
+        client.jwtAuth(userProfile.JWTToken, new JWTAuthCallback() {
+            @Override
+            public void success() {
+                Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
+                db.getQueuedMessages(new DB.GetChatMessagesCallback() {
+                    @Override
+                    public void chatMessagesRetrieved(final List<Message> msgs) {
+                        final Message[] msgsArray = msgs.toArray(new Message[msgs.size()]);
+                        client.sendMessages(new SendMsgsCallback() {
+                            @Override
+                            public void sentToServer() {
+                                // update in memory representation of messages
+                                final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
+
+                                // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
+                                db.upsertMessages(new DB.UpsertMessagesCallback() {
+                                    @Override
+                                    public void messagesUpserted() {
+                                        Log.i(TAG, "Sent queued messages to server: " + msgs.size());
+                                        // finally, notify all listening views about the changes
+                                        if (!chats.isEmpty()) {
+                                            eventBus.post(new ChatsUpdatedEvent(chats));
+                                        }
+                                    }
+                                }, msgsArray);
+                            }
+                        }, DataMap.getTitanMessages(msgsArray));
+                    }
+                });
+            }
+
+            @Override
+            public void fail() {
+                Log.i(TAG, "Authentication failed with NBusy server using JWT auth.");
+            }
+        });
     }
 
     @Override
     public void disconnected(String reason) {
+        Log.w(TAG, "Connection attempt OR connection to NBusy server was shut down with reason: " + reason);
+    }
 
+    @Override
+    public void messagesReceived(MsgMessage... msgs) {
+        if (msgs == null || msgs.length == 0) {
+            throw new IllegalArgumentException("messages cannot be null or empty");
+        }
+
+        final Message[] nbusyMsgs = DataMap.getNBusyMessages(msgs);
+        final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
+        db.upsertMessages(new DB.UpsertMessagesCallback() {
+            @Override
+            public void messagesUpserted() {
+                for (Chat chat : chats) {
+                    eventBus.post(new ChatsUpdatedEvent(chat));
+                }
+            }
+        }, nbusyMsgs);
     }
 }
