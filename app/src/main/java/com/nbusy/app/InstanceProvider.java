@@ -20,8 +20,8 @@ import com.nbusy.sdk.ClientImpl;
  * All instances are singletons unless otherwise mentioned.
  */
 public class InstanceProvider extends Application {
-    private static final Config config = new Config();
     private static Context appContext;
+    private static Config config;
     private static Worker worker;
     private static ConnManager connManager;
     private static Client client;
@@ -29,13 +29,21 @@ public class InstanceProvider extends Application {
     private static DB db;
 
     @Override
-    public void onCreate() {
+    public synchronized void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
     }
 
-    public static Context getAppContext() {
+    public synchronized static Context getAppContext() {
         return appContext;
+    }
+
+    public static synchronized Config getConfig() {
+        if (config == null) {
+            config = new Config();
+        }
+
+        return config;
     }
 
     public static synchronized Worker getWorker() {
@@ -60,8 +68,8 @@ public class InstanceProvider extends Application {
 
     public static synchronized Client getClient() {
         if (client == null) {
-            if (config.serverUrl != null) {
-                client = new ClientImpl(config.serverUrl, false);
+            if (getConfig().serverUrl != null) {
+                client = new ClientImpl(getConfig().serverUrl, false);
             } else {
                 client = new ClientImpl();
             }
@@ -80,7 +88,7 @@ public class InstanceProvider extends Application {
 
     public static synchronized DB getDB() {
         if (db == null) {
-            if (config.env == Config.Env.PRODUCTION) {
+            if (getConfig().env == Config.Env.PRODUCTION) {
                 db = new SQLDB();
             } else {
                 db = new InMemDB();
