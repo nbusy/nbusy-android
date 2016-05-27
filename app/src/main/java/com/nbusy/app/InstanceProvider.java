@@ -6,6 +6,7 @@ import android.content.Context;
 import com.nbusy.app.data.Config;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.InMemDB;
+import com.nbusy.app.data.Profile;
 import com.nbusy.app.data.sqldb.SQLDB;
 import com.nbusy.app.worker.ConnManager;
 import com.nbusy.app.worker.Worker;
@@ -45,9 +46,13 @@ public class InstanceProvider extends Application {
         return worker;
     }
 
-    public static synchronized ConnManager getConnManager() {
+    public static synchronized ConnManager getConnManager(Profile userProfile) {
         if (connManager == null) {
-            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getAppContext(), getWorker().userProfile.get());
+            if (userProfile == null) {
+                throw new IllegalArgumentException("userProfile cannot be null when ConnManager is not initialized");
+            }
+
+            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getAppContext(), userProfile);
         }
 
         return connManager;
