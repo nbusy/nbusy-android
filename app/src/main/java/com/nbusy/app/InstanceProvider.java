@@ -80,7 +80,8 @@ public class InstanceProvider extends Application {
 
     public static synchronized EventBus getEventBus() {
         if (eventBus == null) {
-            eventBus = new EventBus();
+            // todo: remove UIThreadExecutor if we don't need this any more
+            eventBus = new EventBus(/*new AsyncEventBus(TAG, new UIThreadExecutor())*/);
         }
 
         return eventBus;
