@@ -10,6 +10,7 @@ import android.util.Log;
 import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.data.Config;
 import com.nbusy.app.worker.Worker;
+import com.nbusy.sdk.Client;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,6 +26,7 @@ public class WorkerService extends Service {
     private final int standbyTime;
     private final StopStandby stopStandby = new StopStandby();
     private final Worker worker = InstanceProvider.getWorker();
+    private final Client client = InstanceProvider.getClient();
     private int startId;
 
     public WorkerService() {
@@ -86,7 +88,7 @@ public class WorkerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        worker.destroy();
+        client.close();
         RUNNING.set(false);
         Log.i(TAG, "destroyed");
     }

@@ -79,12 +79,6 @@ public class Worker {
         Log.i(TAG, "initialized");
     }
 
-    public void destroy() {
-        Log.i(TAG, "destroyed");
-        client.close();
-    }
-
-
     // todo: should these be done by event bus + conn man ?
 
     /**
