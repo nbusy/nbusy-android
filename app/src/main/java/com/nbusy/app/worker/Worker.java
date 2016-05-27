@@ -60,6 +60,8 @@ public class Worker {
         this.eventBus = eventBus;
         this.db = db;
 
+        // todo: should this be done by ProfileManager or ConnManager or DBManager or CacheManager ?
+
         db.getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
