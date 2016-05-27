@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.google.common.base.Optional;
 import com.nbusy.app.InstanceProvider;
-import com.nbusy.app.activities.LoginActivity;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMap;
@@ -15,13 +14,11 @@ import com.nbusy.app.data.Profile;
 import com.nbusy.app.services.WorkerService;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
-import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 import com.nbusy.sdk.Client;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.GoogleAuthCallback;
@@ -39,7 +36,7 @@ public class Worker {
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
-    public final AtomicReference<Profile> userProfile = new AtomicReference<>();
+    private final Profile userProfile;
 
     public Worker(final Context appContext, final Client client, final EventBus eventBus, DB db) {
         if (appContext == null) {
@@ -59,26 +56,6 @@ public class Worker {
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
-
-        // todo: should this be done by ProfileManager or ConnManager or DBManager or CacheManager ?
-
-        db.getProfile(new DB.GetProfileCallback() {
-            @Override
-            public void profileRetrieved(Profile prof) {
-                userProfile.set(prof);
-                client.connect(InstanceProvider.getConnManager(prof));
-                eventBus.post(new UserProfileRetrievedEvent(prof));
-            }
-
-            @Override
-            public void error() {
-                // no profile stored so display login activity
-                Intent intent = new Intent(appContext, LoginActivity.class);
-                appContext.startActivity(intent); // todo: what happens when service starts before user logs in?
-            }
-        });
-
-        Log.i(TAG, "initialized");
     }
 
     // todo: should these be done by event bus + conn man ?
@@ -92,8 +69,8 @@ public class Worker {
         }
 
         // a view is attaching to event bus so we need to ensure connectivity
-        if (!client.isConnected() && userProfile.get() != null) {
-            client.connect(InstanceProvider.getConnManager(userProfile.get()));
+        if (!client.isConnected() && userProfile != null) {
+            client.connect(InstanceProvider.getConnManager());
         }
 
         // start the worker service if not running
@@ -130,7 +107,7 @@ public class Worker {
         }
 
         final Message[] nbusyMsgs = DataMap.getNBusyMessages(msgs);
-        final Set<Chat> chats = userProfile.get().upsertMessages(nbusyMsgs);
+        final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
         db.upsertMessages(new DB.UpsertMessagesCallback() {
             @Override
             public void messagesUpserted() {
@@ -142,7 +119,7 @@ public class Worker {
     }
 
     public void sendMessages(String chatId, String... msgs) {
-        Optional<Chat.ChatAndNewMessages> cmOpt = userProfile.get().addNewOutgoingMessages(chatId, msgs);
+        Optional<Chat.ChatAndNewMessages> cmOpt = userProfile.addNewOutgoingMessages(chatId, msgs);
         if (!cmOpt.isPresent()) {
             return;
         }
@@ -165,7 +142,7 @@ public class Worker {
             client.echo(m.body, new EchoCallback() {
                 @Override
                 public void echoResponse(String msg) {
-                    eventBus.post(new ChatsUpdatedEvent(userProfile.get().setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
+                    eventBus.post(new ChatsUpdatedEvent(userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
                     receiveMessages(new MsgMessage(m.chatId, "echo", null, m.sent, msg));
                 }
             });
@@ -173,7 +150,7 @@ public class Worker {
         }
 
         // update in memory user profile with messages in case any of them are new, and notify all listener about this state change
-        Set<Chat> chats = userProfile.get().upsertMessages(msgs);
+        Set<Chat> chats = userProfile.upsertMessages(msgs);
         eventBus.post(new ChatsUpdatedEvent(chats));
 
         // persist messages in the database with Status = NEW
@@ -184,7 +161,7 @@ public class Worker {
                     @Override
                     public void sentToServer() {
                         // update in memory representation of messages
-                        final Set<Chat> chats = userProfile.get().setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
+                        final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
 
                         // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
                         db.upsertMessages(new DB.UpsertMessagesCallback() {
@@ -234,7 +211,7 @@ public class Worker {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
                 if (msgs.size() != 0) {
-                    eventBus.post(new ChatsUpdatedEvent(userProfile.get().upsertMessages(msgs)));
+                    eventBus.post(new ChatsUpdatedEvent(userProfile.upsertMessages(msgs)));
                 }
             }
         });

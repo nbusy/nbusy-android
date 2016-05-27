@@ -2,7 +2,9 @@ package com.nbusy.app;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 
+import com.nbusy.app.activities.LoginActivity;
 import com.nbusy.app.data.Config;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.InMemDB;
@@ -11,6 +13,7 @@ import com.nbusy.app.data.sqldb.SQLDB;
 import com.nbusy.app.worker.ConnManager;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.eventbus.EventBus;
+import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
@@ -27,11 +30,29 @@ public class InstanceProvider extends Application {
     private static Client client;
     private static EventBus eventBus;
     private static DB db;
+    private static Profile userProfile;
 
     @Override
     public synchronized void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
+
+        // todo: should this be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
+        db.getProfile(new DB.GetProfileCallback() {
+            @Override
+            public void profileRetrieved(Profile prof) {
+                userProfile = prof;
+                client.connect(getConnManager());
+                eventBus.post(new UserProfileRetrievedEvent(prof));
+            }
+
+            @Override
+            public void error() {
+                // no profile stored so display login activity
+                Intent intent = new Intent(appContext, LoginActivity.class);
+                appContext.startActivity(intent);
+            }
+        });
     }
 
     public synchronized static Context getAppContext() {
@@ -54,10 +75,10 @@ public class InstanceProvider extends Application {
         return worker;
     }
 
-    public static synchronized ConnManager getConnManager(Profile userProfile) {
+    public static synchronized ConnManager getConnManager() {
         if (connManager == null) {
             if (userProfile == null) {
-                throw new IllegalArgumentException("userProfile cannot be null when ConnManager is not initialized");
+                throw new IllegalStateException("userProfile cannot be null when ConnManager is not initialized");
             }
 
             connManager = new ConnManager(getClient(), getEventBus(), getDB(), getAppContext(), userProfile);
