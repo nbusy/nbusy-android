@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.google.common.base.Optional;
+import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.activities.LoginActivity;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
@@ -37,7 +38,6 @@ public class Worker {
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
-    private final Context appContext = null;
     public final AtomicReference<Profile> userProfile = new AtomicReference<>();
 
     public Worker(final Client client, final EventBus eventBus, DB db) {
@@ -59,15 +59,15 @@ public class Worker {
             @Override
             public void profileRetrieved(Profile prof) {
                 userProfile.set(prof);
-//                client.connect(connCallbacks);
+                client.connect(InstanceProvider.getConnManager(prof));
                 eventBus.post(new UserProfileRetrievedEvent(prof));
             }
 
             @Override
             public void error() {
                 // no profile stored so display login activity
-                Intent intent = new Intent(appContext, LoginActivity.class);
-                appContext.startActivity(intent); // todo: what happens when service starts before user logs in?
+                Intent intent = new Intent(InstanceProvider.getAppContext(), LoginActivity.class);
+                InstanceProvider.getAppContext().startActivity(intent); // todo: what happens when service starts before user logs in?
             }
         });
 
@@ -79,9 +79,9 @@ public class Worker {
         client.close();
     }
 
-    /**
-     * Event bus reg/unreg.
-     */
+
+    // todo: should these be done by event bus + conn man ?
+
     public void register(Object o, Context c) {
         if (o == null) {
             throw new IllegalArgumentException("object cannot be null");
@@ -92,7 +92,7 @@ public class Worker {
 
         // a view is attaching to event bus so we need to ensure connectivity
         if (!client.isConnected() && userProfile.get() != null) {
-//            client.connect(connCallbacks);
+            client.connect(InstanceProvider.getConnManager(userProfile.get()));
         }
 
         // start the worker service if not running
