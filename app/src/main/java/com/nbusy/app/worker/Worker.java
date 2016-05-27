@@ -9,7 +9,6 @@ import com.nbusy.app.activities.LoginActivity;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMap;
-import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
 import com.nbusy.app.services.WorkerService;
@@ -17,7 +16,6 @@ import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 import com.nbusy.sdk.Client;
-import com.nbusy.sdk.ClientImpl;
 
 import java.util.List;
 import java.util.Objects;

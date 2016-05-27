@@ -1,5 +1,8 @@
 package com.nbusy.app;
 
+import android.app.Application;
+import android.content.Context;
+
 import com.nbusy.app.data.Config;
 import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.worker.Worker;
@@ -8,10 +11,22 @@ import com.nbusy.sdk.ClientImpl;
 
 /**
  * Creator and keeper of all the instances.
+ * Values are initialized on first request.
  */
-public class InstanceProvider {
+public class InstanceProvider extends Application {
     private static final Config config = new Config();
-    private static Worker worker = null;
+    private static Context appContext;
+    private static Worker worker;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        appContext = getApplicationContext();
+    }
+
+    public static Context getAppContext() {
+        return appContext;
+    }
 
     public static Worker getWorker() {
         if (worker == null) {
