@@ -75,7 +75,7 @@ public class ChatListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        worker.register(this, getActivity());
+        worker.register(this);
     }
 
     @Override

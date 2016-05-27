@@ -82,12 +82,12 @@ public class Worker {
 
     // todo: should these be done by event bus + conn man ?
 
-    public void register(Object o, Context c) {
+    /**
+     * Event bus reg/unreg.
+     */
+    public void register(Object o) {
         if (o == null) {
             throw new IllegalArgumentException("object cannot be null");
-        }
-        if (c == null) {
-            throw new IllegalArgumentException("context cannot be null");
         }
 
         // a view is attaching to event bus so we need to ensure connectivity
@@ -97,9 +97,9 @@ public class Worker {
 
         // start the worker service if not running
         if (!WorkerService.RUNNING.get()) {
-            Intent serviceIntent = new Intent(c, WorkerService.class);
+            Intent serviceIntent = new Intent(InstanceProvider.getAppContext(), WorkerService.class);
             serviceIntent.putExtra(WorkerService.STARTED_BY, o.getClass().getSimpleName());
-            c.startService(serviceIntent);
+            InstanceProvider.getAppContext().startService(serviceIntent);
         }
 
         eventBus.register(o);
