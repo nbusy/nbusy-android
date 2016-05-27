@@ -35,12 +35,16 @@ import titan.client.responses.GoogleAuthResponse;
  */
 public class Worker {
     private static final String TAG = Worker.class.getSimpleName();
+    private final Context appContext;
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
     public final AtomicReference<Profile> userProfile = new AtomicReference<>();
 
-    public Worker(final Client client, final EventBus eventBus, DB db) {
+    public Worker(final Context appContext, final Client client, final EventBus eventBus, DB db) {
+        if (appContext == null) {
+            throw new IllegalArgumentException("appContext cannot be null");
+        }
         if (client == null) {
             throw new IllegalArgumentException("client cannot be null");
         }
@@ -51,6 +55,7 @@ public class Worker {
             throw new IllegalArgumentException("db cannot be null ");
         }
 
+        this.appContext = appContext;
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
@@ -66,8 +71,8 @@ public class Worker {
             @Override
             public void error() {
                 // no profile stored so display login activity
-                Intent intent = new Intent(InstanceProvider.getAppContext(), LoginActivity.class);
-                InstanceProvider.getAppContext().startActivity(intent); // todo: what happens when service starts before user logs in?
+                Intent intent = new Intent(appContext, LoginActivity.class);
+                appContext.startActivity(intent); // todo: what happens when service starts before user logs in?
             }
         });
 
@@ -97,9 +102,9 @@ public class Worker {
 
         // start the worker service if not running
         if (!WorkerService.RUNNING.get()) {
-            Intent serviceIntent = new Intent(InstanceProvider.getAppContext(), WorkerService.class);
+            Intent serviceIntent = new Intent(appContext, WorkerService.class);
             serviceIntent.putExtra(WorkerService.STARTED_BY, o.getClass().getSimpleName());
-            InstanceProvider.getAppContext().startService(serviceIntent);
+            appContext.startService(serviceIntent);
         }
 
         eventBus.register(o);
@@ -107,14 +112,16 @@ public class Worker {
 
     public void unregister(Object o) {
         eventBus.unregister(o);
-        // todo: start 3 min standBy timer here in case a view wants to register again or we're in a brief limbo state
+        // todo: start 3 min disconnect standBy timer here in case a view wants to register again or we're in a brief limbo state
+        // and update needConnection accordingly
     }
 
     /**
      * Whether worker needs an active connection to server.
      */
     public boolean needConnection() {
-        return eventBus.haveSubscribers(); // todo: or there are ongoing operations or queued operations or standby timer is still running
+        // todo: or there are ongoing operations or queued operations or standby timer is still running
+        return eventBus.haveSubscribers();
     }
 
     /************************

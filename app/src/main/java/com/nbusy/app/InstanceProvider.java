@@ -48,7 +48,7 @@ public class InstanceProvider extends Application {
 
     public static synchronized Worker getWorker() {
         if (worker == null) {
-            worker = new Worker(getClient(), getEventBus(), getDB());
+            worker = new Worker(getAppContext(), getClient(), getEventBus(), getDB());
         }
 
         return worker;
