@@ -2,10 +2,7 @@ package com.nbusy.app;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 
-import com.nbusy.app.activities.LoginActivity;
 import com.nbusy.app.data.Config;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.InMemDB;
@@ -14,7 +11,6 @@ import com.nbusy.app.data.sqldb.SQLDB;
 import com.nbusy.app.worker.ConnManager;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.eventbus.EventBus;
-import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
@@ -38,25 +34,6 @@ public class InstanceProvider extends Application {
     public synchronized void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
-
-        // todo: could this be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
-        getDB().getProfile(new DB.GetProfileCallback() {
-            @Override
-            public void profileRetrieved(Profile prof) {
-                Log.i(TAG, "user profile retrieved");
-                userProfile = prof;
-                getConnManager().startConnection();
-                getEventBus().post(new UserProfileRetrievedEvent(prof));
-            }
-
-            @Override
-            public void error() {
-                Log.i(TAG, "user profile does not exist, starting login activity");
-                // no profile stored so display login activity
-                Intent intent = new Intent(appContext, LoginActivity.class);
-                appContext.startActivity(intent);
-            }
-        });
     }
 
     public synchronized static Context getAppContext() {
@@ -102,7 +79,7 @@ public class InstanceProvider extends Application {
     public static synchronized EventBus getEventBus() {
         if (eventBus == null) {
             // todo: remove UIThreadExecutor if we don't need this any more
-            eventBus = new EventBus(/*new AsyncEventBus(TAG, new UIThreadExecutor())*/);
+            eventBus = new EventBus(/*new UIThreadExecutor()*/);
         }
 
         return eventBus;
@@ -118,6 +95,14 @@ public class InstanceProvider extends Application {
         }
 
         return db;
+    }
+
+    public static synchronized void setUserProfile(Profile prof) {
+        if (userProfile != null) {
+            throw new IllegalStateException("userProfile has already been initialized");
+        }
+
+        userProfile = prof;
     }
 
     public static synchronized Profile getUserProfile() {

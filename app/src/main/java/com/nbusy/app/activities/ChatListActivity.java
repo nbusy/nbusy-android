@@ -10,7 +10,11 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.R;
+import com.nbusy.app.data.DB;
+import com.nbusy.app.data.Profile;
+import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -69,6 +73,25 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("just testing from Android simulator");
         sendGcmMessage("test 2");
         sendGcmMessage("test 3");
+
+        // todo: could this be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
+        InstanceProvider.getDB().getProfile(new DB.GetProfileCallback() {
+            @Override
+            public void profileRetrieved(Profile prof) {
+                Log.i(TAG, "user profile retrieved");
+                InstanceProvider.setUserProfile(prof);
+                InstanceProvider.getConnManager().startConnection();
+                InstanceProvider.getEventBus().post(new UserProfileRetrievedEvent(prof));
+            }
+
+            @Override
+            public void error() {
+                Log.i(TAG, "user profile does not exist, starting login activity");
+                // no profile stored so display login activity
+                Intent intent = new Intent(ChatListActivity.this, LoginActivity.class);
+                ChatListActivity.this.startActivity(intent);
+            }
+        });
     }
 
     /**

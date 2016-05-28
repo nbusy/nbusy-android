@@ -22,14 +22,14 @@ import java.util.Collection;
  * also supports tablet devices by allowing list items to be given an
  * 'activated' state upon selection. This helps indicate which item is
  * currently being viewed in a {@link ChatDetailFragment}.
- * <p>
+ * <p/>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
 public class ChatListFragment extends ListFragment {
 
-    private final Worker worker = InstanceProvider.getWorker();
-    private final Profile userProfile = InstanceProvider.getUserProfile();
+    private Worker worker;
+    private Profile userProfile;
     private ChatListArrayAdapter chatAdapter;
 
     /**
@@ -182,6 +182,10 @@ public class ChatListFragment extends ListFragment {
 
     @Subscribe
     public void userProfileRetrievedEventHandler(UserProfileRetrievedEvent e) {
+        if (userProfile == null) {
+            userProfile = e.profile;
+            worker = InstanceProvider.getWorker();
+        }
         setData(e.profile.getChats());
     }
 }
