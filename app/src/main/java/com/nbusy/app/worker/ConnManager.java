@@ -112,4 +112,11 @@ public class ConnManager implements ConnCallbacks {
         // todo: or there are ongoing operations or queued operations or standby timer is still running
         return eventBus.haveSubscribers();
     }
+
+    /**
+     * Starts connection sequence to NBusy servers.
+     */
+    public void startConnection() {
+        client.connect(this);
+    }
 }

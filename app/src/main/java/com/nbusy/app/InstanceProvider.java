@@ -37,14 +37,13 @@ public class InstanceProvider extends Application {
         super.onCreate();
         appContext = getApplicationContext();
 
-        // todo: should could be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
-        // todo2: block thread until we get profile or start login dialog (as we do intests)
-        db.getProfile(new DB.GetProfileCallback() {
+        // todo: could this be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
+        getDB().getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
                 userProfile = prof;
-                client.connect(getConnManager());
-                eventBus.post(new UserProfileRetrievedEvent(prof));
+                getConnManager().startConnection();
+                getEventBus().post(new UserProfileRetrievedEvent(prof));
             }
 
             @Override
