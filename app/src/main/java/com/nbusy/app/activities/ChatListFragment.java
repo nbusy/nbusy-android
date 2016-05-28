@@ -176,9 +176,9 @@ public class ChatListFragment extends ListFragment {
         setListAdapter(chatAdapter);
     }
 
-    /******************************
-     * Worker Event Subscriptions *
-     ******************************/
+    /***********************
+     * Event Subscriptions *
+     ***********************/
 
     @Subscribe
     public void userProfileRetrievedEventHandler(UserProfileRetrievedEvent e) {

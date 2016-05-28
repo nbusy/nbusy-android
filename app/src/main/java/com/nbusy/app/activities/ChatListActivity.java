@@ -10,9 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.R;
-import com.nbusy.app.worker.Worker;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,7 +31,6 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     private static final String PROPERTY_APP_VERSION = "appVer";
     private static final String PROPERTY_REG_ID = "regId";
     private static final String SENDER_ID = "218602439235";
-    private final Worker worker = InstanceProvider.getWorker();
     private final AtomicInteger msgId = new AtomicInteger();
     private GoogleCloudMessaging gcm;
     private String regId;

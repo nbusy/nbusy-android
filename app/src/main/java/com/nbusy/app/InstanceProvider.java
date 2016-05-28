@@ -18,9 +18,6 @@ import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Creator and keeper of all the instances.
  * Values are initialized on first request.
@@ -43,12 +40,10 @@ public class InstanceProvider extends Application {
         appContext = getApplicationContext();
 
         // todo: could this be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
-        final CountDownLatch cdl = new CountDownLatch(1);
         getDB().getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
                 Log.i(TAG, "user profile retrieved");
-                cdl.countDown();
                 userProfile = prof;
                 getConnManager().startConnection();
                 getEventBus().post(new UserProfileRetrievedEvent(prof));
@@ -57,19 +52,11 @@ public class InstanceProvider extends Application {
             @Override
             public void error() {
                 Log.i(TAG, "user profile does not exist, starting login activity");
-                cdl.countDown();
                 // no profile stored so display login activity
                 Intent intent = new Intent(appContext, LoginActivity.class);
                 appContext.startActivity(intent);
             }
         });
-        try {
-            if (!cdl.await(5, TimeUnit.SECONDS)) {
-                Log.e(TAG, "failed to retrieve user profile within 5 seconds");
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     public synchronized static Context getAppContext() {
@@ -138,10 +125,6 @@ public class InstanceProvider extends Application {
     }
 
     public static synchronized Profile getUserProfile() {
-        if (userProfile == null) {
-            throw new IllegalStateException("userProfile is being retrieved or does not exist");
-        }
-
         return userProfile;
     }
 }
