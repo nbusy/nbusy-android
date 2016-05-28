@@ -81,11 +81,7 @@ public class InstanceProvider extends Application {
 
     public static synchronized ConnManager getConnManager() {
         if (connManager == null) {
-            if (userProfile == null) {
-                throw new IllegalStateException("userProfile cannot be null when ConnManager is not initialized");
-            }
-
-            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getAppContext(), userProfile);
+            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getAppContext(), getUserProfile());
         }
 
         return connManager;
@@ -125,6 +121,10 @@ public class InstanceProvider extends Application {
     }
 
     public static synchronized Profile getUserProfile() {
+        if (userProfile == null) {
+            throw new IllegalStateException("userProfile is not retrieved yet or does not exist");
+        }
+
         return userProfile;
     }
 }
