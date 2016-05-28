@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
+import com.nbusy.app.worker.ConnManager;
 import com.nbusy.app.worker.Worker;
 
 /**

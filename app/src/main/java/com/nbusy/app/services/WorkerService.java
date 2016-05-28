@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.data.Config;
+import com.nbusy.app.worker.ConnManager;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.sdk.Client;
 
@@ -27,6 +28,7 @@ public class WorkerService extends Service {
     private final StopStandby stopStandby = new StopStandby();
     private final Worker worker = InstanceProvider.getWorker();
     private final Client client = InstanceProvider.getClient();
+    private final ConnManager connManager = InstanceProvider.getConnManager();
     private int startId;
 
     public WorkerService() {
@@ -36,7 +38,7 @@ public class WorkerService extends Service {
     class StopStandby extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            while (worker.needConnection()) {
+            while (connManager.needConnection()) {
                 try {
                     Thread.sleep(standbyTime);
                 } catch (InterruptedException e) {

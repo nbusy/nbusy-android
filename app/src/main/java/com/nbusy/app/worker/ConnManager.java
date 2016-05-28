@@ -104,4 +104,12 @@ public class ConnManager implements ConnCallbacks {
             }
         }, nbusyMsgs);
     }
+
+    /**
+     * Whether we need an active connection to server.
+     */
+    public boolean needConnection() {
+        // todo: or there are ongoing operations or queued operations or standby timer is still running
+        return eventBus.haveSubscribers();
+    }
 }

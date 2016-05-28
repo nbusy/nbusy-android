@@ -38,7 +38,7 @@ public class Worker {
     private final DB db;
     private final Profile userProfile;
 
-    public Worker(final Context appContext, final Client client, final EventBus eventBus, DB db) {
+    public Worker(final Context appContext, final Client client, final EventBus eventBus, DB db, Profile userProfile) {
         if (appContext == null) {
             throw new IllegalArgumentException("appContext cannot be null");
         }
@@ -51,11 +51,15 @@ public class Worker {
         if (db == null) {
             throw new IllegalArgumentException("db cannot be null ");
         }
+        if (userProfile == null) {
+            throw new IllegalArgumentException("userProfile cannot be null ");
+        }
 
         this.appContext = appContext;
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
+        this.userProfile = userProfile;
     }
 
     // todo: should these be done by event bus + conn man ?
@@ -69,7 +73,7 @@ public class Worker {
         }
 
         // a view is attaching to event bus so we need to ensure connectivity
-        if (!client.isConnected() && userProfile != null) {
+        if (!client.isConnected()) {
             client.connect(InstanceProvider.getConnManager());
         }
 
@@ -87,14 +91,6 @@ public class Worker {
         eventBus.unregister(o);
         // todo: start 3 min disconnect standBy timer here in case a view wants to register again or we're in a brief limbo state
         // and update needConnection accordingly
-    }
-
-    /**
-     * Whether worker needs an active connection to server.
-     */
-    public boolean needConnection() {
-        // todo: or there are ongoing operations or queued operations or standby timer is still running
-        return eventBus.haveSubscribers();
     }
 
     /************************
