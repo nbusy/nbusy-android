@@ -10,6 +10,7 @@ import android.widget.ListView;
 import com.google.common.eventbus.Subscribe;
 import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.data.Chat;
+import com.nbusy.app.data.Profile;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 
@@ -28,6 +29,7 @@ import java.util.Collection;
 public class ChatListFragment extends ListFragment {
 
     private final Worker worker = InstanceProvider.getWorker();
+    private final Profile userProfile = InstanceProvider.getUserProfile();
     private ChatListArrayAdapter chatAdapter;
 
     /**
@@ -67,8 +69,8 @@ public class ChatListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (worker.userProfile.get() != null) {
-            setData(worker.userProfile.get().getChats());
+        if (userProfile != null) {
+            setData(userProfile.getChats());
         }
     }
 

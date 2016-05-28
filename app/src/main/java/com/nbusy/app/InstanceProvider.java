@@ -37,7 +37,7 @@ public class InstanceProvider extends Application {
         super.onCreate();
         appContext = getApplicationContext();
 
-        // todo: should this be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
+        // todo: should could be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
         db.getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
@@ -69,7 +69,7 @@ public class InstanceProvider extends Application {
 
     public static synchronized Worker getWorker() {
         if (worker == null) {
-            worker = new Worker(getAppContext(), getClient(), getEventBus(), getDB());
+            worker = new Worker(getAppContext(), getClient(), getEventBus(), getDB(), getUserProfile());
         }
 
         return worker;
@@ -118,5 +118,13 @@ public class InstanceProvider extends Application {
         }
 
         return db;
+    }
+
+    public static synchronized Profile getUserProfile() {
+        if (userProfile == null) {
+            throw new IllegalStateException("userProfile is being retrieved or does not exist");
+        }
+
+        return userProfile;
     }
 }

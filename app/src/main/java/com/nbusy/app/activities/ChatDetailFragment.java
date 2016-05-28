@@ -15,6 +15,7 @@ import com.google.common.eventbus.Subscribe;
 import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
+import com.nbusy.app.data.Profile;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 
@@ -32,6 +33,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     private static final String TAG = ChatDetailFragment.class.getSimpleName();
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = InstanceProvider.getWorker();
+    private final Profile userProfile = InstanceProvider.getUserProfile();
     private AtomicBoolean viewCreated = new AtomicBoolean(false);
     private String chatId;
     private MessageListArrayAdapter messageAdapter;
@@ -101,7 +103,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
             chatId = (String) arguments.get(ARG_ITEM_ID);
-            Optional<Chat> chat = worker.userProfile.get().getChat(chatId);
+            Optional<Chat> chat = userProfile.getChat(chatId);
             if (chat.isPresent() && !chat.get().messages.isEmpty()) {
                 messageAdapter = new MessageListArrayAdapter(getActivity(), new ArrayList<>(chat.get().messages));
             } else {
