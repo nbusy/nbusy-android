@@ -11,6 +11,7 @@ import com.nbusy.app.data.sqldb.SQLDB;
 import com.nbusy.app.worker.ConnManager;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.eventbus.EventBus;
+import com.nbusy.app.worker.eventbus.UIThreadExecutor;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
@@ -79,7 +80,7 @@ public class InstanceProvider extends Application {
     public static synchronized EventBus getEventBus() {
         if (eventBus == null) {
             // todo: remove UIThreadExecutor if we don't need this any more
-            eventBus = new EventBus(/*new UIThreadExecutor()*/);
+            eventBus = new EventBus(new UIThreadExecutor());
         }
 
         return eventBus;

@@ -75,6 +75,10 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("test 3");
 
         // todo: could this be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
+        if (InstanceProvider.userProfileRetrieved()) {
+            return;
+        }
+
         InstanceProvider.getDB().getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
