@@ -50,7 +50,7 @@ public class InstanceProvider extends Application {
 
     public static synchronized Worker getWorker() {
         if (worker == null) {
-            worker = new Worker(getAppContext(), getClient(), getEventBus(), getDB(), getUserProfile());
+            worker = new Worker(getClient(), getEventBus(), getDB(), getUserProfile());
         }
 
         return worker;
@@ -111,5 +111,9 @@ public class InstanceProvider extends Application {
         }
 
         return userProfile;
+    }
+
+    public static synchronized boolean userProfileRetrieved() {
+        return userProfile != null;
     }
 }

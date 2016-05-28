@@ -26,7 +26,6 @@ public class WorkerService extends Service {
     private static final Config config = new Config();
     private final int standbyTime;
     private final StopStandby stopStandby = new StopStandby();
-    private final Worker worker = InstanceProvider.getWorker();
     private final Client client = InstanceProvider.getClient();
     private final ConnManager connManager = InstanceProvider.getConnManager();
     private int startId;

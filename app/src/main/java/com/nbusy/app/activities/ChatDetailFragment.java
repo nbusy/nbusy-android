@@ -18,6 +18,7 @@ import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.Profile;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
+import com.nbusy.app.worker.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -33,6 +34,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     private static final String TAG = ChatDetailFragment.class.getSimpleName();
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = InstanceProvider.getWorker();
+    private final EventBus eventBus = InstanceProvider.getEventBus();
     private final Profile userProfile = InstanceProvider.getUserProfile();
     private AtomicBoolean viewCreated = new AtomicBoolean(false);
     private String chatId;
@@ -137,13 +139,13 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
-        worker.register(this);
+        eventBus.register(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        worker.unregister(this);
+        eventBus.unregister(this);
     }
 
     /**********************************

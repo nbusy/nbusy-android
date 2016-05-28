@@ -80,7 +80,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
             public void profileRetrieved(Profile prof) {
                 Log.i(TAG, "user profile retrieved");
                 InstanceProvider.setUserProfile(prof);
-                InstanceProvider.getConnManager().startConnection();
+                InstanceProvider.getConnManager().ensureConn();
                 InstanceProvider.getEventBus().post(new UserProfileRetrievedEvent(prof));
             }
 

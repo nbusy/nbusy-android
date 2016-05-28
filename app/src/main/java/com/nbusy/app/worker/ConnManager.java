@@ -1,13 +1,16 @@
 package com.nbusy.app.worker;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
+import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMap;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
+import com.nbusy.app.services.WorkerService;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.sdk.Client;
@@ -111,12 +114,22 @@ public class ConnManager implements ConnCallbacks {
     public boolean needConnection() {
         // todo: or there are ongoing operations or queued operations or standby timer is still running
         return eventBus.haveSubscribers();
+        // todo: start an 3 min disconnect standBy timer on eventbus.unregister in case a view wants to register again or we're in a brief limbo state
     }
 
     /**
-     * Starts connection sequence to NBusy servers.
+     * Starts/restarts connection sequence to NBusy servers if we are not connected.
      */
-    public void startConnection() {
-        client.connect(this);
+    public void ensureConn() {
+        if (!client.isConnected()) {
+            client.connect(this);
+        }
+
+        // start the worker service if not running
+        if (!WorkerService.RUNNING.get()) {
+            Intent serviceIntent = new Intent(InstanceProvider.getAppContext(), WorkerService.class);
+            serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
+            InstanceProvider.getAppContext().startService(serviceIntent);
+        }
     }
 }

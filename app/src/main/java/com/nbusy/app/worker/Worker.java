@@ -1,17 +1,14 @@
 package com.nbusy.app.worker;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import com.google.common.base.Optional;
-import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMap;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
-import com.nbusy.app.services.WorkerService;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.sdk.Client;
@@ -32,16 +29,12 @@ import titan.client.responses.GoogleAuthResponse;
  */
 public class Worker {
     private static final String TAG = Worker.class.getSimpleName();
-    private final Context appContext;
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
     private final Profile userProfile;
 
-    public Worker(final Context appContext, final Client client, final EventBus eventBus, DB db, Profile userProfile) {
-        if (appContext == null) {
-            throw new IllegalArgumentException("appContext cannot be null");
-        }
+    public Worker(final Client client, final EventBus eventBus, DB db, Profile userProfile) {
         if (client == null) {
             throw new IllegalArgumentException("client cannot be null");
         }
@@ -55,42 +48,10 @@ public class Worker {
             throw new IllegalArgumentException("userProfile cannot be null ");
         }
 
-        this.appContext = appContext;
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
         this.userProfile = userProfile;
-    }
-
-    // todo: should these be done by event bus + conn man ?
-
-    /**
-     * Event bus reg/unreg.
-     */
-    public void register(Object o) {
-        if (o == null) {
-            throw new IllegalArgumentException("object cannot be null");
-        }
-
-        // a view is attaching to event bus so we need to ensure connectivity
-        if (!client.isConnected()) {
-            client.connect(InstanceProvider.getConnManager());
-        }
-
-        // start the worker service if not running
-        if (!WorkerService.RUNNING.get()) {
-            Intent serviceIntent = new Intent(appContext, WorkerService.class);
-            serviceIntent.putExtra(WorkerService.STARTED_BY, o.getClass().getSimpleName());
-            appContext.startService(serviceIntent);
-        }
-
-        eventBus.register(o);
-    }
-
-    public void unregister(Object o) {
-        eventBus.unregister(o);
-        // todo: start 3 min disconnect standBy timer here in case a view wants to register again or we're in a brief limbo state
-        // and update needConnection accordingly
     }
 
     /************************

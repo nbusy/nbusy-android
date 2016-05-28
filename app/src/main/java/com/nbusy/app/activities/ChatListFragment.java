@@ -1,17 +1,16 @@
 package com.nbusy.app.activities;
 
 import android.app.Activity;
+import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
 
 import com.google.common.eventbus.Subscribe;
 import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.data.Chat;
-import com.nbusy.app.data.Profile;
-import com.nbusy.app.worker.Worker;
+import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 
 import java.util.ArrayList;
@@ -28,8 +27,7 @@ import java.util.Collection;
  */
 public class ChatListFragment extends ListFragment {
 
-    private Worker worker;
-    private Profile userProfile;
+    private final EventBus eventBus = InstanceProvider.getEventBus();
     private ChatListArrayAdapter chatAdapter;
 
     /**
@@ -69,21 +67,18 @@ public class ChatListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (userProfile != null) {
-            setData(userProfile.getChats());
-        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        worker.register(this);
+        eventBus.register(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        worker.unregister(this);
+        eventBus.unregister(this);
     }
 
     @Override
@@ -182,10 +177,6 @@ public class ChatListFragment extends ListFragment {
 
     @Subscribe
     public void userProfileRetrievedEventHandler(UserProfileRetrievedEvent e) {
-        if (userProfile == null) {
-            userProfile = e.profile;
-            worker = InstanceProvider.getWorker();
-        }
         setData(e.profile.getChats());
     }
 }
