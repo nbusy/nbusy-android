@@ -2,7 +2,7 @@ package com.nbusy.app.data;
 
 import titan.client.messages.MsgMessage;
 
-public class DataMaps {
+public class DataMap {
 
     public static MsgMessage[] getTitanMessages(com.nbusy.app.data.Message... msgs) {
         MsgMessage[] titanMsgs = new MsgMessage[msgs.length];

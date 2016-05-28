@@ -15,9 +15,11 @@ public class ClientImpl extends titan.client.ClientImpl implements Client {
         super(url, async);
     }
 
-    public ClientImpl() {
-        super();
+    public ClientImpl(boolean async) {
+        super("wss://nbusy.herokuapp.com", async);
     }
 
-    // todo: this sdk should have proper debug/production urls to connect to and provide easy connection to dev nbusy server in docker etc.
+    public ClientImpl() {
+        super("wss://nbusy.herokuapp.com", false);
+    }
 }

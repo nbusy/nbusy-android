@@ -1,4 +1,4 @@
-package com.nbusy.app.worker;
+package com.nbusy.app.worker.eventbus;
 
 import android.os.Handler;
 import android.os.Looper;
