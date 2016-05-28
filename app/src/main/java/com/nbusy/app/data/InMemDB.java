@@ -122,7 +122,7 @@ public class InMemDB implements DB {
                 fn.execute();
             }
         }
-        new SimulateDatabase().execute();
+        new SimulateDatabase().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private interface Function {

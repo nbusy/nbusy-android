@@ -3,6 +3,7 @@ package com.nbusy.app;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.nbusy.app.activities.LoginActivity;
 import com.nbusy.app.data.Config;
@@ -17,12 +18,16 @@ import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 import com.nbusy.sdk.Client;
 import com.nbusy.sdk.ClientImpl;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Creator and keeper of all the instances.
  * Values are initialized on first request.
  * All instances are singletons unless otherwise mentioned.
  */
 public class InstanceProvider extends Application {
+    private static final String TAG = InstanceProvider.class.getSimpleName();
     private static Context appContext;
     private static Config config;
     private static Worker worker;
@@ -38,9 +43,12 @@ public class InstanceProvider extends Application {
         appContext = getApplicationContext();
 
         // todo: could this be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
+        final CountDownLatch cdl = new CountDownLatch(1);
         getDB().getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
+                Log.i(TAG, "user profile retrieved");
+                cdl.countDown();
                 userProfile = prof;
                 getConnManager().startConnection();
                 getEventBus().post(new UserProfileRetrievedEvent(prof));
@@ -48,11 +56,20 @@ public class InstanceProvider extends Application {
 
             @Override
             public void error() {
+                Log.i(TAG, "user profile does not exist, starting login activity");
+                cdl.countDown();
                 // no profile stored so display login activity
                 Intent intent = new Intent(appContext, LoginActivity.class);
                 appContext.startActivity(intent);
             }
         });
+        try {
+            if (!cdl.await(5, TimeUnit.SECONDS)) {
+                Log.e(TAG, "failed to retrieve user profile within 5 seconds");
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public synchronized static Context getAppContext() {
