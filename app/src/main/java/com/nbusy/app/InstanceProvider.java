@@ -38,6 +38,7 @@ public class InstanceProvider extends Application {
         appContext = getApplicationContext();
 
         // todo: should could be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
+        // todo2: block thread until we get profile or start login dialog (as we do intests)
         db.getProfile(new DB.GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
