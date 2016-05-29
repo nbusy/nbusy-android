@@ -15,6 +15,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
+import com.nbusy.app.worker.LoginManager;
 
 /**
  * Receive ID token for the current Google user.
@@ -68,10 +69,18 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 String idToken = acct.getIdToken();
 
                 Log.d(TAG, "idToken: " + idToken);
-                InstanceManager.getConnManager(idToken).ensureConn();
+                InstanceManager.getLoginManager().login(idToken, new LoginManager.LoginFinishedCallback() {
+                    @Override
+                    public void success() {
+                        finish();
+                    }
 
-                // todo: wait till conn is ensured or start over
-                finish();
+                    @Override
+                    public void fail() {
+                        Log.e(TAG, "Google auth failed");
+                        // todo: show a toast notification and ask user to retry
+                    }
+                });
             } else {
                 Log.e(TAG, "Google auth failed");
                 // todo: show a toast notification and ask user to retry

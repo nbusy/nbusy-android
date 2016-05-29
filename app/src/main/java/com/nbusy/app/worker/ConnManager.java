@@ -1,32 +1,28 @@
 package com.nbusy.app.worker;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
-import com.nbusy.app.InstanceManager;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMap;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
-import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
+import com.nbusy.app.services.WorkerService;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
-import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 import com.nbusy.sdk.Client;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import titan.client.callbacks.ConnCallbacks;
-import titan.client.callbacks.GoogleAuthCallback;
 import titan.client.callbacks.JWTAuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
-import titan.client.responses.GoogleAuthResponse;
 
 /**
  * Manages connection to the NBusy servers.
@@ -38,67 +34,67 @@ public class ConnManager implements ConnCallbacks {
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
-    private Profile userProfile;
-    private String googleIDToken;
+    private final Profile userProfile;
+    private final Context appContext;
 
-    /**
-     * Initializes connection manager with previously acquired JWT token stored in the user profile.
-     */
-    public ConnManager(Client client, EventBus eventBus, DB db, Profile userProfile) {
+    public ConnManager(Client client, EventBus eventBus, DB db, Profile userProfile, Context appContext) {
+        if (client == null) {
+            throw new IllegalArgumentException("client cannot be null");
+        }
+        if (eventBus == null) {
+            throw new IllegalArgumentException("eventBus cannot be null");
+        }
+        if (db == null) {
+            throw new IllegalArgumentException("db cannot be null");
+        }
+        if (userProfile == null) {
+            throw new IllegalArgumentException("userProfile cannot be null");
+        }
+        if (appContext == null) {
+            throw new IllegalArgumentException("appContext cannot be null");
+        }
+
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
         this.userProfile = userProfile;
+        this.appContext = appContext;
     }
 
     /**
-     * Initializes connection manager with Google ID token.
+     * Whether we need an active connection to server.
      */
-    public ConnManager(Client client, EventBus eventBus, DB db, String googleIDToken) {
-        this.client = client;
-        this.eventBus = eventBus;
-        this.db = db;
-        this.googleIDToken = googleIDToken;
+    public boolean needConnection() {
+        // todo: or there are ongoing operations or queued operations or standby timer is still running
+        return eventBus.haveSubscribers();
+        // todo: start an 3 min disconnect standBy timer on eventbus.unregister in case a view wants to register again or we're in a brief limbo state
     }
+
+    /**
+     * Starts/restarts connection sequence to NBusy servers if we are not connected.
+     */
+    public void ensureConn() {
+        if (!client.isConnected()) {
+            client.connect(this);
+        }
+
+        // start the worker service if not running
+        if (!WorkerService.RUNNING.get()) {
+            Intent serviceIntent = new Intent(appContext, WorkerService.class);
+            serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
+            appContext.startService(serviceIntent);
+        }
+    }
+
+    /***************************
+     * ConnCallbacks Overrides *
+     ***************************/
 
     @Override
     public void connected(String reason) {
         Log.i(TAG, "Connected to NBusy server with reason: " + reason);
 
-        // todo: check return == false from jwt/google auth calls in case connection drops in between calls (highly unlikely though)
-
-        if (userProfile == null) {
-            client.googleAuth(googleIDToken, new GoogleAuthCallback() {
-                @Override
-                public void success(GoogleAuthResponse res) {
-                    Log.i(TAG, "Authenticated with NBusy server using Google auth.");
-
-                    ArrayList<Chat> chats = new ArrayList<>();
-                    chats.add(new Chat("echo", "Echo", "Yo!", new Date()));
-                    final Profile prof = new Profile(res.id, res.token, res.email, res.name, res.picture, chats);
-                    db.createProfile(prof, new CreateProfileCallback() {
-                        @Override
-                        public void success() {
-                            // todo: close connection and let ConnManager handle the rest
-                        }
-
-                        @Override
-                        public void error() {
-                            Log.e(TAG, "Failed to create user profile");
-                        }
-                    });
-                }
-
-                @Override
-                public void fail(int code, String message) {
-                    Log.i(TAG, "Failed to authenticate with NBusy server using Google auth: " + code + " : " + message);
-                }
-            });
-
-            return;
-        }
-
-        client.jwtAuth(userProfile.jwttoken, new JWTAuthCallback() {
+        boolean called = client.jwtAuth(userProfile.jwttoken, new JWTAuthCallback() {
             @Override
             public void success() {
                 Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
@@ -135,6 +131,10 @@ public class ConnManager implements ConnCallbacks {
                 Log.i(TAG, "Authentication failed with NBusy server using JWT auth.");
             }
         });
+
+        if (!called) {
+            client.close();
+        }
     }
 
     @Override
@@ -158,30 +158,5 @@ public class ConnManager implements ConnCallbacks {
                 }
             }
         }, nbusyMsgs);
-    }
-
-    /**
-     * Whether we need an active connection to server.
-     */
-    public boolean needConnection() {
-        // todo: or there are ongoing operations or queued operations or standby timer is still running
-        return eventBus.haveSubscribers();
-        // todo: start an 3 min disconnect standBy timer on eventbus.unregister in case a view wants to register again or we're in a brief limbo state
-    }
-
-    /**
-     * Starts/restarts connection sequence to NBusy servers if we are not connected.
-     */
-    public void ensureConn() {
-        if (!client.isConnected()) {
-            client.connect(this);
-        }
-
-        // start the worker service if not running // todo: this must happen after we have a conn?
-//        if (!WorkerService.RUNNING.get()) {
-//            Intent serviceIntent = new Intent(InstanceManager.getAppContext(), WorkerService.class);
-//            serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
-//            InstanceManager.getAppContext().startService(serviceIntent);
-//        }
     }
 }

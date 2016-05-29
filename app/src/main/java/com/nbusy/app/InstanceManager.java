@@ -9,6 +9,7 @@ import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.data.Profile;
 import com.nbusy.app.data.sqldb.SQLDB;
 import com.nbusy.app.worker.ConnManager;
+import com.nbusy.app.worker.LoginManager;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.app.worker.eventbus.UIThreadExecutor;
@@ -26,6 +27,7 @@ public class InstanceManager extends Application {
     private static Config config;
     private static Worker worker;
     private static ConnManager connManager;
+    private static LoginManager loginManager;
     private static Client client;
     private static EventBus eventBus;
     private static DB db;
@@ -59,18 +61,18 @@ public class InstanceManager extends Application {
 
     public static synchronized ConnManager getConnManager() {
         if (connManager == null) {
-            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getUserProfile());
+            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getUserProfile(), getAppContext());
         }
 
         return connManager;
     }
 
-    public static synchronized ConnManager getConnManager(String googleIDToken) {
-        if (connManager == null) {
-            connManager = new ConnManager(getClient(), getEventBus(), getDB(),googleIDToken);
+    public static synchronized LoginManager getLoginManager() {
+        if (loginManager == null) {
+            loginManager = new LoginManager(getClient(), getDB());
         }
 
-        return connManager;
+        return loginManager;
     }
 
     public static synchronized Client getClient() {
