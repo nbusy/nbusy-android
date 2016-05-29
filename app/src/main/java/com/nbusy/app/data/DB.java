@@ -6,7 +6,7 @@ import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 public interface DB {
-    void createProfile(CreateProfileCallback cb);
+    void createProfile(Profile userProfile, CreateProfileCallback cb);
 
     void getProfile(GetProfileCallback cb);
 

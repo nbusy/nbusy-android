@@ -2,6 +2,7 @@ package com.nbusy.app.data.sqldb;
 
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.Message;
+import com.nbusy.app.data.Profile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
@@ -13,7 +14,7 @@ public class SQLDB implements DB {
 
 
     @Override
-    public void createProfile(CreateProfileCallback cb) {
+    public void createProfile(Profile userProfile, CreateProfileCallback cb) {
 
     }
 

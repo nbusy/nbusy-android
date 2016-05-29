@@ -21,7 +21,7 @@ public class InMemDB implements DB {
     private boolean loggedIn = false;
 
     @Override
-    public void createProfile(final CreateProfileCallback cb) {
+    public void createProfile(Profile userProfile, final CreateProfileCallback cb) {
         loggedIn = true;
         simulateDelay(new Function() {
             @Override

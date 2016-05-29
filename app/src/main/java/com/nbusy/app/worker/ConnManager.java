@@ -10,6 +10,7 @@ import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMap;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
+import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 import com.nbusy.app.services.WorkerService;
@@ -18,6 +19,7 @@ import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 import com.nbusy.sdk.Client;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -75,10 +77,19 @@ public class ConnManager implements ConnCallbacks {
                 public void success(GoogleAuthResponse res) {
                     Log.i(TAG, "Authenticated with NBusy server using Google auth.");
 
-                    // todo: implement these
-//                    db.createProfile();
-//                    InstanceProvider.setUserProfile(prof);
-//                    InstanceProvider.getEventBus().post(new UserProfileRetrievedEvent(prof));
+                    final Profile prof = new Profile(res.ID, res.JWTToken, res.Email, res.Name, new ArrayList<Chat>());
+                    db.createProfile(prof, new CreateProfileCallback() {
+                        @Override
+                        public void success() {
+                            InstanceProvider.setUserProfile(prof);
+                            InstanceProvider.getEventBus().post(new UserProfileRetrievedEvent(prof));
+                        }
+
+                        @Override
+                        public void error() {
+                            Log.e(TAG, "Failed to create user profile");
+                        }
+                    });
                 }
 
                 @Override
