@@ -14,6 +14,7 @@ import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.R;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.Profile;
+import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 
 import java.io.IOException;
@@ -79,7 +80,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
             return;
         }
 
-        InstanceProvider.getDB().getProfile(new DB.GetProfileCallback() {
+        InstanceProvider.getDB().getProfile(new GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
                 Log.i(TAG, "user profile retrieved");

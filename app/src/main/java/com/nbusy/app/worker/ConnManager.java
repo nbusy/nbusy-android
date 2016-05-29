@@ -10,6 +10,8 @@ import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMap;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
+import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
+import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 import com.nbusy.app.services.WorkerService;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
@@ -51,7 +53,7 @@ public class ConnManager implements ConnCallbacks {
             @Override
             public void success() {
                 Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
-                db.getQueuedMessages(new DB.GetChatMessagesCallback() {
+                db.getQueuedMessages(new GetChatMessagesCallback() {
                     @Override
                     public void chatMessagesRetrieved(final List<Message> msgs) {
                         final Message[] msgsArray = msgs.toArray(new Message[msgs.size()]);
@@ -62,7 +64,7 @@ public class ConnManager implements ConnCallbacks {
                                 final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
 
                                 // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
-                                db.upsertMessages(new DB.UpsertMessagesCallback() {
+                                db.upsertMessages(new UpsertMessagesCallback() {
                                     @Override
                                     public void messagesUpserted() {
                                         Log.i(TAG, "Sent queued messages to server: " + msgs.size());
@@ -98,7 +100,7 @@ public class ConnManager implements ConnCallbacks {
 
         final Message[] nbusyMsgs = DataMap.getNBusyMessages(msgs);
         final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
-        db.upsertMessages(new DB.UpsertMessagesCallback() {
+        db.upsertMessages(new UpsertMessagesCallback() {
             @Override
             public void messagesUpserted() {
                 for (Chat chat : chats) {

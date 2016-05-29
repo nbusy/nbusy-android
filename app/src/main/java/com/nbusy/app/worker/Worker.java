@@ -1,6 +1,5 @@
 package com.nbusy.app.worker;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.google.common.base.Optional;
@@ -9,6 +8,8 @@ import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMap;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.Profile;
+import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
+import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.sdk.Client;
@@ -65,7 +66,7 @@ public class Worker {
 
         final Message[] nbusyMsgs = DataMap.getNBusyMessages(msgs);
         final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
-        db.upsertMessages(new DB.UpsertMessagesCallback() {
+        db.upsertMessages(new UpsertMessagesCallback() {
             @Override
             public void messagesUpserted() {
                 for (Chat chat : chats) {
@@ -111,7 +112,7 @@ public class Worker {
         eventBus.post(new ChatsUpdatedEvent(chats));
 
         // persist messages in the database with Status = NEW
-        db.upsertMessages(new DB.UpsertMessagesCallback() {
+        db.upsertMessages(new UpsertMessagesCallback() {
             @Override
             public void messagesUpserted() {
                 client.sendMessages(new SendMsgsCallback() {
@@ -121,7 +122,7 @@ public class Worker {
                         final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
 
                         // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
-                        db.upsertMessages(new DB.UpsertMessagesCallback() {
+                        db.upsertMessages(new UpsertMessagesCallback() {
                             @Override
                             public void messagesUpserted() {
                                 // finally, notify all listening views about the changes
@@ -164,7 +165,7 @@ public class Worker {
             throw new IllegalArgumentException("chatId cannot be null or empty");
         }
 
-        db.getChatMessages(chatId, new DB.GetChatMessagesCallback() {
+        db.getChatMessages(chatId, new GetChatMessagesCallback() {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
                 if (msgs.size() != 0) {

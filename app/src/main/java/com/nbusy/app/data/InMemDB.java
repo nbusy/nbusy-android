@@ -2,6 +2,10 @@ package com.nbusy.app.data;
 
 import android.os.AsyncTask;
 
+import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
+import com.nbusy.app.data.callbacks.GetProfileCallback;
+import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,6 +17,7 @@ import java.util.UUID;
 public class InMemDB implements DB {
 
     private final Config config = new Config();
+    private boolean loggedIn = false;
 
     @Override
     public synchronized void getProfile(final GetProfileCallback cb) {

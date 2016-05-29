@@ -2,6 +2,9 @@ package com.nbusy.app.data.sqldb;
 
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.Message;
+import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
+import com.nbusy.app.data.callbacks.GetProfileCallback;
+import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 public class SQLDB implements DB {
 
