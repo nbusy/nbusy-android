@@ -42,6 +42,7 @@ public class InMemDB implements DB {
             public void execute() {
                 if (!loggedIn) {
                     cb.error();
+                    return;
                 }
 
                 ArrayList<Chat> chats = new ArrayList<>();

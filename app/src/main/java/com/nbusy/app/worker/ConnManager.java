@@ -1,6 +1,5 @@
 package com.nbusy.app.worker;
 
-import android.content.Intent;
 import android.util.Log;
 
 import com.nbusy.app.InstanceManager;
@@ -12,7 +11,6 @@ import com.nbusy.app.data.Profile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
-import com.nbusy.app.services.WorkerService;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
@@ -73,7 +71,7 @@ public class ConnManager implements ConnCallbacks {
                 public void success(GoogleAuthResponse res) {
                     Log.i(TAG, "Authenticated with NBusy server using Google auth.");
 
-                    final Profile prof = new Profile(res.ID, res.JWTToken, res.Email, res.Name, new ArrayList<Chat>());
+                    final Profile prof = new Profile(res.id, res.token, res.email, res.name, new ArrayList<Chat>());
                     db.createProfile(prof, new CreateProfileCallback() {
                         @Override
                         public void success() {
@@ -97,7 +95,7 @@ public class ConnManager implements ConnCallbacks {
             return;
         }
 
-        client.jwtAuth(userProfile.JWTToken, new JWTAuthCallback() {
+        client.jwtAuth(userProfile.jwttoken, new JWTAuthCallback() {
             @Override
             public void success() {
                 Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
@@ -176,11 +174,11 @@ public class ConnManager implements ConnCallbacks {
             client.connect(this);
         }
 
-        // start the worker service if not running
-        if (!WorkerService.RUNNING.get()) {
-            Intent serviceIntent = new Intent(InstanceManager.getAppContext(), WorkerService.class);
-            serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
-            InstanceManager.getAppContext().startService(serviceIntent);
-        }
+        // start the worker service if not running // todo: this must happen after we have a conn?
+//        if (!WorkerService.RUNNING.get()) {
+//            Intent serviceIntent = new Intent(InstanceManager.getAppContext(), WorkerService.class);
+//            serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
+//            InstanceManager.getAppContext().startService(serviceIntent);
+//        }
     }
 }

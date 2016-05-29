@@ -19,10 +19,10 @@ public final class Profile {
     // todo: use a map that does not accept dupe keys or values
     private final HashMap<String, Chat> chats = new HashMap<>(); // chat ID -> chat
 
-    public final String ID;
-    public final String JWTToken;
-    public final String Name;
-    public final String Email;
+    public final String id;
+    public final String jwttoken;
+    public final String name;
+    public final String email;
     public byte[] Picture;
 
     public Profile(String id, String jwtToken, String email,  String name, List<Chat> chats) {
@@ -42,10 +42,10 @@ public final class Profile {
             throw new IllegalArgumentException("chats cannot be null");
         }
 
-        this.ID = id;
-        this.JWTToken = jwtToken;
-        this.Email = email;
-        this.Name = name;
+        this.id = id;
+        this.jwttoken = jwtToken;
+        this.email = email;
+        this.name = name;
 
         for (Chat chat : chats) {
             this.chats.put(chat.id, chat);
