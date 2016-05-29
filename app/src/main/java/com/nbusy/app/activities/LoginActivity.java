@@ -23,7 +23,6 @@ import com.nbusy.app.worker.Worker;
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
-    private final Worker worker = InstanceProvider.getWorker();
     private static final int RC_GET_TOKEN = 9002;
     private GoogleApiClient googleApiClient;
 
@@ -70,7 +69,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 String idToken = acct.getIdToken();
 
                 Log.d(TAG, "idToken: " + idToken);
-                worker.googleAuth(idToken);
+                InstanceProvider.getConnManager(idToken).ensureConn();
             } else {
                 // todo: show a toast notification and ask user to retry
             }

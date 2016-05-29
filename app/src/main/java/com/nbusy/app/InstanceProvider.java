@@ -65,6 +65,14 @@ public class InstanceProvider extends Application {
         return connManager;
     }
 
+    public static synchronized ConnManager getConnManager(String googleIDToken) {
+        if (connManager == null) {
+            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getAppContext(),googleIDToken);
+        }
+
+        return connManager;
+    }
+
     public static synchronized Client getClient() {
         if (client == null) {
             if (getConfig().serverUrl != null) {

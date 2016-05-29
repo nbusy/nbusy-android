@@ -15,15 +15,18 @@ import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 import com.nbusy.app.services.WorkerService;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
+import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 import com.nbusy.sdk.Client;
 
 import java.util.List;
 import java.util.Set;
 
 import titan.client.callbacks.ConnCallbacks;
+import titan.client.callbacks.GoogleAuthCallback;
 import titan.client.callbacks.JWTAuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
+import titan.client.responses.GoogleAuthResponse;
 
 /**
  * Manages connection to the NBusy servers.
@@ -35,8 +38,12 @@ public class ConnManager implements ConnCallbacks {
     private final EventBus eventBus;
     private final DB db;
     private final Context appContext;
-    private final Profile userProfile;
+    private Profile userProfile;
+    private String googleIDToken;
 
+    /**
+     * Initializes connection manager with previously acquired JWT token stored in the user profile.
+     */
     public ConnManager(Client client, EventBus eventBus, DB db, Context appContext, Profile userProfile) {
         this.client = client;
         this.eventBus = eventBus;
@@ -45,14 +52,49 @@ public class ConnManager implements ConnCallbacks {
         this.userProfile = userProfile;
     }
 
+    /**
+     * Initializes connection manager with Google ID token.
+     */
+    public ConnManager(Client client, EventBus eventBus, DB db, Context appContext, String googleIDToken) {
+        this.client = client;
+        this.eventBus = eventBus;
+        this.db = db;
+        this.appContext = appContext;
+        this.googleIDToken = googleIDToken;
+    }
+
     @Override
     public void connected(String reason) {
         Log.i(TAG, "Connected to NBusy server with reason: " + reason);
+
+        // todo: check return == false from jwt/google auth calls in case connection drops in between calls (highly unlikely though)
+
+        if (userProfile == null) {
+            client.googleAuth(googleIDToken, new GoogleAuthCallback() {
+                @Override
+                public void success(GoogleAuthResponse res) {
+                    Log.i(TAG, "Authenticated with NBusy server using Google auth.");
+
+                    // todo: implement these
+//                    db.createProfile();
+//                    InstanceProvider.setUserProfile(prof);
+//                    InstanceProvider.getEventBus().post(new UserProfileRetrievedEvent(prof));
+                }
+
+                @Override
+                public void fail(int code, String message) {
+                    Log.i(TAG, "Failed to authenticate with NBusy server using Google auth: " + code + " : " + message);
+                }
+            });
+
+            return;
+        }
 
         client.jwtAuth(userProfile.JWTToken, new JWTAuthCallback() {
             @Override
             public void success() {
                 Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
+
                 db.getQueuedMessages(new GetChatMessagesCallback() {
                     @Override
                     public void chatMessagesRetrieved(final List<Message> msgs) {

@@ -1,7 +1,5 @@
 package com.nbusy.app.worker;
 
-import android.util.Log;
-
 import com.google.common.base.Optional;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
@@ -19,10 +17,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import titan.client.callbacks.EchoCallback;
-import titan.client.callbacks.GoogleAuthCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
-import titan.client.responses.GoogleAuthResponse;
 
 /**
  * Manages persistent connection to NBusy servers and the persistent queue for relevant operations.
@@ -133,24 +129,6 @@ public class Worker {
                 }, DataMap.getTitanMessages(msgs));
             }
         }, msgs);
-    }
-
-    public boolean googleAuth(String token) {
-        if (token == null || token.isEmpty()) {
-            throw new IllegalArgumentException("token cannot be null or empty");
-        }
-
-        return client.googleAuth(token, new GoogleAuthCallback() {
-            @Override
-            public void success(GoogleAuthResponse res) {
-                Log.i(TAG, "Authenticated with NBusy server using Google auth.");
-            }
-
-            @Override
-            public void fail(int code, String message) {
-                Log.i(TAG, "Failed to authenticate with NBusy server using Google auth: " + code + " : " + message);
-            }
-        });
     }
 
     /***********************
