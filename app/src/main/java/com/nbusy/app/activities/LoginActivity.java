@@ -98,6 +98,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
+                // todo: disable button while logging in
                 getIdToken();
                 break;
         }
