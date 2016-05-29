@@ -17,6 +17,7 @@ import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 import com.nbusy.sdk.Client;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -71,7 +72,9 @@ public class ConnManager implements ConnCallbacks {
                 public void success(GoogleAuthResponse res) {
                     Log.i(TAG, "Authenticated with NBusy server using Google auth.");
 
-                    final Profile prof = new Profile(res.id, res.token, res.email, res.name, res.picture, new ArrayList<Chat>());
+                    ArrayList<Chat> chats = new ArrayList<>();
+                    chats.add(new Chat("echo", "Echo", "Yo!", new Date()));
+                    final Profile prof = new Profile(res.id, res.token, res.email, res.name, res.picture, chats);
                     db.createProfile(prof, new CreateProfileCallback() {
                         @Override
                         public void success() {

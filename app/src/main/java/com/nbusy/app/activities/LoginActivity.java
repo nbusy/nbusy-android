@@ -69,7 +69,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
                 Log.d(TAG, "idToken: " + idToken);
                 InstanceManager.getConnManager(idToken).ensureConn();
-                finish(); // todo: wait till conn is ensured or start over
+
+                // todo: wait till conn is ensured or start over
+                finish();
             } else {
                 Log.e(TAG, "Google auth failed");
                 // todo: show a toast notification and ask user to retry
