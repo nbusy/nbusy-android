@@ -33,6 +33,7 @@ import titan.client.responses.GoogleAuthResponse;
  * Also manages connection lifecycle events like sending queued messages on reconnect, etc.
  */
 public class ConnManager implements ConnCallbacks {
+
     private static final String TAG = ConnManager.class.getSimpleName();
     private final Client client;
     private final EventBus eventBus;
@@ -78,8 +79,7 @@ public class ConnManager implements ConnCallbacks {
                     db.createProfile(prof, new CreateProfileCallback() {
                         @Override
                         public void success() {
-                            InstanceManager.setUserProfile(prof);
-                            InstanceManager.getEventBus().post(new UserProfileRetrievedEvent(prof)); // todo: we should get this from db again to have echo always?
+                            // todo: close connection and let ConnManager handle the rest
                         }
 
                         @Override
