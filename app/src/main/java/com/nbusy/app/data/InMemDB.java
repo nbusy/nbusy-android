@@ -52,7 +52,7 @@ public class InMemDB implements DB {
                     chats.add(new Chat(UUID.randomUUID().toString(), "Chuck Norris", "This is my last-first message!", new Date()));
                 }
 
-                cb.profileRetrieved(new Profile("1", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA", "yo@yo.com", "Yo YoYo", chats));
+                cb.profileRetrieved(new Profile("1", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA", "yo@yo.com", "Yo YoYo", new byte[] {1}, chats));
             }
         });
     }

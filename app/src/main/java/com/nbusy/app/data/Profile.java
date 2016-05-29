@@ -23,9 +23,9 @@ public final class Profile {
     public final String jwttoken;
     public final String name;
     public final String email;
-    public byte[] Picture;
+    public byte[] picture;
 
-    public Profile(String id, String jwtToken, String email,  String name, List<Chat> chats) {
+    public Profile(String id, String jwtToken, String email, String name, byte[] picture, List<Chat> chats) {
         if (id == null || id.isEmpty()) {
             throw new IllegalArgumentException("id cannot be null or empty");
         }
@@ -38,6 +38,9 @@ public final class Profile {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("name cannot be null or empty");
         }
+        if (picture == null || picture.length == 0) {
+            throw new IllegalArgumentException("picture cannot be null or empty");
+        }
         if (chats == null) {
             throw new IllegalArgumentException("chats cannot be null");
         }
@@ -46,6 +49,7 @@ public final class Profile {
         this.jwttoken = jwtToken;
         this.email = email;
         this.name = name;
+        this.picture = picture;
 
         for (Chat chat : chats) {
             this.chats.put(chat.id, chat);
