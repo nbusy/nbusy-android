@@ -1,9 +1,19 @@
 package neptulon.client;
 
+import android.util.Base64;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +41,7 @@ import okio.Buffer;
  */
 public class ConnImpl implements Conn, WebSocketListener {
     private static final Logger logger = Logger.getLogger("Neptulon: " + ConnImpl.class.getSimpleName());
-    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").create();
+    private final Gson gson = new GsonBuilder().registerTypeHierarchyAdapter(byte[].class, new ByteArrayToBase64TypeAdapter()).setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").create();
     private final OkHttpClient client;
     private final List<Middleware> middleware = new CopyOnWriteArrayList<>();
     private final ConcurrentMap<String, ResCallback> resCallbacks = new ConcurrentHashMap<>();
@@ -47,6 +57,16 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final int retryLimit = 7;
     private int retryDelay = 5; // seconds (x2 backoff for each retry)
     private int retryCount = 0;
+
+    private static class ByteArrayToBase64TypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
+        public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            return Base64.decode(json.getAsString(), Base64.NO_WRAP);
+        }
+
+        public JsonElement serialize(byte[] src, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(Base64.encodeToString(src, Base64.NO_WRAP));
+        }
+    }
 
     public enum State {
         CONNECTING,
@@ -123,7 +143,8 @@ public class ConnImpl implements Conn, WebSocketListener {
 
         if (async) {
             new Thread(new Runnable() {
-                @Override public void run() {
+                @Override
+                public void run() {
                     try {
                         ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
                     } catch (IOException e) {

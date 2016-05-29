@@ -76,7 +76,7 @@ public class ConnManager implements ConnCallbacks {
                         @Override
                         public void success() {
                             InstanceManager.setUserProfile(prof);
-                            InstanceManager.getEventBus().post(new UserProfileRetrievedEvent(prof));
+                            InstanceManager.getEventBus().post(new UserProfileRetrievedEvent(prof)); // todo: we should get this from db again to have echo always?
                         }
 
                         @Override
