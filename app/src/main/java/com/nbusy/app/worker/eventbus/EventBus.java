@@ -1,6 +1,6 @@
 package com.nbusy.app.worker.eventbus;
 
-import com.nbusy.app.InstanceProvider;
+import com.nbusy.app.InstanceManager;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -24,8 +24,8 @@ public class EventBus extends com.google.common.eventbus.AsyncEventBus {
         }
 
         // a view is attaching to event bus so we need to ensure connectivity
-        if (InstanceProvider.userProfileRetrieved()) {
-            InstanceProvider.getConnManager().ensureConn();
+        if (InstanceManager.userProfileRetrieved()) {
+            InstanceManager.getConnManager().ensureConn();
         }
 
         subscribers.add(o);

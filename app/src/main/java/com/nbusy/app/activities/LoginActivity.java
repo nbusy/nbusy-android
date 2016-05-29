@@ -13,9 +13,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.nbusy.app.InstanceProvider;
+import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
-import com.nbusy.app.worker.Worker;
 
 /**
  * Receive ID token for the current Google user.
@@ -69,7 +68,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 String idToken = acct.getIdToken();
 
                 Log.d(TAG, "idToken: " + idToken);
-                InstanceProvider.getConnManager(idToken).ensureConn();
+                InstanceManager.getConnManager(idToken).ensureConn();
                 finish();
             } else {
                 Log.e(TAG, "Google auth failed");

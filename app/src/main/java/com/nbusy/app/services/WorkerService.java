@@ -7,7 +7,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.nbusy.app.InstanceProvider;
+import com.nbusy.app.InstanceManager;
 import com.nbusy.app.data.Config;
 import com.nbusy.app.worker.ConnManager;
 import com.nbusy.app.worker.Worker;
@@ -26,8 +26,8 @@ public class WorkerService extends Service {
     private static final Config config = new Config();
     private final int standbyTime;
     private final StopStandby stopStandby = new StopStandby();
-    private final Client client = InstanceProvider.getClient();
-    private final ConnManager connManager = InstanceProvider.getConnManager();
+    private final Client client = InstanceManager.getClient();
+    private final ConnManager connManager = InstanceManager.getConnManager();
     private int startId;
 
     public WorkerService() {

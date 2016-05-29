@@ -1,10 +1,9 @@
 package com.nbusy.app.worker;
 
-import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.nbusy.app.InstanceProvider;
+import com.nbusy.app.InstanceManager;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMap;
@@ -78,8 +77,8 @@ public class ConnManager implements ConnCallbacks {
                     db.createProfile(prof, new CreateProfileCallback() {
                         @Override
                         public void success() {
-                            InstanceProvider.setUserProfile(prof);
-                            InstanceProvider.getEventBus().post(new UserProfileRetrievedEvent(prof));
+                            InstanceManager.setUserProfile(prof);
+                            InstanceManager.getEventBus().post(new UserProfileRetrievedEvent(prof));
                         }
 
                         @Override
@@ -179,9 +178,9 @@ public class ConnManager implements ConnCallbacks {
 
         // start the worker service if not running
         if (!WorkerService.RUNNING.get()) {
-            Intent serviceIntent = new Intent(InstanceProvider.getAppContext(), WorkerService.class);
+            Intent serviceIntent = new Intent(InstanceManager.getAppContext(), WorkerService.class);
             serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
-            InstanceProvider.getAppContext().startService(serviceIntent);
+            InstanceManager.getAppContext().startService(serviceIntent);
         }
     }
 }

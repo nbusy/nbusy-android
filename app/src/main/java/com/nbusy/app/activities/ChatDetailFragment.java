@@ -12,7 +12,7 @@ import android.widget.ListView;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
-import com.nbusy.app.InstanceProvider;
+import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.Profile;
@@ -33,9 +33,9 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
 
     private static final String TAG = ChatDetailFragment.class.getSimpleName();
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
-    private final Worker worker = InstanceProvider.getWorker();
-    private final EventBus eventBus = InstanceProvider.getEventBus();
-    private final Profile userProfile = InstanceProvider.getUserProfile();
+    private final Worker worker = InstanceManager.getWorker();
+    private final EventBus eventBus = InstanceManager.getEventBus();
+    private final Profile userProfile = InstanceManager.getUserProfile();
     private AtomicBoolean viewCreated = new AtomicBoolean(false);
     private String chatId;
     private MessageListArrayAdapter messageAdapter;

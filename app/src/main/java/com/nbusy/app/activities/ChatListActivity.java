@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.nbusy.app.InstanceProvider;
+import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Profile;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
@@ -75,17 +75,17 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("test 3");
 
         // todo: could this be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
-        if (InstanceProvider.userProfileRetrieved()) {
+        if (InstanceManager.userProfileRetrieved()) {
             return;
         }
 
-        InstanceProvider.getDB().getProfile(new GetProfileCallback() {
+        InstanceManager.getDB().getProfile(new GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
                 Log.i(TAG, "user profile retrieved");
-                InstanceProvider.setUserProfile(prof);
-                InstanceProvider.getConnManager().ensureConn();
-                InstanceProvider.getEventBus().post(new UserProfileRetrievedEvent(prof));
+                InstanceManager.setUserProfile(prof);
+                InstanceManager.getConnManager().ensureConn();
+                InstanceManager.getEventBus().post(new UserProfileRetrievedEvent(prof));
             }
 
             @Override
