@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.google.common.base.Optional;
-import com.nbusy.app.InstanceProvider;
+import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.Profile;
@@ -24,8 +24,8 @@ import com.nbusy.app.worker.Worker;
  */
 public class ChatDetailActivity extends Activity {
 
-    private final Worker worker = InstanceProvider.getWorker();
-    private final Profile userProfile = InstanceProvider.getUserProfile();
+    private final Worker worker = InstanceManager.getWorker();
+    private final Profile userProfile = InstanceManager.getUserProfile();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

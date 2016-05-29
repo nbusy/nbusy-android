@@ -20,8 +20,8 @@ import com.nbusy.sdk.ClientImpl;
  * Values are initialized on first request.
  * All instances are singletons unless otherwise mentioned.
  */
-public class InstanceProvider extends Application {
-    private static final String TAG = InstanceProvider.class.getSimpleName();
+public class InstanceManager extends Application {
+    private static final String TAG = InstanceManager.class.getSimpleName();
     private static Context appContext;
     private static Config config;
     private static Worker worker;
@@ -59,7 +59,15 @@ public class InstanceProvider extends Application {
 
     public static synchronized ConnManager getConnManager() {
         if (connManager == null) {
-            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getAppContext(), getUserProfile());
+            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getUserProfile());
+        }
+
+        return connManager;
+    }
+
+    public static synchronized ConnManager getConnManager(String googleIDToken) {
+        if (connManager == null) {
+            connManager = new ConnManager(getClient(), getEventBus(), getDB(),googleIDToken);
         }
 
         return connManager;

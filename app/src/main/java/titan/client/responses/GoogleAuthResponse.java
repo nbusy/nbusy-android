@@ -1,18 +1,18 @@
 package titan.client.responses;
 
 public class GoogleAuthResponse {
-    public final String ID;
-    public final String JWTToken;
-    public final String Name;
-    public final String Email;
-    public final byte[] Picture;
+    public final String token;
+    public final String id;
+    public final String name;
+    public final String email;
+    public final byte[] picture;
 
-    public GoogleAuthResponse(String id, String jwtToken, String name, String email, byte[] picture) {
+    public GoogleAuthResponse(String token,String id, String name, String email, byte[] picture) {
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("token cannot be null or empty");
+        }
         if (id == null || id.isEmpty()) {
             throw new IllegalArgumentException("id cannot be null or empty");
-        }
-        if (jwtToken == null || jwtToken.isEmpty()) {
-            throw new IllegalArgumentException("jwtToken cannot be null or empty");
         }
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("name cannot be null or empty");
@@ -24,10 +24,10 @@ public class GoogleAuthResponse {
             throw new IllegalArgumentException("picture cannot be null or empty");
         }
 
-        ID = id;
-        JWTToken = jwtToken;
-        Name = name;
-        Email = email;
-        Picture = picture;
+        this.token = token;
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.picture = picture;
     }
 }

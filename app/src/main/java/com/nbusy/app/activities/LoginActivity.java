@@ -13,9 +13,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.nbusy.app.InstanceProvider;
+import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
-import com.nbusy.app.worker.Worker;
 
 /**
  * Receive ID token for the current Google user.
@@ -23,7 +22,6 @@ import com.nbusy.app.worker.Worker;
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
-    private final Worker worker = InstanceProvider.getWorker();
     private static final int RC_GET_TOKEN = 9002;
     private GoogleApiClient googleApiClient;
 
@@ -70,8 +68,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 String idToken = acct.getIdToken();
 
                 Log.d(TAG, "idToken: " + idToken);
-                worker.googleAuth(idToken);
+                InstanceManager.getConnManager(idToken).ensureConn();
+
+                // todo: wait till conn is ensured or start over
+                finish();
             } else {
+                Log.e(TAG, "Google auth failed");
                 // todo: show a toast notification and ask user to retry
             }
         }
