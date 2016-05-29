@@ -2,6 +2,7 @@ package com.nbusy.app.data;
 
 import android.os.AsyncTask;
 
+import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
@@ -20,6 +21,17 @@ public class InMemDB implements DB {
     private boolean loggedIn = false;
 
     @Override
+    public void createProfile(final CreateProfileCallback cb) {
+        loggedIn = true;
+        simulateDelay(new Function() {
+            @Override
+            public void execute() {
+                cb.success();
+            }
+        });
+    }
+
+    @Override
     public synchronized void getProfile(final GetProfileCallback cb) {
         if (cb == null) {
             throw new IllegalArgumentException("callback cannot be null");
@@ -28,6 +40,10 @@ public class InMemDB implements DB {
         simulateDelay(new Function() {
             @Override
             public void execute() {
+                if (!loggedIn) {
+                    cb.error();
+                }
+
                 ArrayList<Chat> chats = new ArrayList<>();
                 chats.add(new Chat("echo", "Echo", "Yo!", new Date()));
                 if (config.env != Config.Env.PRODUCTION) {
