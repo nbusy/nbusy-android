@@ -12,7 +12,6 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.nbusy.app.InstanceProvider;
 import com.nbusy.app.R;
-import com.nbusy.app.data.DB;
 import com.nbusy.app.data.Profile;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;

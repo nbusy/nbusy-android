@@ -39,29 +39,26 @@ public class ConnManager implements ConnCallbacks {
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
-    private final Context appContext;
     private Profile userProfile;
     private String googleIDToken;
 
     /**
      * Initializes connection manager with previously acquired JWT token stored in the user profile.
      */
-    public ConnManager(Client client, EventBus eventBus, DB db, Context appContext, Profile userProfile) {
+    public ConnManager(Client client, EventBus eventBus, DB db, Profile userProfile) {
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
-        this.appContext = appContext;
         this.userProfile = userProfile;
     }
 
     /**
      * Initializes connection manager with Google ID token.
      */
-    public ConnManager(Client client, EventBus eventBus, DB db, Context appContext, String googleIDToken) {
+    public ConnManager(Client client, EventBus eventBus, DB db, String googleIDToken) {
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
-        this.appContext = appContext;
         this.googleIDToken = googleIDToken;
     }
 

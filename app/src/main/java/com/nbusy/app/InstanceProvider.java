@@ -59,7 +59,7 @@ public class InstanceProvider extends Application {
 
     public static synchronized ConnManager getConnManager() {
         if (connManager == null) {
-            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getAppContext(), getUserProfile());
+            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getUserProfile());
         }
 
         return connManager;
@@ -67,7 +67,7 @@ public class InstanceProvider extends Application {
 
     public static synchronized ConnManager getConnManager(String googleIDToken) {
         if (connManager == null) {
-            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getAppContext(),googleIDToken);
+            connManager = new ConnManager(getClient(), getEventBus(), getDB(),googleIDToken);
         }
 
         return connManager;
