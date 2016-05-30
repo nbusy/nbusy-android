@@ -72,9 +72,7 @@ public class LoginManager implements ConnCallbacks {
             public void success(GoogleAuthResponse res) {
                 Log.i(TAG, "Authenticated with NBusy server using Google auth.");
 
-                ArrayList<Chat> chats = new ArrayList<>();
-                chats.add(new Chat("echo", "Echo", "Yo!", new Date()));
-                final Profile prof = new Profile(res.id, res.token, res.email, res.name, res.picture, chats);
+                final Profile prof = new Profile(res.id, res.token, res.email, res.name, res.picture, new ArrayList<Chat>());
                 db.createProfile(prof, new CreateProfileCallback() {
                     @Override
                     public void success() {
