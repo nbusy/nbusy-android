@@ -14,6 +14,7 @@ import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Profile;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
+import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 
 import java.io.IOException;
@@ -31,11 +32,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ChatListActivity extends Activity implements ChatListFragment.Callbacks {
 
+    public static final int LOGIN_OK = 9000;
     private static final String TAG = ChatListActivity.class.getSimpleName();
     private static final String PROPERTY_APP_VERSION = "appVer";
     private static final String PROPERTY_REG_ID = "regId";
     private static final String SENDER_ID = "218602439235";
     private final AtomicInteger msgId = new AtomicInteger();
+    private final EventBus eventBus = InstanceManager.getEventBus();
     private GoogleCloudMessaging gcm;
     private String regId;
 
@@ -75,17 +78,19 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("test 3");
 
         // todo: could this be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
-        if (InstanceManager.userProfileRetrieved()) {
-            return;
+        if (!InstanceManager.userProfileRetrieved()) {
+            initUserProfile();
         }
+    }
 
+    private void initUserProfile() {
         InstanceManager.getDB().getProfile(new GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
                 Log.i(TAG, "user profile retrieved");
                 InstanceManager.setUserProfile(prof);
                 InstanceManager.getConnManager().ensureConn();
-                InstanceManager.getEventBus().post(new UserProfileRetrievedEvent(prof));
+                eventBus.post(new UserProfileRetrievedEvent(prof));
             }
 
             @Override
@@ -93,9 +98,16 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
                 Log.i(TAG, "user profile does not exist, starting login activity");
                 // no profile stored so display login activity
                 Intent intent = new Intent(ChatListActivity.this, LoginActivity.class);
-                ChatListActivity.this.startActivity(intent);
+                ChatListActivity.this.startActivityForResult(intent, LOGIN_OK);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == resultCode) {
+            initUserProfile();
+        }
     }
 
     /**

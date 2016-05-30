@@ -72,6 +72,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 InstanceManager.getLoginManager().login(idToken, new LoginManager.LoginFinishedCallback() {
                     @Override
                     public void success() {
+                        setResult(ChatListActivity.LOGIN_OK);
                         finish();
                     }
 
