@@ -139,7 +139,7 @@ public class ConnManager implements ConnCallbacks {
 
     @Override
     public void disconnected(String reason) {
-        Log.w(TAG, "Connection attempt OR connection to NBusy server was shut down with reason: " + reason);
+        Log.w(TAG, "Connection attempt OR connection to NBusy server was closed with reason: " + reason);
     }
 
     @Override
