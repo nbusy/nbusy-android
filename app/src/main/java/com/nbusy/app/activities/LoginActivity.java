@@ -116,4 +116,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         startActivityForResult(signInIntent, RC_GET_TOKEN);
         Log.d(TAG, "getIDToken: starting to get id token");
     }
+
+    @Override
+    public void onBackPressed() {
+    }
 }
