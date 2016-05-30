@@ -15,6 +15,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
+import com.nbusy.app.worker.LoginManager;
 
 /**
  * Receive ID token for the current Google user.
@@ -25,13 +26,18 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static final int RC_GET_TOKEN = 9002;
     private GoogleApiClient googleApiClient;
 
+    // view elements
+    private SignInButton signInButton;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        signInButton.setEnabled(true);
 
         // Button click listeners
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
+        signInButton.setOnClickListener(this);
 
         // Request only the user's ID token, which can be used to identify the user securely to your backend. This will contain the user's basic
         // profile (name, profile picture URL, etc) so you should not need to make an additional call to personalize your application.
@@ -50,7 +56,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         // Customize sign-in button. The sign-in button can be displayed in multiple sizes and color schemes. It can also be contextually
         // rendered based on the requested scopes. For example. a red button may be displayed when Google+ scopes are requested, but a white button
         // may be displayed when only basic profile is requested.
-        SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_WIDE);
         signInButton.setScopes(gso.getScopeArray());
     }
@@ -68,10 +73,19 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 String idToken = acct.getIdToken();
 
                 Log.d(TAG, "idToken: " + idToken);
-                InstanceManager.getConnManager(idToken).ensureConn();
+                InstanceManager.getLoginManager().login(idToken, new LoginManager.LoginFinishedCallback() {
+                    @Override
+                    public void success() {
+                        setResult(ChatListActivity.LOGIN_OK);
+                        finish();
+                    }
 
-                // todo: wait till conn is ensured or start over
-                finish();
+                    @Override
+                    public void fail() {
+                        Log.e(TAG, "Google auth failed");
+                        // todo: show a toast notification and ask user to retry
+                    }
+                });
             } else {
                 Log.e(TAG, "Google auth failed");
                 // todo: show a toast notification and ask user to retry
@@ -89,6 +103,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
+                signInButton.setEnabled(false);
                 getIdToken();
                 break;
         }
@@ -100,5 +115,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(signInIntent, RC_GET_TOKEN);
         Log.d(TAG, "getIDToken: starting to get id token");
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 }

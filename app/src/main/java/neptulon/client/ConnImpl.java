@@ -213,7 +213,11 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public boolean isConnected() {
-        return state.get() == State.CONNECTED;
+        return isConnected(state.get());
+    }
+
+    private boolean isConnected(State s) {
+        return s == State.CONNECTED;
     }
 
     @Override
@@ -253,7 +257,7 @@ public class ConnImpl implements Conn, WebSocketListener {
             wsConnectRequest.cancel();
         }
 
-        if (!isConnected()) {
+        if (!isConnected(s)) {
             return;
         }
 
