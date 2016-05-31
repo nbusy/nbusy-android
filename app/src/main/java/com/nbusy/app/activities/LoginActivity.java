@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -28,12 +29,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     // view elements
     private SignInButton signInButton;
+    private Button productionModeButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        productionModeButton = (Button) findViewById(R.id.production_mode_button);
         signInButton.setEnabled(true);
 
         // Button click listeners
@@ -84,11 +87,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     public void fail() {
                         Log.e(TAG, "Google auth failed");
                         // todo: show a toast notification and ask user to retry
+                        signInButton.setEnabled(true);
                     }
                 });
             } else {
                 Log.e(TAG, "Google auth failed");
                 // todo: show a toast notification and ask user to retry
+                signInButton.setEnabled(true);
             }
         }
     }
@@ -106,6 +111,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 signInButton.setEnabled(false);
                 getIdToken();
                 break;
+            case R.id.production_mode_button:
+                productionModeButton.setVisibility(View.GONE);
+                break;
         }
     }
 
@@ -119,5 +127,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     public void onBackPressed() {
+        // can't press back on login as there is nowhere to go
     }
 }

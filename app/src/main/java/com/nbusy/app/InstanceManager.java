@@ -51,6 +51,14 @@ public class InstanceManager extends Application {
         return config;
     }
 
+    public static synchronized void setConfig(Config cfg) {
+        if (cfg == null) {
+            throw new IllegalArgumentException("config cannot be null");
+        }
+
+        config = cfg;
+    }
+
     public static synchronized Worker getWorker() {
         if (worker == null) {
             worker = new Worker(getClient(), getEventBus(), getDB(), getUserProfile());
