@@ -12,7 +12,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
-import com.nbusy.app.data.Profile;
+import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
@@ -77,7 +77,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("test 2");
         sendGcmMessage("test 3");
 
-        // todo: could this be done by ProfileManager or ConnManager or DBManager or CacheManager or Profile should manage DB and be domain object ?
+        // todo: could this be done by ProfileManager or ConnManager or DBManager or CacheManager or UserProfile should manage DB and be domain object ?
         if (!InstanceManager.userProfileRetrieved()) {
             initUserProfile();
         }
@@ -86,7 +86,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
     private void initUserProfile() {
         InstanceManager.getDB().getProfile(new GetProfileCallback() {
             @Override
-            public void profileRetrieved(Profile prof) {
+            public void profileRetrieved(UserProfile prof) {
                 Log.i(TAG, "user profile retrieved from DB, starting connection");
                 InstanceManager.setUserProfile(prof);
                 InstanceManager.getConnManager().ensureConn();

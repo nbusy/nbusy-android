@@ -15,7 +15,7 @@ import com.google.common.eventbus.Subscribe;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
-import com.nbusy.app.data.Profile;
+import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
@@ -35,7 +35,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     public static final String ARG_ITEM_ID = "item_id"; // fragment argument representing the item ID that this fragment represents
     private final Worker worker = InstanceManager.getWorker();
     private final EventBus eventBus = InstanceManager.getEventBus();
-    private final Profile userProfile = InstanceManager.getUserProfile();
+    private final UserProfile userProfile = InstanceManager.getUserProfile();
     private AtomicBoolean viewCreated = new AtomicBoolean(false);
     private String chatId;
     private MessageListArrayAdapter messageAdapter;

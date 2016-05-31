@@ -1,11 +1,11 @@
 package com.nbusy.app.worker.eventbus;
 
-import com.nbusy.app.data.Profile;
+import com.nbusy.app.data.UserProfile;
 
 public class UserProfileRetrievedEvent {
-    public final Profile profile;
+    public final UserProfile profile;
 
-    public UserProfileRetrievedEvent(Profile profile) {
+    public UserProfileRetrievedEvent(UserProfile profile) {
         if (profile == null) {
             throw new IllegalArgumentException("profile cannot be null");
         }

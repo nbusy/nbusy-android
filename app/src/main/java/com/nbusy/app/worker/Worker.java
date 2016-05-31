@@ -5,7 +5,7 @@ import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMap;
 import com.nbusy.app.data.Message;
-import com.nbusy.app.data.Profile;
+import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
@@ -29,9 +29,9 @@ public class Worker {
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
-    private final Profile userProfile;
+    private final UserProfile userProfile;
 
-    public Worker(final Client client, final EventBus eventBus, DB db, Profile userProfile) {
+    public Worker(final Client client, final EventBus eventBus, DB db, UserProfile userProfile) {
         if (client == null) {
             throw new IllegalArgumentException("client cannot be null");
         }

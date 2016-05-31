@@ -4,12 +4,11 @@ import android.util.Log;
 
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
-import com.nbusy.app.data.Profile;
+import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.sdk.Client;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.GoogleAuthCallback;
@@ -72,7 +71,7 @@ public class LoginManager implements ConnCallbacks {
             public void success(GoogleAuthResponse res) {
                 Log.i(TAG, "Authenticated with NBusy server using Google auth.");
 
-                final Profile prof = new Profile(res.id, res.token, res.email, res.name, res.picture, new ArrayList<Chat>());
+                final UserProfile prof = new UserProfile(res.id, res.token, res.email, res.name, res.picture, new ArrayList<Chat>());
                 db.createProfile(prof, new CreateProfileCallback() {
                     @Override
                     public void success() {

@@ -6,7 +6,7 @@ import android.content.Context;
 import com.nbusy.app.data.Config;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.InMemDB;
-import com.nbusy.app.data.Profile;
+import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.sqldb.SQLDB;
 import com.nbusy.app.worker.ConnManager;
 import com.nbusy.app.worker.LoginManager;
@@ -31,7 +31,7 @@ public class InstanceManager extends Application {
     private static Client client;
     private static EventBus eventBus;
     private static DB db;
-    private static Profile userProfile;
+    private static UserProfile userProfile;
 
     @Override
     public synchronized void onCreate() {
@@ -117,7 +117,7 @@ public class InstanceManager extends Application {
         return db;
     }
 
-    public static synchronized void setUserProfile(Profile prof) {
+    public static synchronized void setUserProfile(UserProfile prof) {
         if (userProfile != null) {
             throw new IllegalStateException("userProfile has already been initialized");
         }
@@ -125,7 +125,7 @@ public class InstanceManager extends Application {
         userProfile = prof;
     }
 
-    public static synchronized Profile getUserProfile() {
+    public static synchronized UserProfile getUserProfile() {
         if (userProfile == null) {
             throw new IllegalStateException("userProfile is not retrieved yet or does not exist");
         }
