@@ -89,7 +89,8 @@ public class InstanceManager extends Application {
 
     public static synchronized EventBus getEventBus() {
         if (eventBus == null) {
-            // todo: remove UIThreadExecutor if we don't need this any more
+            // todo: we need this as some events are raised on non-UI threads which then update the UI and cause an exception
+            // though this approach is not the best either as it creates one thread per event invocation, which we don't need
             eventBus = new EventBus(new UIThreadExecutor());
         }
 
