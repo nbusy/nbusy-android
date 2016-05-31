@@ -87,7 +87,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         InstanceManager.getDB().getProfile(new GetProfileCallback() {
             @Override
             public void profileRetrieved(Profile prof) {
-                Log.i(TAG, "user profile retrieved");
+                Log.i(TAG, "user profile retrieved from DB, starting connection");
                 InstanceManager.setUserProfile(prof);
                 InstanceManager.getConnManager().ensureConn();
                 eventBus.post(new UserProfileRetrievedEvent(prof));
@@ -95,7 +95,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
 
             @Override
             public void error() {
-                Log.i(TAG, "user profile does not exist, starting login activity");
+                Log.i(TAG, "user profile does not exist in DB, starting login activity");
                 // no profile stored so display login activity
                 Intent intent = new Intent(ChatListActivity.this, LoginActivity.class);
                 ChatListActivity.this.startActivityForResult(intent, LOGIN_OK);
@@ -105,6 +105,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // check if we got here with the back button or with proper login result
         if (requestCode == resultCode) {
             initUserProfile();
         }
