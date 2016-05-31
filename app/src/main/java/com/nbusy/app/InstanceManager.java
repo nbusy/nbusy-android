@@ -110,7 +110,7 @@ public class InstanceManager extends Application {
             if (getConfig().env == Config.Env.PRODUCTION) {
                 db = new SQLDB();
             } else {
-                db = new InMemDB();
+                db = new InMemDB(config);
             }
         }
 

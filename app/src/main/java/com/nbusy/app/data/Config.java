@@ -1,8 +1,12 @@
 package com.nbusy.app.data;
 
+import android.util.Log;
+
 import com.nbusy.app.BuildConfig;
 
 public class Config {
+
+    private static final String TAG = Config.class.getSimpleName();
     public final Env env;
     public final String serverUrl;
 
@@ -12,6 +16,7 @@ public class Config {
     public Config(Env env, String serverUrl) {
         this.env = env;
         this.serverUrl = serverUrl;
+        Log.i(TAG, String.format("initialized with Env: %s, Server URL: %s", env, serverUrl));
     }
 
     public Config() {
@@ -38,6 +43,8 @@ public class Config {
                     break;
             }
         }
+
+        Log.i(TAG, String.format("initialized with Env: %s, Server URL: %s", env, serverUrl));
     }
 
     public enum Env {

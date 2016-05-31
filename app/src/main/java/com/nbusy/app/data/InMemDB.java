@@ -17,8 +17,12 @@ import java.util.UUID;
 
 public class InMemDB implements DB {
 
-    private final Config config = new Config();
+    private final Config config;
     private boolean loggedIn = false;
+
+    public InMemDB(Config config) {
+        this.config = config;
+    }
 
     @Override
     public void createProfile(UserProfile userProfile, final CreateProfileCallback cb) {
