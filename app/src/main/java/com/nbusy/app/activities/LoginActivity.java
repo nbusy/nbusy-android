@@ -16,6 +16,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
+import com.nbusy.app.data.Config;
 import com.nbusy.app.worker.LoginManager;
 
 /**
@@ -36,11 +37,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        productionModeButton = (Button) findViewById(R.id.production_mode_button);
         signInButton.setEnabled(true);
+        productionModeButton = (Button) findViewById(R.id.production_mode_button);
+        if (InstanceManager.getConfig().env != Config.Env.PRODUCTION) {
+            productionModeButton.setVisibility(View.VISIBLE);
+        }
 
         // Button click listeners
         signInButton.setOnClickListener(this);
+        productionModeButton.setOnClickListener(this);
 
         // Request only the user's ID token, which can be used to identify the user securely to your backend. This will contain the user's basic
         // profile (name, profile picture URL, etc) so you should not need to make an additional call to personalize your application.
@@ -113,6 +118,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 break;
             case R.id.production_mode_button:
                 productionModeButton.setVisibility(View.GONE);
+                setProductionMode();
                 break;
         }
     }
@@ -123,6 +129,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(signInIntent, RC_GET_TOKEN);
         Log.d(TAG, "getIDToken: starting to get id token");
+    }
+
+    private void setProductionMode() {
+        InstanceManager.setConfig(new Config(Config.Env.PRODUCTION, null));
     }
 
     @Override
