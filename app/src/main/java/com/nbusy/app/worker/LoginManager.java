@@ -20,6 +20,7 @@ import titan.client.responses.GoogleAuthResponse;
  */
 public class LoginManager implements ConnCallbacks {
 
+    public static final int LOGIN_OK = 9000;
     private static final String TAG = ConnManager.class.getSimpleName();
     private final Client client;
     private final DB db;

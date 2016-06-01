@@ -27,6 +27,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static final String TAG = LoginActivity.class.getSimpleName();
     private static final int RC_GET_TOKEN = 9002;
     private GoogleApiClient googleApiClient;
+    private final LoginManager loginManager = InstanceManager.getLoginManager();
+    private final Config config = InstanceManager.getConfig();
 
     // view elements
     private SignInButton signInButton;
@@ -39,7 +41,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setEnabled(true);
         productionModeButton = (Button) findViewById(R.id.production_mode_button);
-        if (InstanceManager.getConfig().env != Config.Env.PRODUCTION) {
+        if (config.env != Config.Env.PRODUCTION) {
             productionModeButton.setVisibility(View.VISIBLE);
         }
 
@@ -81,10 +83,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 String idToken = acct.getIdToken();
 
                 Log.d(TAG, "idToken: " + idToken);
-                InstanceManager.getLoginManager().login(idToken, new LoginManager.LoginFinishedCallback() {
+                loginManager.login(idToken, new LoginManager.LoginFinishedCallback() {
                     @Override
                     public void success() {
-                        setResult(ChatListActivity.LOGIN_OK);
+                        setResult(LoginManager.LOGIN_OK);
                         finish();
                     }
 

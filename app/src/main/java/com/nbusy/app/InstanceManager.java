@@ -10,6 +10,7 @@ import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.sqldb.SQLDB;
 import com.nbusy.app.worker.ConnManager;
 import com.nbusy.app.worker.LoginManager;
+import com.nbusy.app.worker.UserProfileManager;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.app.worker.eventbus.UIThreadExecutor;
@@ -32,6 +33,7 @@ public class InstanceManager extends Application {
     private static EventBus eventBus;
     private static DB db;
     private static UserProfile userProfile;
+    private static UserProfileManager userProfileManager;
 
     @Override
     public synchronized void onCreate() {
@@ -135,5 +137,13 @@ public class InstanceManager extends Application {
 
     public static synchronized boolean userProfileRetrieved() {
         return userProfile != null;
+    }
+
+    public static synchronized UserProfileManager getUserProfileManager() {
+        if (userProfileManager == null) {
+            userProfileManager = new UserProfileManager(getEventBus(), db);
+        }
+
+        return userProfileManager;
     }
 }

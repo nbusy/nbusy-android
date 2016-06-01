@@ -12,10 +12,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
-import com.nbusy.app.data.UserProfile;
-import com.nbusy.app.data.callbacks.GetProfileCallback;
-import com.nbusy.app.worker.eventbus.EventBus;
-import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
+import com.nbusy.app.worker.UserProfileManager;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,15 +29,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ChatListActivity extends Activity implements ChatListFragment.Callbacks {
 
-    public static final int LOGIN_OK = 9000;
     private static final String TAG = ChatListActivity.class.getSimpleName();
     private static final String PROPERTY_APP_VERSION = "appVer";
     private static final String PROPERTY_REG_ID = "regId";
     private static final String SENDER_ID = "218602439235";
     private final AtomicInteger msgId = new AtomicInteger();
-    private final EventBus eventBus = InstanceManager.getEventBus();
     private GoogleCloudMessaging gcm;
     private String regId;
+    private final UserProfileManager userProfileManager = InstanceManager.getUserProfileManager();
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet device.
@@ -77,37 +73,15 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("test 2");
         sendGcmMessage("test 3");
 
-        // todo: could this be done by ProfileManager or ConnManager or DBManager or CacheManager or UserProfile should manage DB and be domain object ?
-        if (!InstanceManager.userProfileRetrieved()) {
-            initUserProfile();
-        }
-    }
-
-    private void initUserProfile() {
-        InstanceManager.getDB().getProfile(new GetProfileCallback() {
-            @Override
-            public void profileRetrieved(UserProfile prof) {
-                Log.i(TAG, "user profile retrieved from DB, starting connection");
-                InstanceManager.setUserProfile(prof);
-                InstanceManager.getConnManager().ensureConn();
-                eventBus.post(new UserProfileRetrievedEvent(prof));
-            }
-
-            @Override
-            public void error() {
-                Log.i(TAG, "user profile does not exist in DB, starting login activity");
-                // no profile stored so display login activity
-                Intent intent = new Intent(ChatListActivity.this, LoginActivity.class);
-                ChatListActivity.this.startActivityForResult(intent, LOGIN_OK);
-            }
-        });
+        userProfileManager.initUserProfile(this, false);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // check if we got here with the back button or with proper login result
         if (requestCode == resultCode) {
-            initUserProfile();
+            // force profile reinitialize after login
+            userProfileManager.initUserProfile(this, true);
         }
     }
 
