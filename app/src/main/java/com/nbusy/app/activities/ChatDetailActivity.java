@@ -11,7 +11,6 @@ import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.UserProfile;
-import com.nbusy.app.worker.Worker;
 
 /**
  * An activity representing a single Chat detail screen. This
@@ -24,7 +23,6 @@ import com.nbusy.app.worker.Worker;
  */
 public class ChatDetailActivity extends Activity {
 
-    private final Worker worker = InstanceManager.getWorker();
     private final UserProfile userProfile = InstanceManager.getUserProfile();
 
     @Override

@@ -26,6 +26,13 @@ public class InMemDB implements DB {
 
     @Override
     public void createProfile(UserProfile userProfile, final CreateProfileCallback cb) {
+        if (userProfile == null) {
+            throw new IllegalArgumentException("userProfile cannot be null");
+        }
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+
         loggedIn = true;
         simulateDelay(new Function() {
             @Override
