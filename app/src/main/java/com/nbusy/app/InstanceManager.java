@@ -112,7 +112,7 @@ public class InstanceManager extends Application {
             if (getConfig().env == Config.Env.PRODUCTION) {
                 db = new SQLDB();
             } else {
-                db = new InMemDB(config);
+                db = new InMemDB(getConfig());
             }
         }
 
@@ -141,7 +141,7 @@ public class InstanceManager extends Application {
 
     public static synchronized UserProfileManager getUserProfileManager() {
         if (userProfileManager == null) {
-            userProfileManager = new UserProfileManager(getEventBus(), db);
+            userProfileManager = new UserProfileManager(getEventBus(), getDB());
         }
 
         return userProfileManager;
