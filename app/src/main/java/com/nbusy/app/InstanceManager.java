@@ -88,9 +88,10 @@ public class InstanceManager extends Application {
     public static synchronized Client getClient() {
         if (client == null) {
             if (getConfig().serverUrl != null) {
-                client = new ClientImpl(getConfig().serverUrl, false);
+                // todo: always use async client otherwise we'll get android.os.NetworkOnMainThreadException, which only happens on TLS mode !
+                client = new ClientImpl(getConfig().serverUrl, true);
             } else {
-                client = new ClientImpl();
+                client = new ClientImpl(true);
             }
         }
 
