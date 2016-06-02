@@ -23,12 +23,12 @@ public class WorkerService extends Service {
     private static final String TAG = WorkerService.class.getSimpleName();
     public static final String STARTED_BY = "StartedBy";
     public static final AtomicBoolean RUNNING = new AtomicBoolean();
-    private static final Config config = new Config();
     private final int standbyTime;
     private final StopStandby stopStandby = new StopStandby();
+    private int startId;
+    private final Config config = InstanceManager.getConfig();
     private final Client client = InstanceManager.getClient();
     private final ConnManager connManager = InstanceManager.getConnManager();
-    private int startId;
 
     public WorkerService() {
         standbyTime = config.env == Config.Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000; // 3 mins (prod) / 10 secs (non-prod)
