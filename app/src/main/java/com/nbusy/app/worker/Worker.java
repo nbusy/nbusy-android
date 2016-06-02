@@ -25,7 +25,7 @@ import titan.client.messages.MsgMessage;
  * All notifications from this class is sent out using an event bus.
  */
 public class Worker {
-    private static final String TAG = Worker.class.getSimpleName();
+
     private final Client client;
     private final EventBus eventBus;
     private final DB db;

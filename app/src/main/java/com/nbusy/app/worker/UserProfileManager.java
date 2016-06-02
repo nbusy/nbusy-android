@@ -50,7 +50,6 @@ public class UserProfileManager {
             @Override
             public void error() {
                 Log.i(TAG, "user profile does not exist in DB, starting login activity");
-                // no profile stored so display login activity
                 Intent intent = new Intent(activity, LoginActivity.class);
                 activity.startActivityForResult(intent, LoginManager.LOGIN_OK);
             }
