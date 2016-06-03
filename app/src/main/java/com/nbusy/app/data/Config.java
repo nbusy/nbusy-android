@@ -9,6 +9,7 @@ public class Config {
     private static final String TAG = Config.class.getSimpleName();
     public final Env env;
     public final String serverUrl;
+    public final int standbyTime;
 
     /**
      * Server URL should start with ws:// or wss://
@@ -16,7 +17,11 @@ public class Config {
     public Config(Env env, String serverUrl) {
         this.env = env;
         this.serverUrl = serverUrl;
-        Log.i(TAG, String.format("initialized with Env: %s, Server URL: %s", env, serverUrl));
+
+        // 3 mins (prod) / 10 secs (non-prod)
+        standbyTime = env == Config.Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000;
+
+        logConfig();
     }
 
     public Config() {
@@ -44,6 +49,13 @@ public class Config {
             }
         }
 
+        // 3 mins (prod) / 10 secs (non-prod)
+        standbyTime = env == Config.Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000;
+
+        logConfig();
+    }
+
+    private void logConfig() {
         Log.i(TAG, String.format("initialized with Env: %s, Server URL: %s", env, serverUrl));
     }
 

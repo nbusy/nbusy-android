@@ -23,23 +23,18 @@ public class WorkerService extends Service {
     private static final String TAG = WorkerService.class.getSimpleName();
     public static final String STARTED_BY = "StartedBy";
     public static final AtomicBoolean RUNNING = new AtomicBoolean();
-    private final int standbyTime;
     private final StopStandby stopStandby = new StopStandby();
     private int startId;
     private final Config config = InstanceManager.getConfig();
     private final Client client = InstanceManager.getClient();
     private final ConnManager connManager = InstanceManager.getConnManager();
 
-    public WorkerService() {
-        standbyTime = config.env == Config.Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000; // 3 mins (prod) / 10 secs (non-prod)
-    }
-
     class StopStandby extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             while (connManager.needConnection()) {
                 try {
-                    Thread.sleep(standbyTime);
+                    Thread.sleep(config.standbyTime);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
