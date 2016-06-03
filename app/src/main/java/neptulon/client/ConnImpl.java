@@ -261,6 +261,20 @@ public class ConnImpl implements Conn, WebSocketListener {
             return;
         }
 
+        if (async) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ws.close(0, "");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+            return;
+        }
+
         try {
             ws.close(0, "");
         } catch (Exception e) {

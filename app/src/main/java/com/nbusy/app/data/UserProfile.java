@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * User profile including user information and chats.
  */
-public final class Profile {
+public final class UserProfile {
 
     // todo: user sorted map by last message time
     // todo: use a map that does not accept dupe keys or values
@@ -25,7 +25,7 @@ public final class Profile {
     public final String email;
     public byte[] picture;
 
-    public Profile(String id, String jwtToken, String email, String name, byte[] picture, List<Chat> chats) {
+    public UserProfile(String id, String jwtToken, String email, String name, byte[] picture, List<Chat> chats) {
         if (id == null || id.isEmpty()) {
             throw new IllegalArgumentException("id cannot be null or empty");
         }

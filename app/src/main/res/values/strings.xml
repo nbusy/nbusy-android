@@ -2,4 +2,5 @@
     <string name="app_name">NBusy</string>
     <string name="title_chat_detail">Chat Detail</string>
     <string name="server_client_id">218602439235-6g09g0ap6i8v25v3rel49rtqjcu9ppj0.apps.googleusercontent.com</string>
+    <string name="login_description">Login with your Google account to get started with NBusy.</string>
 </resources>

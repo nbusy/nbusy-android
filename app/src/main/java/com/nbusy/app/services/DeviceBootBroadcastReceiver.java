@@ -4,13 +4,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.nbusy.app.InstanceManager;
+
 public class DeviceBootBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-            Intent serviceIntent = new Intent(context, WorkerService.class);
-            serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
-            context.startService(serviceIntent);
+            if (InstanceManager.userProfileRetrieved()) {
+                Intent serviceIntent = new Intent(context, ConnManagerService.class);
+                serviceIntent.putExtra(ConnManagerService.STARTED_BY, this.getClass().getSimpleName());
+                context.startService(serviceIntent);
+            } else {
+                // todo: retrieve user profile then start connection manager service
+            }
 
             // todo: use WakefulBroadcastReceiver.startWakefulService() instead to make sure that device does not sleep while service is running?
 //            /**

@@ -6,10 +6,11 @@ import android.content.Context;
 import com.nbusy.app.data.Config;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.InMemDB;
-import com.nbusy.app.data.Profile;
+import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.sqldb.SQLDB;
 import com.nbusy.app.worker.ConnManager;
 import com.nbusy.app.worker.LoginManager;
+import com.nbusy.app.worker.UserProfileManager;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.app.worker.eventbus.UIThreadExecutor;
@@ -22,7 +23,7 @@ import com.nbusy.sdk.ClientImpl;
  * All instances are singletons unless otherwise mentioned.
  */
 public class InstanceManager extends Application {
-    private static final String TAG = InstanceManager.class.getSimpleName();
+
     private static Context appContext;
     private static Config config;
     private static Worker worker;
@@ -31,7 +32,8 @@ public class InstanceManager extends Application {
     private static Client client;
     private static EventBus eventBus;
     private static DB db;
-    private static Profile userProfile;
+    private static UserProfile userProfile;
+    private static UserProfileManager userProfileManager;
 
     @Override
     public synchronized void onCreate() {
@@ -49,6 +51,14 @@ public class InstanceManager extends Application {
         }
 
         return config;
+    }
+
+    public static synchronized void setConfig(Config cfg) {
+        if (cfg == null) {
+            throw new IllegalArgumentException("config cannot be null");
+        }
+
+        config = cfg;
     }
 
     public static synchronized Worker getWorker() {
@@ -78,9 +88,10 @@ public class InstanceManager extends Application {
     public static synchronized Client getClient() {
         if (client == null) {
             if (getConfig().serverUrl != null) {
-                client = new ClientImpl(getConfig().serverUrl, false);
+                // todo: always use async client otherwise we'll get android.os.NetworkOnMainThreadException, which only happens on TLS mode !
+                client = new ClientImpl(getConfig().serverUrl, true);
             } else {
-                client = new ClientImpl();
+                client = new ClientImpl(true);
             }
         }
 
@@ -89,7 +100,8 @@ public class InstanceManager extends Application {
 
     public static synchronized EventBus getEventBus() {
         if (eventBus == null) {
-            // todo: remove UIThreadExecutor if we don't need this any more
+            // todo: we need this as some events are raised on non-UI threads which then update the UI and cause an exception
+            // though this approach is not the best either as it creates one thread per event invocation, which we don't need
             eventBus = new EventBus(new UIThreadExecutor());
         }
 
@@ -101,14 +113,14 @@ public class InstanceManager extends Application {
             if (getConfig().env == Config.Env.PRODUCTION) {
                 db = new SQLDB();
             } else {
-                db = new InMemDB();
+                db = new InMemDB(getConfig());
             }
         }
 
         return db;
     }
 
-    public static synchronized void setUserProfile(Profile prof) {
+    public static synchronized void setUserProfile(UserProfile prof) {
         if (userProfile != null) {
             throw new IllegalStateException("userProfile has already been initialized");
         }
@@ -116,7 +128,7 @@ public class InstanceManager extends Application {
         userProfile = prof;
     }
 
-    public static synchronized Profile getUserProfile() {
+    public static synchronized UserProfile getUserProfile() {
         if (userProfile == null) {
             throw new IllegalStateException("userProfile is not retrieved yet or does not exist");
         }
@@ -126,5 +138,13 @@ public class InstanceManager extends Application {
 
     public static synchronized boolean userProfileRetrieved() {
         return userProfile != null;
+    }
+
+    public static synchronized UserProfileManager getUserProfileManager() {
+        if (userProfileManager == null) {
+            userProfileManager = new UserProfileManager(getEventBus(), getDB());
+        }
+
+        return userProfileManager;
     }
 }

@@ -10,36 +10,30 @@ import android.util.Log;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.data.Config;
 import com.nbusy.app.worker.ConnManager;
-import com.nbusy.app.worker.Worker;
 import com.nbusy.sdk.Client;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Hosts {@link Worker} class to ensure continuous operation even when no activity is visible.
+ * Hosts {@link ConnManager} class to ensure continuous operation even when no activity is visible.
  */
-public class WorkerService extends Service {
+public class ConnManagerService extends Service {
 
-    private static final String TAG = WorkerService.class.getSimpleName();
+    private static final String TAG = ConnManagerService.class.getSimpleName();
     public static final String STARTED_BY = "StartedBy";
     public static final AtomicBoolean RUNNING = new AtomicBoolean();
-    private static final Config config = new Config();
-    private final int standbyTime;
     private final StopStandby stopStandby = new StopStandby();
+    private int startId;
+    private final Config config = InstanceManager.getConfig();
     private final Client client = InstanceManager.getClient();
     private final ConnManager connManager = InstanceManager.getConnManager();
-    private int startId;
-
-    public WorkerService() {
-        standbyTime = config.env == Config.Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000; // 3 mins (prod) / 10 secs (non-prod)
-    }
 
     class StopStandby extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             while (connManager.needConnection()) {
                 try {
-                    Thread.sleep(standbyTime);
+                    Thread.sleep(config.standbyTime);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -80,7 +74,7 @@ public class WorkerService extends Service {
             stopStandby.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
-        WorkerService.RUNNING.set(true);
+        ConnManagerService.RUNNING.set(true);
 
         // we want this service to continue running until it is explicitly stopped, so return sticky
         return Service.START_STICKY;

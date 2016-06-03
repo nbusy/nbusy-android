@@ -8,10 +8,10 @@ import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMap;
 import com.nbusy.app.data.Message;
-import com.nbusy.app.data.Profile;
+import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
-import com.nbusy.app.services.WorkerService;
+import com.nbusy.app.services.ConnManagerService;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.sdk.Client;
@@ -34,10 +34,10 @@ public class ConnManager implements ConnCallbacks {
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
-    private final Profile userProfile;
+    private final UserProfile userProfile;
     private final Context appContext;
 
-    public ConnManager(Client client, EventBus eventBus, DB db, Profile userProfile, Context appContext) {
+    public ConnManager(Client client, EventBus eventBus, DB db, UserProfile userProfile, Context appContext) {
         if (client == null) {
             throw new IllegalArgumentException("client cannot be null");
         }
@@ -78,10 +78,10 @@ public class ConnManager implements ConnCallbacks {
             client.connect(this);
         }
 
-        // start the worker service if not running
-        if (!WorkerService.RUNNING.get()) {
-            Intent serviceIntent = new Intent(appContext, WorkerService.class);
-            serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
+        // start the connection manager service if not running
+        if (!ConnManagerService.RUNNING.get()) {
+            Intent serviceIntent = new Intent(appContext, ConnManagerService.class);
+            serviceIntent.putExtra(ConnManagerService.STARTED_BY, this.getClass().getSimpleName());
             appContext.startService(serviceIntent);
         }
     }

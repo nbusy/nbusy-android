@@ -48,7 +48,7 @@
 
         <service android:name="com.nbusy.organizer.data.DataService" />
         <service android:name=".services.GcmIntentService" />
-        <service android:name=".services.WorkerService" />
+        <service android:name=".services.ConnManagerService" />
 
         <receiver
             android:name=".services.GcmBroadcastReceiver"

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -15,6 +16,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
+import com.nbusy.app.data.Config;
 import com.nbusy.app.worker.LoginManager;
 
 /**
@@ -28,6 +30,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     // view elements
     private SignInButton signInButton;
+    private Button productionModeButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,9 +38,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         setContentView(R.layout.activity_login);
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setEnabled(true);
+        productionModeButton = (Button) findViewById(R.id.production_mode_button);
+        if (InstanceManager.getConfig().env != Config.Env.PRODUCTION) {
+            productionModeButton.setVisibility(View.VISIBLE);
+        }
 
         // Button click listeners
         signInButton.setOnClickListener(this);
+        productionModeButton.setOnClickListener(this);
 
         // Request only the user's ID token, which can be used to identify the user securely to your backend. This will contain the user's basic
         // profile (name, profile picture URL, etc) so you should not need to make an additional call to personalize your application.
@@ -76,7 +84,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 InstanceManager.getLoginManager().login(idToken, new LoginManager.LoginFinishedCallback() {
                     @Override
                     public void success() {
-                        setResult(ChatListActivity.LOGIN_OK);
+                        setResult(LoginManager.LOGIN_OK);
                         finish();
                     }
 
@@ -84,11 +92,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     public void fail() {
                         Log.e(TAG, "Google auth failed");
                         // todo: show a toast notification and ask user to retry
+                        signInButton.setEnabled(true);
                     }
                 });
             } else {
                 Log.e(TAG, "Google auth failed");
                 // todo: show a toast notification and ask user to retry
+                signInButton.setEnabled(true);
             }
         }
     }
@@ -106,6 +116,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 signInButton.setEnabled(false);
                 getIdToken();
                 break;
+            case R.id.production_mode_button:
+                productionModeButton.setVisibility(View.GONE);
+                setProductionMode();
+                break;
         }
     }
 
@@ -117,7 +131,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         Log.d(TAG, "getIDToken: starting to get id token");
     }
 
+    private void setProductionMode() {
+        InstanceManager.setConfig(new Config(Config.Env.PRODUCTION, null));
+    }
+
     @Override
     public void onBackPressed() {
+        // can't press back on login as there is nowhere to go
     }
 }

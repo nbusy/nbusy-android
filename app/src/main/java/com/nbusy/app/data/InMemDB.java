@@ -17,11 +17,22 @@ import java.util.UUID;
 
 public class InMemDB implements DB {
 
-    private final Config config = new Config();
+    private final Config config;
     private boolean loggedIn = false;
 
+    public InMemDB(Config config) {
+        this.config = config;
+    }
+
     @Override
-    public void createProfile(Profile userProfile, final CreateProfileCallback cb) {
+    public void createProfile(UserProfile userProfile, final CreateProfileCallback cb) {
+        if (userProfile == null) {
+            throw new IllegalArgumentException("userProfile cannot be null");
+        }
+        if (cb == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+
         loggedIn = true;
         simulateDelay(new Function() {
             @Override
@@ -52,7 +63,7 @@ public class InMemDB implements DB {
                     chats.add(new Chat(UUID.randomUUID().toString(), "Chuck Norris", "This is my last-first message!", new Date()));
                 }
 
-                cb.profileRetrieved(new Profile("1", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA", "yo@yo.com", "Yo YoYo", new byte[] {1}, chats));
+                cb.profileRetrieved(new UserProfile("1", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA", "yo@yo.com", "Yo YoYo", new byte[] {1}, chats));
             }
         });
     }

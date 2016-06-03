@@ -1,10 +1,15 @@
 package com.nbusy.app.data;
 
+import android.util.Log;
+
 import com.nbusy.app.BuildConfig;
 
 public class Config {
+
+    private static final String TAG = Config.class.getSimpleName();
     public final Env env;
     public final String serverUrl;
+    public final int standbyTime;
 
     /**
      * Server URL should start with ws:// or wss://
@@ -12,6 +17,11 @@ public class Config {
     public Config(Env env, String serverUrl) {
         this.env = env;
         this.serverUrl = serverUrl;
+
+        // 3 mins (prod) / 10 secs (non-prod)
+        standbyTime = env == Config.Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000;
+
+        logConfig();
     }
 
     public Config() {
@@ -38,6 +48,15 @@ public class Config {
                     break;
             }
         }
+
+        // 3 mins (prod) / 10 secs (non-prod)
+        standbyTime = env == Config.Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000;
+
+        logConfig();
+    }
+
+    private void logConfig() {
+        Log.i(TAG, String.format("initialized with Env: %s, Server URL: %s, Standby Time: %s(s)", env, serverUrl, standbyTime / 1000));
     }
 
     public enum Env {
