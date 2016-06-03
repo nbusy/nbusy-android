@@ -41,7 +41,7 @@ public class UserProfileManager {
         db.getProfile(new GetProfileCallback() {
             @Override
             public void profileRetrieved(UserProfile prof) {
-                Log.i(TAG, "user profile retrieved from DB");
+                Log.i(TAG, "user profile retrieved from DB, starting connection");
                 InstanceManager.setUserProfile(prof);
                 InstanceManager.getConnManager().ensureConn();
                 eventBus.post(new UserProfileRetrievedEvent(prof));
