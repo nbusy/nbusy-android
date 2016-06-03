@@ -11,11 +11,11 @@ public class DeviceBootBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
             if (InstanceManager.userProfileRetrieved()) {
-                Intent serviceIntent = new Intent(context, WorkerService.class);
-                serviceIntent.putExtra(WorkerService.STARTED_BY, this.getClass().getSimpleName());
+                Intent serviceIntent = new Intent(context, ConnManagerService.class);
+                serviceIntent.putExtra(ConnManagerService.STARTED_BY, this.getClass().getSimpleName());
                 context.startService(serviceIntent);
             } else {
-                // todo: retrieve user profile then start worker service
+                // todo: retrieve user profile then start connection manager service
             }
 
             // todo: use WakefulBroadcastReceiver.startWakefulService() instead to make sure that device does not sleep while service is running?

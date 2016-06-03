@@ -10,17 +10,16 @@ import android.util.Log;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.data.Config;
 import com.nbusy.app.worker.ConnManager;
-import com.nbusy.app.worker.Worker;
 import com.nbusy.sdk.Client;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Hosts {@link Worker} class to ensure continuous operation even when no activity is visible.
+ * Hosts {@link ConnManager} class to ensure continuous operation even when no activity is visible.
  */
-public class WorkerService extends Service {
+public class ConnManagerService extends Service {
 
-    private static final String TAG = WorkerService.class.getSimpleName();
+    private static final String TAG = ConnManagerService.class.getSimpleName();
     public static final String STARTED_BY = "StartedBy";
     public static final AtomicBoolean RUNNING = new AtomicBoolean();
     private final StopStandby stopStandby = new StopStandby();
@@ -75,7 +74,7 @@ public class WorkerService extends Service {
             stopStandby.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
-        WorkerService.RUNNING.set(true);
+        ConnManagerService.RUNNING.set(true);
 
         // we want this service to continue running until it is explicitly stopped, so return sticky
         return Service.START_STICKY;
