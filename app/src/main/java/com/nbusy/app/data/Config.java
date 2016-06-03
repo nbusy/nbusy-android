@@ -56,7 +56,7 @@ public class Config {
     }
 
     private void logConfig() {
-        Log.i(TAG, String.format("initialized with Env: %s, Server URL: %s", env, serverUrl));
+        Log.i(TAG, String.format("initialized with Env: %s, Server URL: %s, Standby Time: %s(s)", env, serverUrl, standbyTime / 1000));
     }
 
     public enum Env {
