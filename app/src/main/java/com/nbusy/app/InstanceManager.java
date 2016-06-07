@@ -110,11 +110,13 @@ public class InstanceManager extends Application {
 
     public static synchronized DB getDB() {
         if (db == null) {
-            if (getConfig().env == Config.Env.PRODUCTION) {
-                db = new SQLDB();
-            } else {
-                db = new InMemDB(getConfig());
-            }
+            // todo: switch to this when implemented
+//            if (getConfig().env == Config.Env.PRODUCTION) {
+//                 db = new SQLDB();
+//            } else {
+//                db = new InMemDB(getConfig());
+//            }
+            db = new InMemDB(getConfig());
         }
 
         return db;
