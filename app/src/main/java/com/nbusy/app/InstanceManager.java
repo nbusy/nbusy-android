@@ -3,11 +3,9 @@ package com.nbusy.app;
 import android.app.Application;
 import android.content.Context;
 
-import com.nbusy.app.data.Config;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.data.UserProfile;
-import com.nbusy.app.data.sqldb.SQLDB;
 import com.nbusy.app.worker.ConnManager;
 import com.nbusy.app.worker.LoginManager;
 import com.nbusy.app.worker.UserProfileManager;

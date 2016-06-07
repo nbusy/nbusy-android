@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.nbusy.app.InstanceManager;
-import com.nbusy.app.data.Config;
+import com.nbusy.app.Config;
 import com.nbusy.app.worker.ConnManager;
 import com.nbusy.sdk.Client;
 

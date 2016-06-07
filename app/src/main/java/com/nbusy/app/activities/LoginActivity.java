@@ -16,7 +16,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
-import com.nbusy.app.data.Config;
+import com.nbusy.app.Config;
 import com.nbusy.app.worker.LoginManager;
 
 /**

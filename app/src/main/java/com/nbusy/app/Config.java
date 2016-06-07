@@ -1,8 +1,6 @@
-package com.nbusy.app.data;
+package com.nbusy.app;
 
 import android.util.Log;
-
-import com.nbusy.app.BuildConfig;
 
 public class Config {
 
