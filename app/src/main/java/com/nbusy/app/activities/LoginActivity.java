@@ -14,6 +14,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
 import com.nbusy.app.Config;
@@ -69,37 +70,40 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, final int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RC_GET_TOKEN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            Log.d(TAG, "onActivityResult: GET_TOKEN: is success: " + result.getStatus().isSuccess());
+        if (requestCode != RC_GET_TOKEN) {
+            return;
+        }
 
-            if (result.isSuccess()) {
-                GoogleSignInAccount acct = result.getSignInAccount();
-                String idToken = acct.getIdToken();
+        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+        Status status = result.getStatus();
+        Log.d(TAG, "onActivityResult: GET_TOKEN: is success: " + status.isSuccess());
 
-                Log.d(TAG, "idToken: " + idToken);
-                InstanceManager.getLoginManager().login(idToken, new LoginManager.LoginFinishedCallback() {
-                    @Override
-                    public void success() {
-                        setResult(LoginManager.LOGIN_OK);
-                        finish();
-                    }
+        if (result.isSuccess()) {
+            GoogleSignInAccount acct = result.getSignInAccount();
+            String idToken = acct.getIdToken();
 
-                    @Override
-                    public void fail() {
-                        Log.e(TAG, "Google auth failed");
-                        // todo: show a toast notification and ask user to retry
-                        signInButton.setEnabled(true);
-                    }
-                });
-            } else {
-                Log.e(TAG, "Google auth failed");
-                // todo: show a toast notification and ask user to retry
-                signInButton.setEnabled(true);
-            }
+            Log.d(TAG, "idToken: " + idToken);
+            InstanceManager.getLoginManager().login(idToken, new LoginManager.LoginFinishedCallback() {
+                @Override
+                public void success() {
+                    setResult(LoginManager.LOGIN_OK);
+                    finish();
+                }
+
+                @Override
+                public void fail() {
+                    Log.e(TAG, "Google auth failed");
+                    // todo: show a toast notification and ask user to retry
+                    signInButton.setEnabled(true);
+                }
+            });
+        } else {
+            Log.e(TAG, "Google auth failed with status: " + result);
+            // todo: show a toast notification and ask user to retry
+            signInButton.setEnabled(true);
         }
     }
 
