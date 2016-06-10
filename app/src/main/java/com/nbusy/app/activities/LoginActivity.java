@@ -50,8 +50,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         // Request only the user's ID token, which can be used to identify the user securely to your backend. This will contain the user's basic
         // profile (name, profile picture URL, etc) so you should not need to make an additional call to personalize your application.
+        String clientId = getString(R.string.server_client_id);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.server_client_id))
+                .requestIdToken(clientId)
                 .requestEmail()
                 .requestProfile()
                 .build();
@@ -78,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
 
         GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-        Status status = result.getStatus();
+        final Status status = result.getStatus();
         Log.d(TAG, "onActivityResult: GET_TOKEN: is success: " + status.isSuccess());
 
         if (result.isSuccess()) {
@@ -95,13 +96,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
                 @Override
                 public void fail() {
-                    Log.e(TAG, "Google auth failed");
+                    Log.e(TAG, "Google auth failed with status: " + status);
                     // todo: show a toast notification and ask user to retry
                     signInButton.setEnabled(true);
                 }
             });
         } else {
-            Log.e(TAG, "Google auth failed with status: " + result);
+            Log.e(TAG, "Google auth failed with status: " + status);
             // todo: show a toast notification and ask user to retry
             signInButton.setEnabled(true);
         }
