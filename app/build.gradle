@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            storeFile file(System.env.NBUSY_KEYSTORE)
+            keyAlias System.env.NBUSY_KEYSTORE_ALIAS
+            keyPassword System.env.NBUSY_KEYSTORE_PASS
+            storePassword System.env.NBUSY_KEYSTORE_PASS
+        }
+    }
     compileSdkVersion 23
     buildToolsVersion '23.0.3'
     defaultConfig {
@@ -14,6 +22,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     compileOptions {
@@ -26,7 +35,7 @@ android {
     }
     adbOptions { // (Optional) This enables long timeouts required on slow environments, e.g. Travis
         timeOutInMs 5 * 60 * 1000  // 5 minutes
-        installOptions "-d","-t"
+        installOptions "-d", "-t"
     }
     productFlavors {
     }
