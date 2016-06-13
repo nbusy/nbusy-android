@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         final Status status = result.getStatus();
         Log.d(TAG, "onActivityResult: GET_TOKEN: is success: " + status.isSuccess());
 
-        if (result.isSuccess()) {
+        if (status.isSuccess()) {
             GoogleSignInAccount acct = result.getSignInAccount();
             String idToken = acct.getIdToken();
 
