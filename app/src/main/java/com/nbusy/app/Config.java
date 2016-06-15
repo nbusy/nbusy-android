@@ -1,8 +1,6 @@
-package com.nbusy.app.data;
+package com.nbusy.app;
 
 import android.util.Log;
-
-import com.nbusy.app.BuildConfig;
 
 public class Config {
 
@@ -19,7 +17,7 @@ public class Config {
         this.serverUrl = serverUrl;
 
         // 3 mins (prod) / 10 secs (non-prod)
-        standbyTime = env == Config.Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000;
+        standbyTime = env == Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000;
 
         logConfig();
     }
@@ -50,7 +48,7 @@ public class Config {
         }
 
         // 3 mins (prod) / 10 secs (non-prod)
-        standbyTime = env == Config.Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000;
+        standbyTime = env == Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000;
 
         logConfig();
     }

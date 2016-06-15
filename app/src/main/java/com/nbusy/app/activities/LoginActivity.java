@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -14,9 +15,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
-import com.nbusy.app.data.Config;
+import com.nbusy.app.Config;
 import com.nbusy.app.worker.LoginManager;
 
 /**
@@ -28,9 +30,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static final int RC_GET_TOKEN = 9002;
     private GoogleApiClient googleApiClient;
 
-    // view elements
     private SignInButton signInButton;
     private Button productionModeButton;
+    private TextView errorTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         if (InstanceManager.getConfig().env != Config.Env.PRODUCTION) {
             productionModeButton.setVisibility(View.VISIBLE);
         }
+        errorTextView = (TextView) findViewById(R.id.error);
 
         // Button click listeners
         signInButton.setOnClickListener(this);
@@ -49,8 +52,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         // Request only the user's ID token, which can be used to identify the user securely to your backend. This will contain the user's basic
         // profile (name, profile picture URL, etc) so you should not need to make an additional call to personalize your application.
+        String clientId = getString(R.string.server_client_id);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.server_client_id))
+                .requestIdToken(clientId)
                 .requestEmail()
                 .requestProfile()
                 .build();
@@ -69,37 +73,40 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, final int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RC_GET_TOKEN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            Log.d(TAG, "onActivityResult: GET_TOKEN: is success: " + result.getStatus().isSuccess());
+        if (requestCode != RC_GET_TOKEN) {
+            return;
+        }
 
-            if (result.isSuccess()) {
-                GoogleSignInAccount acct = result.getSignInAccount();
-                String idToken = acct.getIdToken();
+        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+        final Status status = result.getStatus();
+        Log.d(TAG, "onActivityResult: GET_TOKEN: is success: " + status.isSuccess());
 
-                Log.d(TAG, "idToken: " + idToken);
-                InstanceManager.getLoginManager().login(idToken, new LoginManager.LoginFinishedCallback() {
-                    @Override
-                    public void success() {
-                        setResult(LoginManager.LOGIN_OK);
-                        finish();
-                    }
+        if (status.isSuccess()) {
+            GoogleSignInAccount acct = result.getSignInAccount();
+            String idToken = acct.getIdToken();
 
-                    @Override
-                    public void fail() {
-                        Log.e(TAG, "Google auth failed");
-                        // todo: show a toast notification and ask user to retry
-                        signInButton.setEnabled(true);
-                    }
-                });
-            } else {
-                Log.e(TAG, "Google auth failed");
-                // todo: show a toast notification and ask user to retry
-                signInButton.setEnabled(true);
-            }
+            Log.d(TAG, "idToken: " + idToken);
+            InstanceManager.getLoginManager().login(idToken, new LoginManager.LoginFinishedCallback() {
+                @Override
+                public void success() {
+                    setResult(LoginManager.LOGIN_OK);
+                    finish();
+                }
+
+                @Override
+                public void fail() {
+                    Log.e(TAG, "Google auth failed with status: " + status);
+                    errorTextView.setVisibility(View.VISIBLE);
+                    signInButton.setEnabled(true);
+                }
+            });
+        } else {
+            Log.e(TAG, "Google auth failed with status: " + status);
+            errorTextView.setVisibility(View.VISIBLE);
+            signInButton.setEnabled(true);
         }
     }
 
@@ -114,6 +121,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         switch (v.getId()) {
             case R.id.sign_in_button:
                 signInButton.setEnabled(false);
+                errorTextView.setVisibility(View.GONE);
                 getIdToken();
                 break;
             case R.id.production_mode_button:

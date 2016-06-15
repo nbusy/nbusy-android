@@ -13,6 +13,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "218602439235-an748qe3l4srqmv4gskv5man8r19nhpl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nbusy.app",
+            "certificate_hash": "940736D6AA4ED4057D89D07A1E71C1A8D9F4D17B"
+          }
+        },
+        {
           "client_id": "218602439235-feaql1qdttn67m35lgi0870jdmd361hn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -25,11 +33,7 @@
           "client_type": 3
         }
       ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCoV_DoQOPXysMPwCUCL5ggeq48qj7WuAU"
-        }
-      ],
+      "api_key": [],
       "services": {
         "analytics_service": {
           "status": 1
