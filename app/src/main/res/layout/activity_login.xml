@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/login_description"
-        android:id="@+id/textView"
+        android:id="@+id/description"
         android:layout_gravity="center_horizontal"
         android:layout_marginLeft="25dp"
         android:layout_marginTop="25dp"
@@ -29,6 +29,17 @@
         android:id="@+id/production_mode_button"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="25dp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Login failed. Please try again."
+        android:id="@+id/error"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="25dp"
+        android:textColor="@android:color/holo_red_light"
+        android:visibility="gone" />
 
 </LinearLayout>

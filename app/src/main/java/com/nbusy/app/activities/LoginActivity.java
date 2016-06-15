@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -29,9 +30,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static final int RC_GET_TOKEN = 9002;
     private GoogleApiClient googleApiClient;
 
-    // view elements
     private SignInButton signInButton;
     private Button productionModeButton;
+    private TextView errorTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         if (InstanceManager.getConfig().env != Config.Env.PRODUCTION) {
             productionModeButton.setVisibility(View.VISIBLE);
         }
+        errorTextView = (TextView) findViewById(R.id.error);
 
         // Button click listeners
         signInButton.setOnClickListener(this);
@@ -97,13 +99,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 @Override
                 public void fail() {
                     Log.e(TAG, "Google auth failed with status: " + status);
-                    // todo: show a toast notification and ask user to retry
+                    errorTextView.setVisibility(View.VISIBLE);
                     signInButton.setEnabled(true);
                 }
             });
         } else {
             Log.e(TAG, "Google auth failed with status: " + status);
-            // todo: show a toast notification and ask user to retry
+            errorTextView.setVisibility(View.VISIBLE);
             signInButton.setEnabled(true);
         }
     }
