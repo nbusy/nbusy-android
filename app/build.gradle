@@ -3,10 +3,6 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            storeFile file(System.env.NBUSY_KEYSTORE)
-            keyAlias System.env.NBUSY_KEYSTORE_ALIAS
-            keyPassword System.env.NBUSY_KEYSTORE_PASS
-            storePassword System.env.NBUSY_KEYSTORE_PASS
         }
     }
     compileSdkVersion 23
@@ -22,7 +18,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
         }
     }
     compileOptions {
@@ -39,6 +34,14 @@ android {
     }
     productFlavors {
     }
+}
+
+if (System.env.NBUSY_KEYSTORE) {
+    android.signingConfigs.config.storeFile = file(System.env.NBUSY_KEYSTORE)
+    android.signingConfigs.config.keyAlias = System.env.NBUSY_KEYSTORE_ALIAS
+    android.signingConfigs.config.keyPassword = System.env.NBUSY_KEYSTORE_PASS
+    android.signingConfigs.config.storePassword = System.env.NBUSY_KEYSTORE_PASS
+    android.buildTypes.release.signingConfig = android.signingConfigs.config
 }
 
 dependencies {
