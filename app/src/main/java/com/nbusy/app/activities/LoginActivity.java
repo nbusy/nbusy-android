@@ -121,6 +121,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         switch (v.getId()) {
             case R.id.sign_in_button:
                 signInButton.setEnabled(false);
+                errorTextView.setVisibility(View.GONE);
                 getIdToken();
                 break;
             case R.id.production_mode_button:
