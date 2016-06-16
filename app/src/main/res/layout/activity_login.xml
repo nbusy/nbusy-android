@@ -38,6 +38,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="25dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@android:color/holo_red_light" />
+        android:textColor="@android:color/holo_orange_dark" />
 
 </LinearLayout>
