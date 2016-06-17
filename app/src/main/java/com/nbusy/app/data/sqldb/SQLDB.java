@@ -2,6 +2,7 @@ package com.nbusy.app.data.sqldb;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.nbusy.app.data.DB;
@@ -39,7 +40,30 @@ public class SQLDB implements DB {
 
     @Override
     public void getProfile(GetProfileCallback cb) {
+        String[] projection = {
+                SQLTables.ProfileTable._ID,
+                SQLTables.ProfileTable.JWT_TOKEN,
+                SQLTables.ProfileTable.NAME,
+                SQLTables.ProfileTable.EMAIL
+        };
 
+        Cursor c = db.query(
+                SQLTables.ProfileTable.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                "*",                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+        c.moveToFirst();
+        String id = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable._ID));
+        String jwtToken = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.JWT_TOKEN));
+        String name = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.NAME));
+        String email = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.EMAIL));
+
+//        cb.
     }
 
     @Override
