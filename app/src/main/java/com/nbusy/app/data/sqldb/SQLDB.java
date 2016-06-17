@@ -78,6 +78,28 @@ public class SQLDB implements DB {
 
     @Override
     public void upsertMessages(UpsertMessagesCallback cb, Message... msgs) {
+//// New value for one column
+//        ContentValues values = new ContentValues();
+//        values.put(FeedEntry.COLUMN_NAME_TITLE, title);
+//
+//// Which row to update, based on the ID
+//        String selection = FeedEntry.COLUMN_NAME_ENTRY_ID + " LIKE ?";
+//        String[] selectionArgs = { String.valueOf(rowId) };
+//
+//        int count = db.update(
+//                FeedReaderDbHelper.FeedEntry.TABLE_NAME,
+//                values,
+//                selection,
+//                selectionArgs);
+    }
+
+    private void deleteMessages() {
+//        // Define 'where' part of query.
+//        String selection = FeedEntry.COLUMN_NAME_ENTRY_ID + " LIKE ?";
+//// Specify arguments in placeholder order.
+//        String[] selectionArgs = { String.valueOf(rowId) };
+//// Issue SQL statement.
+//        db.delete(table_name, selection, selectionArgs);
 
     }
 }
