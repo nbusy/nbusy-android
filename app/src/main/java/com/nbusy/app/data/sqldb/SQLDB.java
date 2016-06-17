@@ -10,7 +10,8 @@ import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 public class SQLDB implements DB {
 
-    // todo: Because they can be long-running, be sure that you call SQLDBHelper.getWritableDatabase() or SQLDBHelper.getReadableDatabase() in a background thread, such as with AsyncTask or IntentService.
+    // todo: Because they can be long-running, be sure that you call SQLDBHelper.getWritableDatabase() or SQLDBHelper.getReadableDatabase()
+    // in a background thread, such as with AsyncTask or IntentService.
 
 
     @Override

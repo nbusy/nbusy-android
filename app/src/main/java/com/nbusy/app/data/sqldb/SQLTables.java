@@ -13,7 +13,7 @@ public final class SQLTables {
     private static final String BLOB_TYPE = " BLOB";
     private static final String INTEGER_TYPE = " INTEGER";
 
-    private static final String SQL_CREATE_ENTRIES =
+    public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + ProfileTable.TABLE_NAME + " (" +
                     ProfileTable._ID + " INTEGER PRIMARY KEY," +
                     ProfileTable.USER_ID + TEXT_TYPE + COMMA_SEP +
@@ -24,7 +24,7 @@ public final class SQLTables {
 //                    "FOREIGN KEY(" + ProfileTable.TABLE_NAME + Chats.TABLE_NAME + ") REFERENCES " + Chats.TABLE_NAME + "(" + Chats._ID + ")" +
                     " )";
 
-    private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + ProfileTable.TABLE_NAME;
+    public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + ProfileTable.TABLE_NAME;
 
     public static abstract class ProfileTable implements BaseColumns {
         public static final String TABLE_NAME = "user_profile";

@@ -1,6 +1,5 @@
 package com.nbusy.app.data.sqldb;
 
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -9,7 +8,7 @@ public class SQLDBHelper extends SQLiteOpenHelper {
 
     private static final String TAG = SQLDBHelper.class.getSimpleName();
     private static final int DATABASE_VERSION = 1; // increment this whenever schema changes
-    private static final String DATABASE_NAME = "nbusy";
+    private static final String DATABASE_NAME = "nbusy.db";
 
     public SQLDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -17,20 +16,19 @@ public class SQLDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // todo: https://github.com/android/platform_development/blob/master/samples/NotePad/src/com/example/android/notepad/NotePadProvider.java
-//        db.execSQL("CREATE TABLE " + NotePad.Notes.TABLE_NAME + " ("
-//                + NotePad.Notes._ID + " INTEGER PRIMARY KEY,"
-//                + NotePad.Notes.COLUMN_NAME_TITLE + " TEXT,"
-//                + NotePad.Notes.COLUMN_NAME_NOTE + " TEXT,"
-//                + NotePad.Notes.COLUMN_NAME_CREATE_DATE + " INTEGER,"
-//                + NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE + " INTEGER"
-//                + ");");
+        db.execSQL(SQLTables.SQL_CREATE_ENTRIES);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        // if migration script does not work, start over
+        db.execSQL(SQLTables.SQL_DELETE_ENTRIES);
+        onCreate(db);
     }
 
-    // Note: Because they can be long-running, be sure that you call getWritableDatabase() or getReadableDatabase() in a background thread, such as with AsyncTask or IntentService.
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // we don't support downgrade so call base which throws an exception
+        super.onDowngrade(db, oldVersion, newVersion);
+    }
 }
