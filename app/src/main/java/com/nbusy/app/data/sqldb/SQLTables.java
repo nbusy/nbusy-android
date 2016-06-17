@@ -15,8 +15,7 @@ public final class SQLTables {
 
     public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + ProfileTable.TABLE_NAME + " (" +
-                    ProfileTable._ID + " INTEGER PRIMARY KEY," +
-                    ProfileTable.USER_ID + TEXT_TYPE + COMMA_SEP +
+                    ProfileTable._ID + " TEXT PRIMARY KEY," +
                     ProfileTable.JWT_TOKEN + TEXT_TYPE + COMMA_SEP +
                     ProfileTable.NAME + TEXT_TYPE + COMMA_SEP +
                     ProfileTable.EMAIL + TEXT_TYPE + COMMA_SEP +
@@ -28,7 +27,6 @@ public final class SQLTables {
 
     public static abstract class ProfileTable implements BaseColumns {
         public static final String TABLE_NAME = "user_profile";
-        public static final String USER_ID = "user_id";
         public static final String JWT_TOKEN = "jwt_token";
         public static final String NAME = "name";
         public static final String EMAIL = "email";

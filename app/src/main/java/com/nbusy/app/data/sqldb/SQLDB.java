@@ -1,5 +1,6 @@
 package com.nbusy.app.data.sqldb;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -24,7 +25,16 @@ public class SQLDB implements DB {
 
     @Override
     public void createProfile(UserProfile userProfile, CreateProfileCallback cb) {
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(SQLTables.ProfileTable._ID, userProfile.id);
+        values.put(SQLTables.ProfileTable.JWT_TOKEN, userProfile.jwttoken);
+        values.put(SQLTables.ProfileTable.NAME, userProfile.name);
+        values.put(SQLTables.ProfileTable.EMAIL, userProfile.email);
+        values.put(SQLTables.ProfileTable.PICTURE, userProfile.picture);
 
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(SQLTables.ProfileTable.TABLE_NAME, null, values);
     }
 
     @Override
