@@ -38,9 +38,6 @@ public final class UserProfile {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("name cannot be null or empty");
         }
-        if (picture == null || picture.length == 0) {
-            throw new IllegalArgumentException("picture cannot be null or empty");
-        }
         if (chats == null) {
             throw new IllegalArgumentException("chats cannot be null");
         }

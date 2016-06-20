@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.UserProfile;
@@ -12,6 +13,8 @@ import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
+
+import java.util.ArrayList;
 
 public class SQLDB implements DB {
 
@@ -63,7 +66,7 @@ public class SQLDB implements DB {
         String name = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.NAME));
         String email = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.EMAIL));
 
-//        cb.
+        cb.profileRetrieved(new UserProfile(id, jwtToken, email, name, null, new ArrayList<Chat>()));
     }
 
     @Override
