@@ -13,6 +13,6 @@ import org.junit.runner.RunWith;
 public class SQLDBTest {
     @Test
     public void getDB() throws Exception {
-        DB db = new SQLDB(InstrumentationRegistry.getContext());
+        DB db = new SQLDB(InstrumentationRegistry.getTargetContext());
     }
 }
