@@ -53,12 +53,17 @@ public class SQLDB implements DB {
         Cursor c = db.query(
                 SQLTables.ProfileTable.TABLE_NAME,  // The table to query
                 projection,                               // The columns to return
-                "*",                                // The columns for the WHERE clause
+                null,                                // The columns for the WHERE clause
                 null,                            // The values for the WHERE clause
                 null,                                     // don't group the rows
                 null,                                     // don't filter by row groups
                 null                                 // The sort order
         );
+
+        if (c.getCount() <= 0) {
+            cb.error();
+            return;
+        }
 
         c.moveToFirst();
         String id = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable._ID));
