@@ -19,8 +19,8 @@ public final class SQLTables {
                     ProfileTable.JWT_TOKEN + TEXT_TYPE + COMMA_SEP +
                     ProfileTable.NAME + TEXT_TYPE + COMMA_SEP +
                     ProfileTable.EMAIL + TEXT_TYPE + COMMA_SEP +
-                    ProfileTable.PICTURE + BLOB_TYPE + COMMA_SEP +
-//                    "FOREIGN KEY(" + ProfileTable.TABLE_NAME + Chats.TABLE_NAME + ") REFERENCES " + Chats.TABLE_NAME + "(" + Chats._ID + ")" +
+                    ProfileTable.PICTURE + BLOB_TYPE + /* COMMA_SEP +
+                    "FOREIGN KEY(" + ProfileTable.TABLE_NAME + Chats.TABLE_NAME + ") REFERENCES " + Chats.TABLE_NAME + "(" + Chats._ID + ")" + */
                     " )";
 
     public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + ProfileTable.TABLE_NAME;
