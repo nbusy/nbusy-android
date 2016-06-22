@@ -18,7 +18,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.junit.Assert.fail;
+import static junit.framework.TestCase.fail;
 
 @RunWith(AndroidJUnit4.class)
 public class SQLDBTest {
@@ -28,6 +28,8 @@ public class SQLDBTest {
         }
     }
 
+    // todo: set env to test (or in test script as env var?)
+
     @Test
     public void getEmptyProfile() throws Exception {
         DB db = new SQLDB(InstrumentationRegistry.getTargetContext());
@@ -36,8 +38,7 @@ public class SQLDBTest {
         db.getProfile(new GetProfileCallback() {
             @Override
             public void profileRetrieved(UserProfile userProfile) {
-//                fail("expected empty profile");
-                cbCounter.countDown();
+                fail("expected empty profile");
             }
 
             @Override
@@ -70,8 +71,7 @@ public class SQLDBTest {
 
             @Override
             public void error() {
-//                fail("didn't expect profile creation to fail");
-                cbCounter.countDown();
+                fail("didn't expect profile creation to fail");
 
             }
         });

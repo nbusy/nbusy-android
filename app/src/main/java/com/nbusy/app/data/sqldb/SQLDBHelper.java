@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.nbusy.app.Config;
+import com.nbusy.app.InstanceManager;
+
 public class SQLDBHelper extends SQLiteOpenHelper {
 
     private static final String TAG = SQLDBHelper.class.getSimpleName();
@@ -12,6 +15,13 @@ public class SQLDBHelper extends SQLiteOpenHelper {
 
     public SQLDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        if (InstanceManager.getConfig().env == Config.Env.TEST) {
+            db.execSQL(SQLTables.SQL_DELETE_ENTRIES);
+        }
     }
 
     @Override
