@@ -21,6 +21,8 @@ public class SQLDB implements DB {
     private final SQLDBHelper sqldbHelper;
     private final SQLiteDatabase db;
 
+    // todo: do all sequal operations in a single background thread and call cb
+
     public SQLDB(Context context) {
         sqldbHelper = new SQLDBHelper(context);
         // todo: call this in a background thread as upgrade might take a long while.. also it might fail on full disk
