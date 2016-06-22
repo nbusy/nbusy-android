@@ -12,14 +12,16 @@ public class SQLDBHelper extends SQLiteOpenHelper {
     private static final String TAG = SQLDBHelper.class.getSimpleName();
     private static final int DATABASE_VERSION = 1; // increment this whenever schema changes
     private static final String DATABASE_NAME = "nbusy.db";
+    private final Config config;
 
-    public SQLDBHelper(Context context) {
+    public SQLDBHelper(Context context, Config config) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.config = config;
     }
 
     @Override
     public void onOpen(SQLiteDatabase db) {
-        if (InstanceManager.getConfig().env == Config.Env.TEST) {
+        if (config.env == Config.Env.TEST) {
             db.execSQL(SQLTables.SQL_DELETE_ENTRIES);
         }
     }

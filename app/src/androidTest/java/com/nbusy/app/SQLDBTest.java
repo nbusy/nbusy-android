@@ -32,7 +32,7 @@ public class SQLDBTest {
 
     @Test
     public void getEmptyProfile() throws Exception {
-        DB db = new SQLDB(InstrumentationRegistry.getTargetContext());
+        DB db = new SQLDB(InstrumentationRegistry.getTargetContext(), new Config(Config.Env.TEST, "abc"));
 
         final CountDownLatch cbCounter = new CountDownLatch(1);
         db.getProfile(new GetProfileCallback() {
@@ -53,7 +53,7 @@ public class SQLDBTest {
 
     @Test
     public void createThenGetProfile() throws TimeoutException, InterruptedException {
-        DB db = new SQLDB(InstrumentationRegistry.getTargetContext());
+        DB db = new SQLDB(InstrumentationRegistry.getTargetContext(), new Config(Config.Env.TEST, "abc"));
         UserProfile profile = new UserProfile(
                 "1234",
                 "sadfsdgfgafdg",
