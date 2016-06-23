@@ -12,25 +12,25 @@ import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
+import com.nbusy.app.data.callbacks.SeedDBCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 import java.util.ArrayList;
 
 public class SQLDB implements DB {
 
+    // todo: do all sequal operations in a single background thread and call cb
+
     private final SQLDBHelper sqldbHelper;
     private final SQLiteDatabase db;
 
-    // todo: do all sequal operations in a single background thread and call cb
-
     public SQLDB(Context context) {
         sqldbHelper = new SQLDBHelper(context);
-        // todo: call this in a background thread as upgrade might take a long while.. also it might fail on full disk
-        db = sqldbHelper.getWritableDatabase();
+        db = sqldbHelper.getWritableDatabase(); // todo: call this in a background thread as upgrade might take a long while.. also it might fail on full disk
     }
 
     @Override
-    public void seedDB() {
+    public void seedDB(SeedDBCallback cb) {
 
     }
 

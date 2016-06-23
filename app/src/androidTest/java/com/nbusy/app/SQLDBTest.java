@@ -8,6 +8,7 @@ import com.nbusy.app.data.DB;
 import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
+import com.nbusy.app.data.callbacks.SeedDBCallback;
 import com.nbusy.app.data.sqldb.SQLDB;
 
 import org.junit.Test;
@@ -32,7 +33,16 @@ public class SQLDBTest {
 
     @Test
     public void getEmptyProfile() throws Exception {
-        DB db = new SQLDB(InstrumentationRegistry.getTargetContext(), new Config(Config.Env.TEST, "abc"));
+        DB db = new SQLDB(InstrumentationRegistry.getTargetContext());
+
+        final CountDownLatch seedCounter = new CountDownLatch(1);
+        db.seedDB(new SeedDBCallback() {
+            @Override
+            public void success() {
+                seedCounter.countDown();
+            }
+        });
+        awaitThrows(seedCounter);
 
         final CountDownLatch cbCounter = new CountDownLatch(1);
         db.getProfile(new GetProfileCallback() {
@@ -53,7 +63,7 @@ public class SQLDBTest {
 
     @Test
     public void createThenGetProfile() throws TimeoutException, InterruptedException {
-        DB db = new SQLDB(InstrumentationRegistry.getTargetContext(), new Config(Config.Env.TEST, "abc"));
+        DB db = new SQLDB(InstrumentationRegistry.getTargetContext());
         UserProfile profile = new UserProfile(
                 "1234",
                 "sadfsdgfgafdg",

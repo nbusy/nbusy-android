@@ -3,6 +3,7 @@ package com.nbusy.app.data.sqldb;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class SQLDBHelper extends SQLiteOpenHelper {
 
@@ -14,9 +15,15 @@ public class SQLDBHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    public void seedDB(SQLiteDatabase db) {
+        db.execSQL(SQLTables.SQL_DELETE_ENTRIES);
+        db.execSQL(SQLTables.SQL_CREATE_ENTRIES);
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQLTables.SQL_CREATE_ENTRIES);
+        Log.i(TAG, "created");
     }
 
     @Override
@@ -24,11 +31,13 @@ public class SQLDBHelper extends SQLiteOpenHelper {
         // if migration script does not work, start over
         db.execSQL(SQLTables.SQL_DELETE_ENTRIES);
         onCreate(db);
+        Log.i(TAG, "upgraded");
     }
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // we don't support downgrade so call base which throws an exception
         super.onDowngrade(db, oldVersion, newVersion);
+        Log.i(TAG, "downgraded");
     }
 }

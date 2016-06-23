@@ -6,6 +6,7 @@ import com.nbusy.app.Config;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
+import com.nbusy.app.data.callbacks.SeedDBCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 import java.util.ArrayList;
@@ -26,8 +27,13 @@ public class InMemDB implements DB {
     }
 
     @Override
-    public void seedDB() {
-
+    public void seedDB(final SeedDBCallback cb) {
+        simulateDelay(new Function() {
+            @Override
+            public void execute() {
+                cb.success();
+            }
+        });
     }
 
     @Override
@@ -69,7 +75,7 @@ public class InMemDB implements DB {
                     chats.add(new Chat(UUID.randomUUID().toString(), "Chuck Norris", "This is my last-first message!", new Date()));
                 }
 
-                cb.profileRetrieved(new UserProfile("1", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA", "yo@yo.com", "Yo YoYo", new byte[] {1}, chats));
+                cb.profileRetrieved(new UserProfile("1", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA", "yo@yo.com", "Yo YoYo", new byte[]{1}, chats));
             }
         });
     }
