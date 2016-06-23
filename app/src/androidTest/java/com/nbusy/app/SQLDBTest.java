@@ -29,8 +29,6 @@ public class SQLDBTest {
         }
     }
 
-    // todo: set env to test (or in test script as env var?)
-
     @Test
     public void getEmptyProfile() throws Exception {
         DB db = new SQLDB(InstrumentationRegistry.getTargetContext());

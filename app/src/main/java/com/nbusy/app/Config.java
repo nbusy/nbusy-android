@@ -24,8 +24,11 @@ public class Config {
 
     public Config() {
         String envENV = System.getenv("NBUSY_ENV");
+        String envENV2 = System.getenv("ENV");
         if (envENV != null) {
             env = Env.valueOf(envENV);
+        } else if(envENV2 != null) {
+            env = Env.valueOf(envENV2);
         } else {
             env = BuildConfig.DEBUG ? Env.DEBUG : Env.PRODUCTION;
         }

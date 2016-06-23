@@ -31,7 +31,8 @@ public class SQLDB implements DB {
 
     @Override
     public void seedDB(SeedDBCallback cb) {
-
+        sqldbHelper.seedDB(db);
+        cb.success();
     }
 
     @Override
