@@ -26,6 +26,11 @@ public class InMemDB implements DB {
     }
 
     @Override
+    public void seedDB() {
+
+    }
+
+    @Override
     public void createProfile(UserProfile userProfile, final CreateProfileCallback cb) {
         if (userProfile == null) {
             throw new IllegalArgumentException("userProfile cannot be null");

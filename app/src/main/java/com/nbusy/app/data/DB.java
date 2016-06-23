@@ -6,6 +6,8 @@ import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 public interface DB {
+    void seedDB();
+
     void createProfile(UserProfile userProfile, CreateProfileCallback cb);
 
     void getProfile(GetProfileCallback cb);

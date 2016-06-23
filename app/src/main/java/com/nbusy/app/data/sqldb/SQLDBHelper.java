@@ -4,26 +4,14 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.nbusy.app.Config;
-import com.nbusy.app.InstanceManager;
-
 public class SQLDBHelper extends SQLiteOpenHelper {
 
     private static final String TAG = SQLDBHelper.class.getSimpleName();
     private static final int DATABASE_VERSION = 1; // increment this whenever schema changes
     private static final String DATABASE_NAME = "nbusy.db";
-    private final Config config;
 
-    public SQLDBHelper(Context context, Config config) {
+    public SQLDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.config = config;
-    }
-
-    @Override
-    public void onOpen(SQLiteDatabase db) {
-        if (config.env == Config.Env.TEST) {
-            db.execSQL(SQLTables.SQL_DELETE_ENTRIES);
-        }
     }
 
     @Override

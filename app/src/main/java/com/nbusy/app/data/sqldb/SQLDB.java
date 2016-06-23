@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.nbusy.app.Config;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.Message;
@@ -24,10 +23,15 @@ public class SQLDB implements DB {
 
     // todo: do all sequal operations in a single background thread and call cb
 
-    public SQLDB(Context context, Config config) {
-        sqldbHelper = new SQLDBHelper(context, config);
+    public SQLDB(Context context) {
+        sqldbHelper = new SQLDBHelper(context);
         // todo: call this in a background thread as upgrade might take a long while.. also it might fail on full disk
         db = sqldbHelper.getWritableDatabase();
+    }
+
+    @Override
+    public void seedDB() {
+
     }
 
     @Override

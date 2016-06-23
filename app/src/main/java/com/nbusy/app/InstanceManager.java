@@ -109,7 +109,7 @@ public class InstanceManager extends Application {
 
     public static synchronized DB getDB() {
         if (db == null) {
-            db = new SQLDB(getAppContext(), getConfig());
+            db = new SQLDB(getAppContext());
         }
 
         return db;
