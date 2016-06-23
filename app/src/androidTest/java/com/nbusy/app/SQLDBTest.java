@@ -11,6 +11,7 @@ import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.SeedDBCallback;
 import com.nbusy.app.data.sqldb.SQLDB;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,15 +24,18 @@ import static junit.framework.TestCase.fail;
 
 @RunWith(AndroidJUnit4.class)
 public class SQLDBTest {
+
+    private DB db;
+
     public static void awaitThrows(CountDownLatch cdl) throws InterruptedException, TimeoutException {
         if (!cdl.await(5, TimeUnit.SECONDS)) {
             throw new TimeoutException("CountDownLatch timed out after awaiting for 5 seconds.");
         }
     }
 
-    @Test
-    public void getEmptyProfile() throws Exception {
-        DB db = new SQLDB(InstrumentationRegistry.getTargetContext());
+    @Before
+    public void setUp() throws Exception {
+        db = new SQLDB(InstrumentationRegistry.getTargetContext());
 
         final CountDownLatch seedCounter = new CountDownLatch(1);
         db.seedDB(new SeedDBCallback() {
@@ -41,7 +45,10 @@ public class SQLDBTest {
             }
         });
         awaitThrows(seedCounter);
+    }
 
+    @Test
+    public void getEmptyProfile() throws Exception {
         final CountDownLatch cbCounter = new CountDownLatch(1);
         db.getProfile(new GetProfileCallback() {
             @Override
@@ -60,8 +67,7 @@ public class SQLDBTest {
     }
 
     @Test
-    public void createThenGetProfile() throws TimeoutException, InterruptedException {
-        DB db = new SQLDB(InstrumentationRegistry.getTargetContext());
+    public void createThenGetProfile() throws Exception {
         UserProfile profile = new UserProfile(
                 "1234",
                 "sadfsdgfgafdg",
@@ -83,6 +89,6 @@ public class SQLDBTest {
 
             }
         });
-//        awaitThrows(cbCounter);
+        awaitThrows(cbCounter);
     }
 }

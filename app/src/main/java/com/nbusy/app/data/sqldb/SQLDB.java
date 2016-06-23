@@ -47,6 +47,11 @@ public class SQLDB implements DB {
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(SQLTables.ProfileTable.TABLE_NAME, null, values);
+        if (newRowId != -1) {
+            cb.success();
+        } else {
+            cb.error();
+        }
     }
 
     @Override
