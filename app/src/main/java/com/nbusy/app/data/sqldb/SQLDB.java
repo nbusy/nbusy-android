@@ -40,7 +40,7 @@ public class SQLDB implements DB {
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(SQLTables.ProfileTable._ID, userProfile.id);
-        values.put(SQLTables.ProfileTable.JWT_TOKEN, userProfile.jwttoken);
+        values.put(SQLTables.ProfileTable.JWT_TOKEN, userProfile.jwtToken);
         values.put(SQLTables.ProfileTable.NAME, userProfile.name);
         values.put(SQLTables.ProfileTable.EMAIL, userProfile.email);
         values.put(SQLTables.ProfileTable.PICTURE, userProfile.picture);

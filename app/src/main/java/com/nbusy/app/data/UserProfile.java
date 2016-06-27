@@ -20,7 +20,7 @@ public final class UserProfile {
     private final HashMap<String, Chat> chats = new HashMap<>(); // chat ID -> chat
 
     public final String id;
-    public final String jwttoken;
+    public final String jwtToken;
     public final String name;
     public final String email;
     public byte[] picture;
@@ -43,7 +43,7 @@ public final class UserProfile {
         }
 
         this.id = id;
-        this.jwttoken = jwtToken;
+        this.jwtToken = jwtToken;
         this.email = email;
         this.name = name;
         this.picture = picture;

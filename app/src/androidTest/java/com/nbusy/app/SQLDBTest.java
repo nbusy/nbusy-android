@@ -82,10 +82,10 @@ public class SQLDBTest {
     @Test
     public void createThenGetProfile() throws Exception {
         final UserProfile profile = new UserProfile(
-                "1234",
-                "sadfsdgfgafdg",
-                "chuck@nbusy.com",
-                "chuck norris",
+                "id-1234",
+                "token-12jg4ec",
+                "mail-chuck@nbusy.com",
+                "name-chuck norris",
                 new byte[]{0, 2, 3},
                 new ArrayList<Chat>());
 
@@ -109,6 +109,12 @@ public class SQLDBTest {
             @Override
             public void profileRetrieved(UserProfile up) {
                 assertEquals(profile.id, up.id);
+                assertEquals(profile.jwtToken, up.jwtToken);
+                assertEquals(profile.email, up.email);
+                assertEquals(profile.name, up.name);
+                assertEquals(null, up.picture);
+
+                // todo: compare chats one by one
 
                 cbCounter2.countDown();
             }
