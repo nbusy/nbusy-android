@@ -20,7 +20,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static junit.framework.TestCase.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
 public class SQLDBTest {
@@ -63,12 +64,24 @@ public class SQLDBTest {
         });
         awaitThrows(cbCounter);
 
-        // todo: call getProfile again and verify that it still errors
+        final CountDownLatch cbCounter2 = new CountDownLatch(1);
+        db.getProfile(new GetProfileCallback() {
+            @Override
+            public void profileRetrieved(UserProfile userProfile) {
+                fail("expected empty profile");
+            }
+
+            @Override
+            public void error() {
+                cbCounter2.countDown();
+            }
+        });
+        awaitThrows(cbCounter2);
     }
 
     @Test
     public void createThenGetProfile() throws Exception {
-        UserProfile profile = new UserProfile(
+        final UserProfile profile = new UserProfile(
                 "1234",
                 "sadfsdgfgafdg",
                 "chuck@nbusy.com",
@@ -90,5 +103,22 @@ public class SQLDBTest {
             }
         });
         awaitThrows(cbCounter);
+
+        final CountDownLatch cbCounter2 = new CountDownLatch(1);
+        db.getProfile(new GetProfileCallback() {
+            @Override
+            public void profileRetrieved(UserProfile up) {
+                assertEquals(profile.id, up.id);
+
+                cbCounter2.countDown();
+            }
+
+            @Override
+            public void error() {
+                cbCounter2.countDown();
+                fail("expected non-null profile");
+            }
+        });
+        awaitThrows(cbCounter2);
     }
 }
