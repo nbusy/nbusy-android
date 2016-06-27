@@ -62,7 +62,7 @@ public class SQLDBTest {
                 cbCounter.countDown();
             }
         });
-        awaitThrows(cbCounter);
+        awaitThrows(cbCounter); // todo: add fail reason here, and derive from CB
 
         final CountDownLatch cbCounter2 = new CountDownLatch(1);
         db.getProfile(new GetProfileCallback() {
@@ -121,7 +121,6 @@ public class SQLDBTest {
 
             @Override
             public void error() {
-                cbCounter2.countDown();
                 fail("expected non-null profile");
             }
         });
