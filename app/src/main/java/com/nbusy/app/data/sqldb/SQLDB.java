@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.google.common.base.Optional;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.Message;
@@ -43,7 +44,11 @@ public class SQLDB implements DB {
         values.put(SQLTables.ProfileTable.JWT_TOKEN, userProfile.jwtToken);
         values.put(SQLTables.ProfileTable.NAME, userProfile.name);
         values.put(SQLTables.ProfileTable.EMAIL, userProfile.email);
-        values.put(SQLTables.ProfileTable.PICTURE, userProfile.picture);
+
+        Optional<byte[]> picture = userProfile.getPicture();
+        if (picture.isPresent()) {
+            values.put(SQLTables.ProfileTable.PICTURE, picture.get());
+        }
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(SQLTables.ProfileTable.TABLE_NAME, null, values);

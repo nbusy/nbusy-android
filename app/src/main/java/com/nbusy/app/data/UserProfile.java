@@ -23,7 +23,7 @@ public final class UserProfile {
     public final String jwtToken;
     public final String name;
     public final String email;
-    public byte[] picture;
+    private byte[] picture;
 
     public UserProfile(String id, String jwtToken, String email, String name, byte[] picture, List<Chat> chats) {
         if (id == null || id.isEmpty()) {
@@ -51,6 +51,14 @@ public final class UserProfile {
         for (Chat chat : chats) {
             this.chats.put(chat.id, chat);
         }
+    }
+
+    public synchronized Optional<byte[]> getPicture() {
+        if (picture == null) {
+            return Optional.absent();
+        }
+
+        return Optional.of(picture);
     }
 
     public synchronized Optional<Chat> getChat(String chatId) {

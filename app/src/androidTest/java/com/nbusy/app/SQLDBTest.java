@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
@@ -99,7 +100,6 @@ public class SQLDBTest {
             @Override
             public void error() {
                 fail("didn't expect profile creation to fail");
-
             }
         });
         awaitThrows(cbCounter);
@@ -112,7 +112,7 @@ public class SQLDBTest {
                 assertEquals(profile.jwtToken, up.jwtToken);
                 assertEquals(profile.email, up.email);
                 assertEquals(profile.name, up.name);
-                assertEquals(null, up.picture);
+                assertFalse(up.getPicture().isPresent());
 
                 // todo: compare chats one by one
 
