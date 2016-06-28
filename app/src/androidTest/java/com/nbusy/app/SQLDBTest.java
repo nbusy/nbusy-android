@@ -114,8 +114,6 @@ public class SQLDBTest {
                 assertEquals(profile.name, up.name);
                 assertFalse(up.getPicture().isPresent());
 
-                // todo: compare chats one by one
-
                 cbCounter2.countDown();
             }
 

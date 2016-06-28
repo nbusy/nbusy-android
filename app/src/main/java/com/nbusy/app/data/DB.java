@@ -13,6 +13,10 @@ public interface DB {
 
     void getProfile(GetProfileCallback cb);
 
+//    void getPicture(GetPictureCallback cb);
+
+//    void upsertChats(UpsertChatsCallback cb, Chat... chats);
+
     void getChatMessages(String chatId, GetChatMessagesCallback cb);
 
     void getQueuedMessages(GetChatMessagesCallback cb);

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class SQLDB implements DB {
 
-    // todo: do all sequal operations in a single background thread and call cb
+    // todo: do all sql operations in a single background thread and call cb
 
     private final SQLDBHelper sqldbHelper;
     private final SQLiteDatabase db;
@@ -88,6 +88,8 @@ public class SQLDB implements DB {
         String jwtToken = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.JWT_TOKEN));
         String name = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.NAME));
         String email = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.EMAIL));
+
+        c.close();
 
         cb.profileRetrieved(new UserProfile(id, jwtToken, email, name, null, new ArrayList<Chat>()));
     }
