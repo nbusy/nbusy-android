@@ -12,9 +12,11 @@ import com.nbusy.app.data.Message;
 import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
+import com.nbusy.app.data.callbacks.GetPictureCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.DropDBCallback;
 import com.nbusy.app.data.callbacks.SeedDBCallback;
+import com.nbusy.app.data.callbacks.UpsertChatsCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 import java.util.ArrayList;
@@ -39,7 +41,25 @@ public class SQLDB implements DB {
 
     @Override
     public void seedDB(final SeedDBCallback cb) {
-        cb.success();
+        UserProfile profile = new UserProfile(
+                "id-1234",
+                "token-12jg4ec",
+                "mail-chuck@nbusy.com",
+                "name-chuck norris",
+                new byte[]{0, 2, 3},
+                new ArrayList<Chat>());
+
+        createProfile(profile, new CreateProfileCallback() {
+            @Override
+            public void success() {
+                cb.success();
+            }
+
+            @Override
+            public void error() {
+                cb.error();
+            }
+        });
     }
 
     @Override
@@ -101,17 +121,29 @@ public class SQLDB implements DB {
     }
 
     @Override
-    public void getChatMessages(String chatId, GetChatMessagesCallback cb) {
+    public void getPicture(GetPictureCallback cb) {
+        throw new UnsupportedOperationException();
+    }
 
+    @Override
+    public void upsertChats(UpsertChatsCallback cb, Chat... chats) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void getChatMessages(String chatId, GetChatMessagesCallback cb) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void getQueuedMessages(GetChatMessagesCallback cb) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void upsertMessages(UpsertMessagesCallback cb, Message... msgs) {
+        throw new UnsupportedOperationException();
+
 //// New value for one column
 //        ContentValues values = new ContentValues();
 //        values.put(FeedEntry.COLUMN_NAME_TITLE, title);
@@ -128,6 +160,8 @@ public class SQLDB implements DB {
     }
 
     private void deleteMessages() {
+        throw new UnsupportedOperationException();
+
 //        // Define 'where' part of query.
 //        String selection = FeedEntry.COLUMN_NAME_ENTRY_ID + " LIKE ?";
 //// Specify arguments in placeholder order.

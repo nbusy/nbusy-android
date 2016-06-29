@@ -156,5 +156,6 @@ public class SQLDBTest {
     @Test
     public void createChats() throws Exception {
         DB db = getSeededDB();
+//        db.upsertChats(new );
     }
 }

@@ -5,9 +5,11 @@ import android.os.AsyncTask;
 import com.nbusy.app.Config;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
+import com.nbusy.app.data.callbacks.GetPictureCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.DropDBCallback;
 import com.nbusy.app.data.callbacks.SeedDBCallback;
+import com.nbusy.app.data.callbacks.UpsertChatsCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 import java.util.ArrayList;
@@ -89,6 +91,16 @@ public class InMemDB implements DB {
                 cb.profileRetrieved(new UserProfile("1", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkIjoxNDU2MTQ5MjY0LCJ1c2VyaWQiOiIxIn0.wuKJ8CuDkCZYLmhgO-UlZd6v8nxKGk_PtkBwjalyjwA", "yo@yo.com", "Yo YoYo", new byte[]{1}, chats));
             }
         });
+    }
+
+    @Override
+    public void getPicture(GetPictureCallback cb) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void upsertChats(UpsertChatsCallback cb, Chat... chats) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
