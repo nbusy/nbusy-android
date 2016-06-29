@@ -15,7 +15,7 @@ public class SQLDBHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    public void seedDB(SQLiteDatabase db) {
+    public void dropDB(SQLiteDatabase db) {
         db.execSQL(SQLTables.SQL_DELETE_ENTRIES);
         db.execSQL(SQLTables.SQL_CREATE_ENTRIES);
     }
@@ -29,8 +29,7 @@ public class SQLDBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // if migration script does not work, start over
-        db.execSQL(SQLTables.SQL_DELETE_ENTRIES);
-        onCreate(db);
+        dropDB(db);
         Log.i(TAG, "upgraded");
     }
 

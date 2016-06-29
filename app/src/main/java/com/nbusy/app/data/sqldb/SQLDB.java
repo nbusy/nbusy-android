@@ -13,7 +13,7 @@ import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
-import com.nbusy.app.data.callbacks.SeedDBCallback;
+import com.nbusy.app.data.callbacks.DropDBCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 import java.util.ArrayList;
@@ -31,8 +31,8 @@ public class SQLDB implements DB {
     }
 
     @Override
-    public void seedDB(SeedDBCallback cb) {
-        sqldbHelper.seedDB(db);
+    public void dropDB(final DropDBCallback cb) {
+        sqldbHelper.dropDB(db);
         cb.success();
     }
 

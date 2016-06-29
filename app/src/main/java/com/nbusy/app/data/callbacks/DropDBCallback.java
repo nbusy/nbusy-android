@@ -1,5 +1,7 @@
 package com.nbusy.app.data.callbacks;
 
-public interface SeedDBCallback {
+public interface DropDBCallback {
     void success();
+
+    void error();
 }

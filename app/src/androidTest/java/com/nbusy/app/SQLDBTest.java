@@ -8,10 +8,9 @@ import com.nbusy.app.data.DB;
 import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
-import com.nbusy.app.data.callbacks.SeedDBCallback;
+import com.nbusy.app.data.callbacks.DropDBCallback;
 import com.nbusy.app.data.sqldb.SQLDB;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -27,30 +26,42 @@ import static org.junit.Assert.fail;
 @RunWith(AndroidJUnit4.class)
 public class SQLDBTest {
 
-    private DB db;
-
-    public static void awaitThrows(CountDownLatch cdl) throws InterruptedException, TimeoutException {
+    private static void awaitThrows(CountDownLatch cdl) throws InterruptedException, TimeoutException {
         if (!cdl.await(5, TimeUnit.SECONDS)) {
             throw new TimeoutException("CountDownLatch timed out after awaiting for 5 seconds.");
         }
     }
 
-    @Before
-    public void setUp() throws Exception {
-        db = new SQLDB(InstrumentationRegistry.getTargetContext());
+    private static DB getEmptyDB() throws TimeoutException, InterruptedException {
+        DB db = new SQLDB(InstrumentationRegistry.getTargetContext());
 
         final CountDownLatch seedCounter = new CountDownLatch(1);
-        db.seedDB(new SeedDBCallback() {
+        db.dropDB(new DropDBCallback() {
             @Override
             public void success() {
                 seedCounter.countDown();
             }
+
+            @Override
+            public void error() {
+
+            }
         });
         awaitThrows(seedCounter);
+
+        return db;
+    }
+
+    private static DB getSeededDB() throws TimeoutException, InterruptedException {
+        DB db = getEmptyDB();
+
+        return db;
     }
 
     @Test
     public void getEmptyProfile() throws Exception {
+        DB db = getEmptyDB();
+
         final CountDownLatch cbCounter = new CountDownLatch(1);
         db.getProfile(new GetProfileCallback() {
             @Override
@@ -82,6 +93,8 @@ public class SQLDBTest {
 
     @Test
     public void createThenGetProfile() throws Exception {
+        DB db = getEmptyDB();
+
         final UserProfile profile = new UserProfile(
                 "id-1234",
                 "token-12jg4ec",
@@ -123,5 +136,10 @@ public class SQLDBTest {
             }
         });
         awaitThrows(cbCounter2);
+    }
+
+    @Test
+    public void createChats() throws Exception {
+        DB db = getSeededDB();
     }
 }
