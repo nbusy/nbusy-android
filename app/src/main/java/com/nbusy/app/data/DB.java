@@ -4,10 +4,13 @@ import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.DropDBCallback;
+import com.nbusy.app.data.callbacks.SeedDBCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 public interface DB {
     void dropDB(DropDBCallback cb);
+
+    void seedDB(SeedDBCallback cb);
 
     void createProfile(UserProfile userProfile, CreateProfileCallback cb);
 

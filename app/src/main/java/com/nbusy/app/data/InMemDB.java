@@ -7,6 +7,7 @@ import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.DropDBCallback;
+import com.nbusy.app.data.callbacks.SeedDBCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 import java.util.ArrayList;
@@ -28,6 +29,16 @@ public class InMemDB implements DB {
 
     @Override
     public void dropDB(final DropDBCallback cb) {
+        simulateDelay(new Function() {
+            @Override
+            public void execute() {
+                cb.success();
+            }
+        });
+    }
+
+    @Override
+    public void seedDB(final SeedDBCallback cb) {
         simulateDelay(new Function() {
             @Override
             public void execute() {

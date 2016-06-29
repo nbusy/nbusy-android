@@ -9,6 +9,7 @@ import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.DropDBCallback;
+import com.nbusy.app.data.callbacks.SeedDBCallback;
 import com.nbusy.app.data.sqldb.SQLDB;
 
 import org.junit.Test;
@@ -44,7 +45,7 @@ public class SQLDBTest {
 
             @Override
             public void error() {
-
+                fail("could not drop database");
             }
         });
         awaitThrows(seedCounter);
@@ -54,6 +55,20 @@ public class SQLDBTest {
 
     private static DB getSeededDB() throws TimeoutException, InterruptedException {
         DB db = getEmptyDB();
+
+        final CountDownLatch seedCounter = new CountDownLatch(1);
+        db.seedDB(new SeedDBCallback() {
+            @Override
+            public void success() {
+                seedCounter.countDown();
+            }
+
+            @Override
+            public void error() {
+                fail("could not seed database");
+            }
+        });
+        awaitThrows(seedCounter);
 
         return db;
     }
