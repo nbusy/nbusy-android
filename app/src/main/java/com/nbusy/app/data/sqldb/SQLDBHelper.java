@@ -16,13 +16,16 @@ public class SQLDBHelper extends SQLiteOpenHelper {
     }
 
     public void dropDB(SQLiteDatabase db) {
+        db.execSQL(SQLTables.DROP_CHATS_TABLE);
         db.execSQL(SQLTables.DROP_PROFILE_TABLE);
-        db.execSQL(SQLTables.CREATE_PROFILE_TABLE);
+        Log.i(TAG, "dropped");
+        onCreate(db);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQLTables.CREATE_PROFILE_TABLE);
+        db.execSQL(SQLTables.CREATE_CHATS_TABLE);
         Log.i(TAG, "created");
     }
 
