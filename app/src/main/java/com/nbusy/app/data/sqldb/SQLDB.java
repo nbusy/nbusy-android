@@ -127,7 +127,7 @@ public class SQLDB implements DB {
 
     @Override
     public void upsertChats(UpsertChatsCallback cb, Chat... chats) {
-        throw new UnsupportedOperationException();
+        cb.callback();
     }
 
     @Override

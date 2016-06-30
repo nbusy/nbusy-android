@@ -3,19 +3,23 @@ package com.nbusy.app;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.google.common.collect.ImmutableSet;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
+import com.nbusy.app.data.Message;
 import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.DropDBCallback;
 import com.nbusy.app.data.callbacks.SeedDBCallback;
+import com.nbusy.app.data.callbacks.UpsertChatsCallback;
 import com.nbusy.app.data.sqldb.SQLDB;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -156,6 +160,30 @@ public class SQLDBTest {
     @Test
     public void createChats() throws Exception {
         DB db = getSeededDB();
-//        db.upsertChats(new );
+
+        Chat chat1 = new Chat(
+                "id-chat-1234",
+                "Phil Norris",
+                "my last message to Phil",
+                new Date(),
+                ImmutableSet.<Message>of(/* todo: */));
+
+        Chat chat2 = new Chat(
+                "id-chat-5678",
+                "Old Norris",
+                "my last message to Old",
+                new Date(),
+                ImmutableSet.<Message>of(/* todo: */));
+
+        final CountDownLatch cbCounter = new CountDownLatch(1);
+        db.upsertChats(new UpsertChatsCallback() {
+            @Override
+            public void callback() {
+                cbCounter.countDown();
+            }
+        }, chat1, chat2);
+        awaitThrows(cbCounter);
+
+//        db.getProfile();
     }
 }
