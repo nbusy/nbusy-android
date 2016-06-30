@@ -27,7 +27,7 @@ public final class SQLTables {
                     ChatsTable._ID + " TEXT PRIMARY KEY," +
                     ChatsTable.PEER_NAME + TEXT_TYPE + COMMA_SEP +
                     ChatsTable.LAST_MESSAGE + TEXT_TYPE + COMMA_SEP +
-                    ChatsTable.LAST_MESSAGE_SENT + INTEGER_TYPE + COMMA_SEP +
+                    ChatsTable.LAST_MESSAGE_SENT + INTEGER_TYPE +
                     ")";
 
     public static final String CREATE_MESSAGES_TABLE =
