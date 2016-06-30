@@ -28,7 +28,16 @@ public final class SQLTables {
                     ChatsTable.PEER_NAME + TEXT_TYPE + COMMA_SEP +
                     ChatsTable.LAST_MESSAGE + TEXT_TYPE + COMMA_SEP +
                     ChatsTable.LAST_MESSAGE_SENT + INTEGER_TYPE + COMMA_SEP +
-                    "FOREIGN KEY(" + ChatsTable.TABLE_NAME + ProfileTable.TABLE_NAME + ") REFERENCES " + ProfileTable.TABLE_NAME + "(" + ProfileTable._ID + ")" +
+                    ")";
+
+    public static final String CREATE_MESSAGES_TABLE =
+            "CREATE TABLE " + ProfileTable.TABLE_NAME + " (" +
+                    ProfileTable._ID + " TEXT PRIMARY KEY," +
+                    ProfileTable.JWT_TOKEN + TEXT_TYPE + COMMA_SEP +
+                    ProfileTable.NAME + TEXT_TYPE + COMMA_SEP +
+                    ProfileTable.EMAIL + TEXT_TYPE + COMMA_SEP +
+                    ProfileTable.PICTURE + BLOB_TYPE + /* COMMA_SEP +
+                    "FOREIGN KEY(" + ProfileTable.TABLE_NAME + Chats.TABLE_NAME + ") REFERENCES " + Chats.TABLE_NAME + "(" + Chats._ID + ")" + */
                     ")";
 
     public static final String DROP_PROFILE_TABLE = "DROP TABLE IF EXISTS " + ProfileTable.TABLE_NAME;
