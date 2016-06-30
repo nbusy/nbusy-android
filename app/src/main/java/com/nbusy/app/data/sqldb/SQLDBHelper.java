@@ -16,13 +16,13 @@ public class SQLDBHelper extends SQLiteOpenHelper {
     }
 
     public void dropDB(SQLiteDatabase db) {
-        db.execSQL(SQLTables.SQL_DELETE_ENTRIES);
-        db.execSQL(SQLTables.SQL_CREATE_ENTRIES);
+        db.execSQL(SQLTables.DROP_PROFILE_TABLE);
+        db.execSQL(SQLTables.CREATE_PROFILE_TABLE);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(SQLTables.SQL_CREATE_ENTRIES);
+        db.execSQL(SQLTables.CREATE_PROFILE_TABLE);
         Log.i(TAG, "created");
     }
 
