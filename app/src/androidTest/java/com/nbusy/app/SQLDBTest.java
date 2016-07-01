@@ -26,6 +26,7 @@ import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
@@ -161,14 +162,14 @@ public class SQLDBTest {
     public void createChats() throws Exception {
         DB db = getSeededDB();
 
-        Chat chat1 = new Chat(
+        final Chat chat1 = new Chat(
                 "id-chat-1234",
                 "Phil Norris",
                 "my last message to Phil",
                 new Date(),
                 ImmutableSet.<Message>of(/* todo: */));
 
-        Chat chat2 = new Chat(
+        final Chat chat2 = new Chat(
                 "id-chat-5678",
                 "Old Norris",
                 "my last message to Old",
@@ -184,6 +185,22 @@ public class SQLDBTest {
         }, chat1, chat2);
         awaitThrows(cbCounter);
 
-//        db.getProfile();
+        final CountDownLatch cbCounter2 = new CountDownLatch(1);
+        db.getProfile(new GetProfileCallback() {
+            @Override
+            public void profileRetrieved(UserProfile up) {
+//                assertTrue(up.getChat(chat1.id).isPresent());
+//                Chat dbChat1 = up.getChat(chat1.id).get();
+//                assertEquals(chat1.peerName, dbChat1.peerName);
+
+                cbCounter2.countDown();
+            }
+
+            @Override
+            public void error() {
+                fail("expected non-null profile");
+            }
+        });
+        awaitThrows(cbCounter2);
     }
 }

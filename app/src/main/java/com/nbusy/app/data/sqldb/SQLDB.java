@@ -96,30 +96,34 @@ public class SQLDB implements DB {
                 SQLTables.ProfileTable.EMAIL
         };
 
-        Cursor c = db.query(
-                SQLTables.ProfileTable.TABLE_NAME,  // The table to query
-                projection,                               // The columns to return
-                null,                                // The columns for the WHERE clause
-                null,                            // The values for the WHERE clause
-                null,                                     // don't group the rows
-                null,                                     // don't filter by row groups
-                null                                 // The sort order
-        );
+        UserProfile profile = null;
+        try (Cursor c = db.query(
+                SQLTables.ProfileTable.TABLE_NAME, // The table to query
+                projection, // The columns to return
+                null, // The columns for the WHERE clause
+                null, // The values for the WHERE clause
+                null, // don't group the rows
+                null, // don't filter by row groups
+                null // The sort order
+        )) {
+            if (c.getCount() > 0) {
+                c.moveToFirst();
+                profile = new UserProfile(
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable._ID)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.JWT_TOKEN)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.EMAIL)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.NAME)),
+                        null,
+                        new ArrayList<Chat>());
+            }
+        }
 
-        if (c.getCount() <= 0) {
+        if (profile == null) {
             cb.error();
             return;
         }
 
-        c.moveToFirst();
-        String id = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable._ID));
-        String jwtToken = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.JWT_TOKEN));
-        String name = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.NAME));
-        String email = c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.EMAIL));
-
-        c.close();
-
-        cb.profileRetrieved(new UserProfile(id, jwtToken, email, name, null, new ArrayList<Chat>()));
+        cb.profileRetrieved(profile);
     }
 
     @Override
