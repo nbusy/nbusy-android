@@ -24,13 +24,15 @@ import java.util.ArrayList;
 public class SQLDB implements DB {
 
     // todo: do all sql operations in a single background thread and call cb
+    // todo: call db.close() when background service stops and create new instance if closed == true
 
     private final SQLDBHelper sqldbHelper;
     private final SQLiteDatabase db;
 
     public SQLDB(Context context) {
         sqldbHelper = new SQLDBHelper(context);
-        db = sqldbHelper.getWritableDatabase(); // todo: call this in a background thread as upgrade might take a long while.. also it might fail on full disk
+        // todo: call this in a background thread as upgrade might take a long while.. also it might fail on full disk
+        db = sqldbHelper.getWritableDatabase();
     }
 
     @Override
