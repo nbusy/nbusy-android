@@ -20,6 +20,7 @@ import com.nbusy.app.data.callbacks.UpsertChatsCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SQLDB implements DB {
 
@@ -34,6 +35,56 @@ public class SQLDB implements DB {
         // todo: call this in a background thread as upgrade might take a long while.. also it might fail on full disk
         db = sqldbHelper.getWritableDatabase();
     }
+
+    // retrieve profile fields without joins, return null if there is no user profile
+    private UserProfile getProfile() {
+        String[] profileProjection = {
+                SQLTables.ProfileTable._ID,
+                SQLTables.ProfileTable.JWT_TOKEN,
+                SQLTables.ProfileTable.NAME,
+                SQLTables.ProfileTable.EMAIL
+        };
+
+        UserProfile profile = null;
+        try (Cursor c = db.query(
+                SQLTables.ProfileTable.TABLE_NAME, // The table to query
+                profileProjection, // The columns to return
+                null, // The columns for the WHERE clause
+                null, // The values for the WHERE clause
+                null, // don't group the rows
+                null, // don't filter by row groups
+                null // The sort order
+        )) {
+            if (c.getCount() > 0) {
+                c.moveToFirst();
+                profile = new UserProfile(
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable._ID)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.JWT_TOKEN)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.EMAIL)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.NAME)),
+                        null,
+                        new ArrayList<Chat>());
+            }
+        }
+
+        return profile;
+    }
+
+    // retrieve chats with their fields without joins
+    private List<Chat> getChats() {
+        String[] chatsProjection = {
+                SQLTables.ChatsTable._ID,
+                SQLTables.ChatsTable.PEER_NAME,
+                SQLTables.ChatsTable.LAST_MESSAGE,
+                SQLTables.ChatsTable.LAST_MESSAGE_SENT
+        };
+
+        return null;
+    }
+
+    /*********************
+     * DB Implementation *
+     *********************/
 
     @Override
     public void dropDB(final DropDBCallback cb) {
@@ -89,35 +140,7 @@ public class SQLDB implements DB {
 
     @Override
     public void getProfile(GetProfileCallback cb) {
-        String[] projection = {
-                SQLTables.ProfileTable._ID,
-                SQLTables.ProfileTable.JWT_TOKEN,
-                SQLTables.ProfileTable.NAME,
-                SQLTables.ProfileTable.EMAIL
-        };
-
-        UserProfile profile = null;
-        try (Cursor c = db.query(
-                SQLTables.ProfileTable.TABLE_NAME, // The table to query
-                projection, // The columns to return
-                null, // The columns for the WHERE clause
-                null, // The values for the WHERE clause
-                null, // don't group the rows
-                null, // don't filter by row groups
-                null // The sort order
-        )) {
-            if (c.getCount() > 0) {
-                c.moveToFirst();
-                profile = new UserProfile(
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable._ID)),
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.JWT_TOKEN)),
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.EMAIL)),
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.NAME)),
-                        null,
-                        new ArrayList<Chat>());
-            }
-        }
-
+        UserProfile profile = getProfile();
         if (profile == null) {
             cb.error();
             return;
