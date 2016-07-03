@@ -38,7 +38,7 @@ public class SQLDB implements DB {
 
     // retrieve profile fields without joins, return null if there is no user profile
     private UserProfile getProfile() {
-        String[] profileProjection = {
+        String[] projection = {
                 SQLTables.ProfileTable._ID,
                 SQLTables.ProfileTable.JWT_TOKEN,
                 SQLTables.ProfileTable.NAME,
@@ -48,15 +48,14 @@ public class SQLDB implements DB {
         UserProfile profile = null;
         try (Cursor c = db.query(
                 SQLTables.ProfileTable.TABLE_NAME, // The table to query
-                profileProjection, // The columns to return
+                projection, // The columns to return
                 null, // The columns for the WHERE clause
                 null, // The values for the WHERE clause
                 null, // don't group the rows
                 null, // don't filter by row groups
                 null // The sort order
         )) {
-            if (c.getCount() > 0) {
-                c.moveToFirst();
+            if (c.moveToFirst()) {
                 profile = new UserProfile(
                         c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable._ID)),
                         c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.JWT_TOKEN)),
@@ -70,16 +69,30 @@ public class SQLDB implements DB {
         return profile;
     }
 
-    // retrieve chats with their fields without joins
+    // retrieve chats with their fields without joins, return empty list if there are not chats
     private List<Chat> getChats() {
-        String[] chatsProjection = {
+        String[] projection = {
                 SQLTables.ChatsTable._ID,
                 SQLTables.ChatsTable.PEER_NAME,
                 SQLTables.ChatsTable.LAST_MESSAGE,
                 SQLTables.ChatsTable.LAST_MESSAGE_SENT
         };
 
-        return null;
+        try (Cursor c = db.query(
+                SQLTables.ChatsTable.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                null
+        )) {
+            while (c.moveToNext()) {
+
+            }
+        }
+
+        return new ArrayList<>();
     }
 
     /*********************
