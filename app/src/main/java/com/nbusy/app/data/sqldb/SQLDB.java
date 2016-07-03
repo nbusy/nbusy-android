@@ -20,6 +20,7 @@ import com.nbusy.app.data.callbacks.UpsertChatsCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SQLDB implements DB {
@@ -78,6 +79,7 @@ public class SQLDB implements DB {
                 SQLTables.ChatsTable.LAST_MESSAGE_SENT
         };
 
+        ArrayList<Chat> chats = new ArrayList<>();
         try (Cursor c = db.query(
                 SQLTables.ChatsTable.TABLE_NAME,
                 projection,
@@ -88,11 +90,16 @@ public class SQLDB implements DB {
                 null
         )) {
             while (c.moveToNext()) {
-
+                chats.add(new Chat(
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatsTable._ID)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatsTable.PEER_NAME)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatsTable.LAST_MESSAGE)),
+                        new Date(c.getInt(c.getColumnIndexOrThrow(SQLTables.ChatsTable.LAST_MESSAGE_SENT))*1000L)
+                ));
             }
         }
 
-        return new ArrayList<>();
+        return chats;
     }
 
     /*********************
