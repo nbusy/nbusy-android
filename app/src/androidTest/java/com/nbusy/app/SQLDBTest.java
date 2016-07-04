@@ -179,8 +179,13 @@ public class SQLDBTest {
         final CountDownLatch cbCounter = new CountDownLatch(1);
         db.upsertChats(new UpsertChatsCallback() {
             @Override
-            public void callback() {
+            public void success() {
                 cbCounter.countDown();
+            }
+
+            @Override
+            public void error() {
+                fail("failed to persist chat(s)");
             }
         }, chat1, chat2);
         awaitThrows(cbCounter);
@@ -189,9 +194,17 @@ public class SQLDBTest {
         db.getProfile(new GetProfileCallback() {
             @Override
             public void profileRetrieved(UserProfile up) {
-//                assertTrue(up.getChat(chat1.id).isPresent());
-//                Chat dbChat1 = up.getChat(chat1.id).get();
-//                assertEquals(chat1.peerName, dbChat1.peerName);
+                assertTrue(up.getChat(chat1.id).isPresent());
+                Chat dbChat1 = up.getChat(chat1.id).get();
+                assertEquals(chat1.peerName, dbChat1.peerName);
+                assertEquals(chat1.lastMessage, dbChat1.lastMessage);
+                assertEquals(chat1.lastMessageSent, dbChat1.lastMessageSent);
+
+                assertTrue(up.getChat(chat2.id).isPresent());
+                Chat dbChat2 = up.getChat(chat2.id).get();
+                assertEquals(chat2.peerName, dbChat2.peerName);
+                assertEquals(chat2.lastMessage, dbChat2.lastMessage);
+                assertEquals(chat2.lastMessageSent, dbChat2.lastMessageSent);
 
                 cbCounter2.countDown();
             }

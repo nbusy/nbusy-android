@@ -94,7 +94,7 @@ public class SQLDB implements DB {
                         c.getString(c.getColumnIndexOrThrow(SQLTables.ChatsTable._ID)),
                         c.getString(c.getColumnIndexOrThrow(SQLTables.ChatsTable.PEER_NAME)),
                         c.getString(c.getColumnIndexOrThrow(SQLTables.ChatsTable.LAST_MESSAGE)),
-                        new Date(c.getInt(c.getColumnIndexOrThrow(SQLTables.ChatsTable.LAST_MESSAGE_SENT))*1000L)
+                        new Date(c.getLong(c.getColumnIndexOrThrow(SQLTables.ChatsTable.LAST_MESSAGE_SENT)))
                 ));
             }
         }
@@ -177,7 +177,21 @@ public class SQLDB implements DB {
 
     @Override
     public void upsertChats(UpsertChatsCallback cb, Chat... chats) {
-        cb.callback();
+        for (Chat chat : chats) {
+            ContentValues values = new ContentValues();
+            values.put(SQLTables.ChatsTable._ID, chat.id);
+            values.put(SQLTables.ChatsTable.PEER_NAME, chat.peerName);
+            values.put(SQLTables.ChatsTable.LAST_MESSAGE, chat.lastMessage);
+            values.put(SQLTables.ChatsTable.LAST_MESSAGE_SENT, chat.lastMessageSent.getTime());
+
+            long newRowId = db.insert(SQLTables.ChatsTable.TABLE_NAME, null, values);
+            if (newRowId == -1) {
+                cb.error();
+                return;
+            }
+        }
+
+        cb.success();
     }
 
     @Override
