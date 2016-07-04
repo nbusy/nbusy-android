@@ -194,6 +194,8 @@ public class SQLDBTest {
         db.getProfile(new GetProfileCallback() {
             @Override
             public void profileRetrieved(UserProfile up) {
+                assertEquals(2, up.getChats().size());
+
                 assertTrue(up.getChat(chat1.id).isPresent());
                 Chat dbChat1 = up.getChat(chat1.id).get();
                 assertEquals(chat1.peerName, dbChat1.peerName);
