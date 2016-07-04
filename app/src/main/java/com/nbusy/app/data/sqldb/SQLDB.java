@@ -166,6 +166,7 @@ public class SQLDB implements DB {
             return;
         }
 
+        profile.upsertChats(getChats());
         cb.profileRetrieved(profile);
     }
 

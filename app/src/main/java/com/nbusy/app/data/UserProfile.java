@@ -48,9 +48,7 @@ public final class UserProfile {
         this.name = name;
         this.picture = picture;
 
-        for (Chat chat : chats) {
-            this.chats.put(chat.id, chat);
-        }
+        upsertChats(chats);
     }
 
     public synchronized Optional<byte[]> getPicture() {
@@ -75,6 +73,12 @@ public final class UserProfile {
 
     public synchronized Collection<Chat> getChats() {
         return this.chats.values();
+    }
+
+    public synchronized void upsertChats(List<Chat> chats) {
+        for (Chat chat : chats) {
+            this.chats.put(chat.id, chat);
+        }
     }
 
     public synchronized Optional<Chat.ChatAndNewMessages> addNewOutgoingMessages(String chatId, String... msgs) {
