@@ -73,15 +73,15 @@ public class SQLDB implements DB {
     // retrieve chats with their fields without joins, return empty list if there are not chats
     private List<Chat> getChats() {
         String[] projection = {
-                SQLTables.ChatsTable._ID,
-                SQLTables.ChatsTable.PEER_NAME,
-                SQLTables.ChatsTable.LAST_MESSAGE,
-                SQLTables.ChatsTable.LAST_MESSAGE_SENT
+                SQLTables.ChatTable._ID,
+                SQLTables.ChatTable.PEER_NAME,
+                SQLTables.ChatTable.LAST_MESSAGE,
+                SQLTables.ChatTable.LAST_MESSAGE_SENT
         };
 
         ArrayList<Chat> chats = new ArrayList<>();
         try (Cursor c = db.query(
-                SQLTables.ChatsTable.TABLE_NAME,
+                SQLTables.ChatTable.TABLE_NAME,
                 projection,
                 null,
                 null,
@@ -91,10 +91,10 @@ public class SQLDB implements DB {
         )) {
             while (c.moveToNext()) {
                 chats.add(new Chat(
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatsTable._ID)),
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatsTable.PEER_NAME)),
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatsTable.LAST_MESSAGE)),
-                        new Date(c.getLong(c.getColumnIndexOrThrow(SQLTables.ChatsTable.LAST_MESSAGE_SENT)))
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatTable._ID)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatTable.PEER_NAME)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatTable.LAST_MESSAGE)),
+                        new Date(c.getLong(c.getColumnIndexOrThrow(SQLTables.ChatTable.LAST_MESSAGE_SENT)))
                 ));
             }
         }
@@ -179,12 +179,12 @@ public class SQLDB implements DB {
     public void upsertChats(UpsertChatsCallback cb, Chat... chats) {
         for (Chat chat : chats) {
             ContentValues values = new ContentValues();
-            values.put(SQLTables.ChatsTable._ID, chat.id);
-            values.put(SQLTables.ChatsTable.PEER_NAME, chat.peerName);
-            values.put(SQLTables.ChatsTable.LAST_MESSAGE, chat.lastMessage);
-            values.put(SQLTables.ChatsTable.LAST_MESSAGE_SENT, chat.lastMessageSent.getTime());
+            values.put(SQLTables.ChatTable._ID, chat.id);
+            values.put(SQLTables.ChatTable.PEER_NAME, chat.peerName);
+            values.put(SQLTables.ChatTable.LAST_MESSAGE, chat.lastMessage);
+            values.put(SQLTables.ChatTable.LAST_MESSAGE_SENT, chat.lastMessageSent.getTime());
 
-            long newRowId = db.insert(SQLTables.ChatsTable.TABLE_NAME, null, values);
+            long newRowId = db.insert(SQLTables.ChatTable.TABLE_NAME, null, values);
             if (newRowId == -1) {
                 cb.error();
                 return;

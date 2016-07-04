@@ -16,8 +16,8 @@ public class SQLDBHelper extends SQLiteOpenHelper {
     }
 
     public void dropDB(SQLiteDatabase db) {
-        db.execSQL(SQLTables.DROP_MESSAGES_TABLE);
-        db.execSQL(SQLTables.DROP_CHATS_TABLE);
+        db.execSQL(SQLTables.DROP_MESSAGE_TABLE);
+        db.execSQL(SQLTables.DROP_CHAT_TABLE);
         db.execSQL(SQLTables.DROP_PROFILE_TABLE);
         Log.i(TAG, "dropped");
         onCreate(db);
@@ -26,8 +26,8 @@ public class SQLDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQLTables.CREATE_PROFILE_TABLE);
-        db.execSQL(SQLTables.CREATE_CHATS_TABLE);
-        db.execSQL(SQLTables.CREATE_MESSAGES_TABLE);
+        db.execSQL(SQLTables.CREATE_CHAT_TABLE);
+        db.execSQL(SQLTables.CREATE_MESSAGE_TABLE);
         Log.i(TAG, "created");
     }
 
