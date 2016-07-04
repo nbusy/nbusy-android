@@ -32,9 +32,9 @@ import static org.junit.Assert.fail;
 @RunWith(AndroidJUnit4.class)
 public class SQLDBTest {
 
-    private static void awaitThrows(CountDownLatch cdl) throws InterruptedException, TimeoutException {
+    private static void awaitThrows(CountDownLatch cdl, String reason) throws InterruptedException, TimeoutException {
         if (!cdl.await(5, TimeUnit.SECONDS)) {
-            throw new TimeoutException("CountDownLatch timed out after awaiting for 5 seconds.");
+            throw new TimeoutException("CountDownLatch timed out after awaiting for 5 seconds with message: " + reason);
         }
     }
 
@@ -53,7 +53,7 @@ public class SQLDBTest {
                 fail("could not drop database");
             }
         });
-        awaitThrows(seedCounter);
+        awaitThrows(seedCounter, "could not drop database");
 
         return db;
     }
@@ -73,7 +73,7 @@ public class SQLDBTest {
                 fail("could not seed database");
             }
         });
-        awaitThrows(seedCounter);
+        awaitThrows(seedCounter, "could not seed database");
 
         return db;
     }
@@ -94,7 +94,7 @@ public class SQLDBTest {
                 cbCounter.countDown();
             }
         });
-        awaitThrows(cbCounter); // todo: add fail reason here, and derive from CB
+        awaitThrows(cbCounter, "could not retrieve profile");
 
         final CountDownLatch cbCounter2 = new CountDownLatch(1);
         db.getProfile(new GetProfileCallback() {
@@ -108,7 +108,7 @@ public class SQLDBTest {
                 cbCounter2.countDown();
             }
         });
-        awaitThrows(cbCounter2);
+        awaitThrows(cbCounter2, "could not retrieve profile");
     }
 
     @Test
@@ -132,10 +132,10 @@ public class SQLDBTest {
 
             @Override
             public void error() {
-                fail("didn't expect profile creation to fail");
+                fail("could not create profile");
             }
         });
-        awaitThrows(cbCounter);
+        awaitThrows(cbCounter, "could not create profile");
 
         final CountDownLatch cbCounter2 = new CountDownLatch(1);
         db.getProfile(new GetProfileCallback() {
@@ -155,7 +155,7 @@ public class SQLDBTest {
                 fail("expected non-null profile");
             }
         });
-        awaitThrows(cbCounter2);
+        awaitThrows(cbCounter2, "could not retrieve profile");
     }
 
     @Test
@@ -167,14 +167,14 @@ public class SQLDBTest {
                 "Phil Norris",
                 "my last message to Phil",
                 new Date(),
-                ImmutableSet.<Message>of(/* todo: */));
+                ImmutableSet.<Message>of());
 
         final Chat chat2 = new Chat(
                 "id-chat-5678",
                 "Old Norris",
                 "my last message to Old",
                 new Date(),
-                ImmutableSet.<Message>of(/* todo: */));
+                ImmutableSet.<Message>of());
 
         final CountDownLatch cbCounter = new CountDownLatch(1);
         db.upsertChats(new UpsertChatsCallback() {
@@ -188,7 +188,7 @@ public class SQLDBTest {
                 fail("failed to persist chat(s)");
             }
         }, chat1, chat2);
-        awaitThrows(cbCounter);
+        awaitThrows(cbCounter, "failed to persist chat(s)");
 
         final CountDownLatch cbCounter2 = new CountDownLatch(1);
         db.getProfile(new GetProfileCallback() {
@@ -216,6 +216,6 @@ public class SQLDBTest {
                 fail("expected non-null profile");
             }
         });
-        awaitThrows(cbCounter2);
+        awaitThrows(cbCounter2, "failed to retrieve profile");
     }
 }
