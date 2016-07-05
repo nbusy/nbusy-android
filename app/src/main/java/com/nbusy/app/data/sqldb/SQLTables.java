@@ -12,6 +12,7 @@ public final class SQLTables {
     private static final String TEXT_TYPE = " TEXT";
     private static final String BLOB_TYPE = " BLOB";
     private static final String INTEGER_TYPE = " INTEGER";
+    private static final String REAL_TYPE = " REAL";
 
     public static final String CREATE_PROFILE_TABLE =
             "CREATE TABLE " + ProfileTable.TABLE_NAME + " (" +
@@ -36,7 +37,7 @@ public final class SQLTables {
                     MessageTable.CHAT_ID + TEXT_TYPE + COMMA_SEP +
                     MessageTable.FROM + TEXT_TYPE + COMMA_SEP +
                     MessageTable.BODY + TEXT_TYPE + COMMA_SEP +
-                    MessageTable.SENT + INTEGER_TYPE + COMMA_SEP +
+                    MessageTable.SENT + TEXT_TYPE + COMMA_SEP +
                     MessageTable.STATUS + TEXT_TYPE + COMMA_SEP +
                     "FOREIGN KEY(" + MessageTable.CHAT_ID + ") REFERENCES " + ChatTable.TABLE_NAME + "(" + ChatTable._ID + ")" +
                     ")";

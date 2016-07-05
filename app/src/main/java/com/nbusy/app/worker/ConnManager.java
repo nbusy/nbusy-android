@@ -112,12 +112,16 @@ public class ConnManager implements ConnCallbacks {
                                 // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
                                 db.upsertMessages(new UpsertMessagesCallback() {
                                     @Override
-                                    public void messagesUpserted() {
+                                    public void success() {
                                         Log.i(TAG, "Sent queued messages to server: " + msgs.size());
                                         // finally, notify all listening views about the changes
                                         if (!chats.isEmpty()) {
                                             eventBus.post(new ChatsUpdatedEvent(chats));
                                         }
+                                    }
+
+                                    @Override
+                                    public void error() {
                                     }
                                 }, msgsArray);
                             }
@@ -152,10 +156,14 @@ public class ConnManager implements ConnCallbacks {
         final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
         db.upsertMessages(new UpsertMessagesCallback() {
             @Override
-            public void messagesUpserted() {
+            public void success() {
                 for (Chat chat : chats) {
                     eventBus.post(new ChatsUpdatedEvent(chat));
                 }
+            }
+
+            @Override
+            public void error() {
             }
         }, nbusyMsgs);
     }

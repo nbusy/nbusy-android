@@ -164,7 +164,7 @@ public class InMemDB implements DB {
         simulateDelay(new Function() {
             @Override
             public void execute() {
-                cb.messagesUpserted();
+                cb.success();
             }
         });
     }

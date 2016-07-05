@@ -64,10 +64,14 @@ public class Worker {
         final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
         db.upsertMessages(new UpsertMessagesCallback() {
             @Override
-            public void messagesUpserted() {
+            public void success() {
                 for (Chat chat : chats) {
                     eventBus.post(new ChatsUpdatedEvent(chat));
                 }
+            }
+
+            @Override
+            public void error() {
             }
         }, nbusyMsgs);
     }
@@ -110,7 +114,7 @@ public class Worker {
         // persist messages in the database with Status = NEW
         db.upsertMessages(new UpsertMessagesCallback() {
             @Override
-            public void messagesUpserted() {
+            public void success() {
                 client.sendMessages(new SendMsgsCallback() {
                     @Override
                     public void sentToServer() {
@@ -120,13 +124,21 @@ public class Worker {
                         // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
                         db.upsertMessages(new UpsertMessagesCallback() {
                             @Override
-                            public void messagesUpserted() {
+                            public void success() {
                                 // finally, notify all listening views about the changes
                                 eventBus.post(new ChatsUpdatedEvent(chats));
+                            }
+
+                            @Override
+                            public void error() {
                             }
                         }, msgs);
                     }
                 }, DataMap.getTitanMessages(msgs));
+            }
+
+            @Override
+            public void error() {
             }
         }, msgs);
     }

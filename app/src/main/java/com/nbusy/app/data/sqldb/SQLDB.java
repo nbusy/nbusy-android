@@ -115,22 +115,7 @@ public class SQLDB implements DB {
 
     @Override
     public void seedDB(final SeedDBCallback cb) {
-        UserProfile profile = new UserProfile(
-                "id-s1234",
-                "token-12jg4ec",
-                "mail-chuck@nbusy.com",
-                "name-chuck norris",
-                new byte[]{0, 2, 3},
-                new ArrayList<Chat>());
-
-        final Chat chat = new Chat(
-                "id-chat-s1234",
-                "Phil Norris",
-                "my last message to Phil",
-                new Date(),
-                ImmutableSet.<Message>of());
-
-        createProfile(profile, new CreateProfileCallback() {
+        createProfile(SeedData.profile, new CreateProfileCallback() {
             @Override
             public void success() {
                 upsertChats(new UpsertChatsCallback() {
@@ -143,7 +128,7 @@ public class SQLDB implements DB {
                     public void error() {
                         cb.error();
                     }
-                }, chat);
+                }, SeedData.chatsArray);
             }
 
             @Override
@@ -168,7 +153,7 @@ public class SQLDB implements DB {
         }
 
         // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(SQLTables.ProfileTable.TABLE_NAME, null, values);
+        long newRowId = db.insertWithOnConflict(SQLTables.ProfileTable.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         if (newRowId != -1) {
             cb.success();
         } else {
@@ -202,7 +187,7 @@ public class SQLDB implements DB {
             values.put(SQLTables.ChatTable.LAST_MESSAGE, chat.lastMessage);
             values.put(SQLTables.ChatTable.LAST_MESSAGE_SENT, chat.lastMessageSent.getTime());
 
-            long newRowId = db.insert(SQLTables.ChatTable.TABLE_NAME, null, values);
+            long newRowId = db.insertWithOnConflict(SQLTables.ChatTable.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
             if (newRowId == -1) {
                 cb.error();
                 return;
@@ -224,21 +209,23 @@ public class SQLDB implements DB {
 
     @Override
     public void upsertMessages(UpsertMessagesCallback cb, Message... msgs) {
-        throw new UnsupportedOperationException();
+        for (Message msg : msgs) {
+            ContentValues values = new ContentValues();
+            values.put(SQLTables.MessageTable._ID, msg.id);
+            values.put(SQLTables.MessageTable.CHAT_ID, msg.chatId);
+            values.put(SQLTables.MessageTable.FROM, msg.from);
+            values.put(SQLTables.MessageTable.BODY, msg.body);
+            values.put(SQLTables.MessageTable.SENT, msg.sent.getTime());
+            values.put(SQLTables.MessageTable.STATUS, msg.status.toString());
 
-//// New value for one column
-//        ContentValues values = new ContentValues();
-//        values.put(FeedEntry.COLUMN_NAME_TITLE, title);
-//
-//// Which row to update, based on the ID
-//        String selection = FeedEntry.COLUMN_NAME_ENTRY_ID + " LIKE ?";
-//        String[] selectionArgs = { String.valueOf(rowId) };
-//
-//        int count = db.update(
-//                FeedReaderDbHelper.FeedEntry.TABLE_NAME,
-//                values,
-//                selection,
-//                selectionArgs);
+            long newRowId = db.insertWithOnConflict(SQLTables.MessageTable.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+            if (newRowId == -1) {
+                cb.error();
+                return;
+            }
+        }
+
+        cb.success();
     }
 
     private void deleteMessages() {
