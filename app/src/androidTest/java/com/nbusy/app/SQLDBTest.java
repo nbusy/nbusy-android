@@ -222,7 +222,7 @@ public class SQLDBTest {
     }
 
     @Test
-    public void upsertMessages() throws Exception {
+    public void crudMessages() throws Exception {
         DB db = getSeededDB();
 
         Message msg = Message.newIncomingMessage(SeedData.chat1.id, "chuck chuck", "hey dude, what up", new Date());
