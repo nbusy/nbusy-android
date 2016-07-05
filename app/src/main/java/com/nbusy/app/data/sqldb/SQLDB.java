@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.Message;
@@ -115,17 +116,34 @@ public class SQLDB implements DB {
     @Override
     public void seedDB(final SeedDBCallback cb) {
         UserProfile profile = new UserProfile(
-                "id-1234",
+                "id-s1234",
                 "token-12jg4ec",
                 "mail-chuck@nbusy.com",
                 "name-chuck norris",
                 new byte[]{0, 2, 3},
                 new ArrayList<Chat>());
 
+        final Chat chat = new Chat(
+                "id-chat-s1234",
+                "Phil Norris",
+                "my last message to Phil",
+                new Date(),
+                ImmutableSet.<Message>of());
+
         createProfile(profile, new CreateProfileCallback() {
             @Override
             public void success() {
-                cb.success();
+                upsertChats(new UpsertChatsCallback() {
+                    @Override
+                    public void success() {
+                        cb.success();
+                    }
+
+                    @Override
+                    public void error() {
+                        cb.error();
+                    }
+                }, chat);
             }
 
             @Override

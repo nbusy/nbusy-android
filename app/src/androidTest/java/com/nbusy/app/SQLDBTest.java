@@ -159,7 +159,7 @@ public class SQLDBTest {
     }
 
     @Test
-    public void createChats() throws Exception {
+    public void upsertChats() throws Exception {
         DB db = getSeededDB();
 
         final Chat chat1 = new Chat(
@@ -194,7 +194,7 @@ public class SQLDBTest {
         db.getProfile(new GetProfileCallback() {
             @Override
             public void profileRetrieved(UserProfile up) {
-                assertEquals(2, up.getChats().size());
+                assertEquals(3, up.getChats().size());
 
                 assertTrue(up.getChat(chat1.id).isPresent());
                 Chat dbChat1 = up.getChat(chat1.id).get();
@@ -217,5 +217,10 @@ public class SQLDBTest {
             }
         });
         awaitThrows(cbCounter2, "failed to retrieve profile");
+    }
+
+    @Test
+    public void upsertMessages() throws Exception {
+        DB db = getSeededDB();
     }
 }
