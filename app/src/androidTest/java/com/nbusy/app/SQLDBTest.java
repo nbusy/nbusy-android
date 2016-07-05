@@ -13,7 +13,9 @@ import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.DropDBCallback;
 import com.nbusy.app.data.callbacks.SeedDBCallback;
 import com.nbusy.app.data.callbacks.UpsertChatsCallback;
+import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 import com.nbusy.app.data.sqldb.SQLDB;
+import com.nbusy.app.data.sqldb.SeedData;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -222,5 +224,23 @@ public class SQLDBTest {
     @Test
     public void upsertMessages() throws Exception {
         DB db = getSeededDB();
+
+        Message msg = Message.newIncomingMessage(SeedData.chat1.id, "chuck chuck", "hey dude, what up", new Date());
+
+        final CountDownLatch cbCounter = new CountDownLatch(1);
+        db.upsertMessages(new UpsertMessagesCallback() {
+            @Override
+            public void success() {
+                cbCounter.countDown();
+            }
+
+            @Override
+            public void error() {
+                fail("failed to persist message(s)");
+            }
+        }, msg);
+        awaitThrows(cbCounter, "failed to persist message(s)");
+
+
     }
 }

@@ -18,7 +18,7 @@ public class DataMap {
         Message[] nbusyMsgs = new Message[msgs.length];
 
         for (int i = 0; i < msgs.length; i++) {
-            nbusyMsgs[i] = Message.newIncomingMessage(msgs[i].chatId, msgs[i].from, msgs[i].time, msgs[i].message);
+            nbusyMsgs[i] = Message.newIncomingMessage(msgs[i].chatId, msgs[i].from, msgs[i].message, msgs[i].time);
         }
 
         return nbusyMsgs;

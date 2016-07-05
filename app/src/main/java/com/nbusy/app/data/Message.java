@@ -47,7 +47,7 @@ public final class Message {
         return new Message(UUID.randomUUID().toString(), chatId, null, to, true, body, new Date(), Status.NEW);
     }
 
-    public static Message newIncomingMessage(String chatId, String from, Date sent, String body) {
+    public static Message newIncomingMessage(String chatId, String from, String body, Date sent) {
         return new Message(UUID.randomUUID().toString(), chatId, from, null, false, body, sent, Status.RECEIVED);
     }
 
