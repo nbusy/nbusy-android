@@ -28,6 +28,8 @@ public class SQLDB implements DB {
     // todo: do all sql operations in a single background thread and call cb
     // todo: call db.close() when background service stops and create new instance if closed == true
 
+    private static final String EQ_SEL = " = ?";
+
     private final SQLDBHelper sqldbHelper;
     private final SQLiteDatabase db;
 
@@ -202,8 +204,8 @@ public class SQLDB implements DB {
         try (Cursor c = db.query(
                 SQLTables.MessageTable.TABLE_NAME,
                 projection,
-                null,
-                null,
+                SQLTables.MessageTable.CHAT_ID + EQ_SEL,
+                new String[] { chatId },
                 null,
                 null,
                 null
