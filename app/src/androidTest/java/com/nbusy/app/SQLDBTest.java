@@ -9,6 +9,7 @@ import com.nbusy.app.data.DB;
 import com.nbusy.app.data.Message;
 import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
+import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.data.callbacks.DropDBCallback;
 import com.nbusy.app.data.callbacks.SeedDBCallback;
@@ -22,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -241,6 +243,15 @@ public class SQLDBTest {
         }, msg);
         awaitThrows(cbCounter, "failed to persist message(s)");
 
+        final CountDownLatch cbCounter2 = new CountDownLatch(1);
+        db.getChatMessages(SeedData.chat1.id, new GetChatMessagesCallback() {
+            @Override
+            public void chatMessagesRetrieved(List<Message> msgs) {
+                assertEquals(1, msgs.size());
 
+                cbCounter2.countDown();
+            }
+        });
+        awaitThrows(cbCounter2, "failed to retrieve messages");
     }
 }

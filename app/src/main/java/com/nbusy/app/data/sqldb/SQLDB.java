@@ -22,6 +22,7 @@ import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class SQLDB implements DB {
 
@@ -209,11 +210,20 @@ public class SQLDB implements DB {
         )) {
             while (c.moveToNext()) {
                 String from = c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.FROM));
-                boolean owner = from == null; // todo: this behavior needs testing
-//                new Date(c.getLong(c.getColumnIndexOrThrow(SQLTables.MessageTable.SENT));
-//                msgs.add(new Message());
+                boolean owner = from == null || Objects.equals(from, "");
+                msgs.add(new Message(
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable._ID)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.CHAT_ID)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.FROM)),
+                        null,
+                        owner,
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.BODY)),
+                        new Date(c.getLong(c.getColumnIndexOrThrow(SQLTables.MessageTable.SENT))),
+                        Message.Status.valueOf(c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.STATUS)))));
             }
         }
+
+        cb.chatMessagesRetrieved(msgs);
     }
 
     @Override

@@ -16,7 +16,7 @@ public final class Message {
     public final Date sent; // message sent date/time
     public final Status status; // delivery status
 
-    Message(String id, String chatId, String from, String to, boolean owner, String body, Date sent, Status status) {
+    public Message(String id, String chatId, String from, String to, boolean owner, String body, Date sent, Status status) {
         if (id == null || id.isEmpty()) {
             throw new IllegalArgumentException("id cannot be null or empty");
         }
