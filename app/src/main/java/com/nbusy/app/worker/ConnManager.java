@@ -102,6 +102,10 @@ public class ConnManager implements ConnCallbacks {
                 db.getQueuedMessages(new GetChatMessagesCallback() {
                     @Override
                     public void chatMessagesRetrieved(final List<Message> msgs) {
+                        if (msgs.isEmpty()) {
+                            return;
+                        }
+
                         final Message[] msgsArray = msgs.toArray(new Message[msgs.size()]);
                         client.sendMessages(new SendMsgsCallback() {
                             @Override
