@@ -227,7 +227,7 @@ public class SQLDBTest {
     public void crudMessages() throws Exception {
         DB db = getSeededDB();
 
-        Message msg = Message.newIncomingMessage(SeedData.chat1.id, "chuck chuck", "hey dude, what up", new Date());
+        final Message msg1 = Message.newIncomingMessage(SeedData.chat1.id, "chuck chuck", "hey dude, what up", new Date());
 
         final CountDownLatch cbCounter = new CountDownLatch(1);
         db.upsertMessages(new UpsertMessagesCallback() {
@@ -240,14 +240,17 @@ public class SQLDBTest {
             public void error() {
                 fail("failed to persist message(s)");
             }
-        }, msg);
+        }, msg1);
         awaitThrows(cbCounter, "failed to persist message(s)");
 
         final CountDownLatch cbCounter2 = new CountDownLatch(1);
         db.getChatMessages(SeedData.chat1.id, new GetChatMessagesCallback() {
             @Override
-            public void chatMessagesRetrieved(List<Message> msgs) {
+            public void chatMessagesRetrieved(final List<Message> msgs) {
                 assertEquals(1, msgs.size());
+
+                Message dbMsg1 = msgs.get(0);
+                assertEquals(msg1.id, dbMsg1.id);
 
                 cbCounter2.countDown();
             }

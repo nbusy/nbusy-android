@@ -64,7 +64,7 @@ public final class SQLTables {
     public static abstract class MessageTable implements BaseColumns {
         public static final String TABLE_NAME = "message";
         public static final String CHAT_ID = "chat_id";
-        public static final String FROM = "[from]";
+        public static final String FROM = "_from";
         public static final String BODY = "body";
         public static final String SENT = "sent";
         public static final String STATUS = "status";

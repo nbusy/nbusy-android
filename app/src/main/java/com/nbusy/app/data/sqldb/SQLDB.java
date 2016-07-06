@@ -21,7 +21,6 @@ import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 public class SQLDB implements DB {
@@ -192,6 +191,7 @@ public class SQLDB implements DB {
     public void getChatMessages(String chatId, GetChatMessagesCallback cb) {
         String[] projection = {
                 SQLTables.MessageTable._ID,
+                SQLTables.MessageTable.CHAT_ID,
                 SQLTables.MessageTable.FROM,
                 SQLTables.MessageTable.BODY,
                 SQLTables.MessageTable.SENT,
