@@ -21,6 +21,7 @@ import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class SQLDB implements DB {
@@ -37,6 +38,44 @@ public class SQLDB implements DB {
         sqldbHelper = new SQLDBHelper(context);
         // todo: call this in a background thread as upgrade might take a long while.. also it might fail on full disk
         db = sqldbHelper.getWritableDatabase();
+    }
+
+    private List<Message> getChatMessages(String selection, String[] selectionArgs) {
+        String[] projection = {
+                SQLTables.MessageTable._ID,
+                SQLTables.MessageTable.CHAT_ID,
+                SQLTables.MessageTable.FROM,
+                SQLTables.MessageTable.BODY,
+                SQLTables.MessageTable.SENT,
+                SQLTables.MessageTable.STATUS
+        };
+
+        ArrayList<Message> msgs = new ArrayList<>();
+        try (Cursor c = db.query(
+                SQLTables.MessageTable.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+        )) {
+            while (c.moveToNext()) {
+                String from = c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.FROM));
+                boolean owner = from == null || Objects.equals(from, "");
+                msgs.add(new Message(
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable._ID)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.CHAT_ID)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.FROM)),
+                        null,
+                        owner,
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.BODY)),
+                        new Date(c.getLong(c.getColumnIndexOrThrow(SQLTables.MessageTable.SENT))),
+                        Message.Status.valueOf(c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.STATUS)))));
+            }
+        }
+
+        return msgs;
     }
 
     /*********************
@@ -191,46 +230,12 @@ public class SQLDB implements DB {
 
     @Override
     public void getChatMessages(String chatId, GetChatMessagesCallback cb) {
-        String[] projection = {
-                SQLTables.MessageTable._ID,
-                SQLTables.MessageTable.CHAT_ID,
-                SQLTables.MessageTable.FROM,
-                SQLTables.MessageTable.BODY,
-                SQLTables.MessageTable.SENT,
-                SQLTables.MessageTable.STATUS
-        };
-
-        ArrayList<Message> msgs = new ArrayList<>();
-        try (Cursor c = db.query(
-                SQLTables.MessageTable.TABLE_NAME,
-                projection,
-                SQLTables.MessageTable.CHAT_ID + EQ_SEL,
-                new String[] { chatId },
-                null,
-                null,
-                null
-        )) {
-            while (c.moveToNext()) {
-                String from = c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.FROM));
-                boolean owner = from == null || Objects.equals(from, "");
-                msgs.add(new Message(
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable._ID)),
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.CHAT_ID)),
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.FROM)),
-                        null,
-                        owner,
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.BODY)),
-                        new Date(c.getLong(c.getColumnIndexOrThrow(SQLTables.MessageTable.SENT))),
-                        Message.Status.valueOf(c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.STATUS)))));
-            }
-        }
-
-        cb.chatMessagesRetrieved(msgs);
+        cb.chatMessagesRetrieved(getChatMessages(SQLTables.MessageTable.CHAT_ID + EQ_SEL, new String[] { chatId }));
     }
 
     @Override
     public void getQueuedMessages(GetChatMessagesCallback cb) {
-        throw new UnsupportedOperationException();
+        cb.chatMessagesRetrieved(getChatMessages(SQLTables.MessageTable.STATUS + EQ_SEL, new String[] { Message.Status.NEW.toString() }));
     }
 
     @Override
