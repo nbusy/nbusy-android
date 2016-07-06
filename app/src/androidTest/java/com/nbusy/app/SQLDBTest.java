@@ -228,6 +228,7 @@ public class SQLDBTest {
         DB db = getSeededDB();
 
         final Message msg1 = Message.newIncomingMessage(SeedData.chat1.id, "chuck chuck", "hey dude, what up", new Date());
+        final Message msg2 = Message.newIncomingMessage(SeedData.chat1.id, "phil norris", "all good dude", new Date());
 
         final CountDownLatch cbCounter = new CountDownLatch(1);
         db.upsertMessages(new UpsertMessagesCallback() {
@@ -240,17 +241,30 @@ public class SQLDBTest {
             public void error() {
                 fail("failed to persist message(s)");
             }
-        }, msg1);
+        }, msg1, msg2);
         awaitThrows(cbCounter, "failed to persist message(s)");
 
         final CountDownLatch cbCounter2 = new CountDownLatch(1);
         db.getChatMessages(SeedData.chat1.id, new GetChatMessagesCallback() {
             @Override
             public void chatMessagesRetrieved(final List<Message> msgs) {
-                assertEquals(1, msgs.size());
+                assertEquals(2, msgs.size());
 
                 Message dbMsg1 = msgs.get(0);
                 assertEquals(msg1.id, dbMsg1.id);
+                assertEquals(msg1.chatId, dbMsg1.chatId);
+                assertEquals(msg1.from, dbMsg1.from);
+                assertEquals(msg1.body, dbMsg1.body);
+                assertEquals(msg1.sent, dbMsg1.sent);
+                assertEquals(msg1.status, dbMsg1.status);
+
+                Message dbMsg2 = msgs.get(1);
+                assertEquals(msg2.id, dbMsg2.id);
+                assertEquals(msg2.chatId, dbMsg2.chatId);
+                assertEquals(msg2.from, dbMsg2.from);
+                assertEquals(msg2.body, dbMsg2.body);
+                assertEquals(msg2.sent, dbMsg2.sent);
+                assertEquals(msg2.status, dbMsg2.status);
 
                 cbCounter2.countDown();
             }
