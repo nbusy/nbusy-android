@@ -230,12 +230,12 @@ public class SQLDB implements DB {
 
     @Override
     public void getChatMessages(String chatId, GetChatMessagesCallback cb) {
-        cb.chatMessagesRetrieved(getChatMessages(SQLTables.MessageTable.CHAT_ID + EQ_SEL, new String[] { chatId }));
+        cb.chatMessagesRetrieved(getChatMessages(SQLTables.MessageTable.CHAT_ID + EQ_SEL, new String[]{chatId}));
     }
 
     @Override
     public void getQueuedMessages(GetChatMessagesCallback cb) {
-        cb.chatMessagesRetrieved(getChatMessages(SQLTables.MessageTable.STATUS + EQ_SEL, new String[] { Message.Status.NEW.toString() }));
+        cb.chatMessagesRetrieved(getChatMessages(SQLTables.MessageTable.STATUS + EQ_SEL, new String[]{Message.Status.NEW.toString()}));
     }
 
     @Override
