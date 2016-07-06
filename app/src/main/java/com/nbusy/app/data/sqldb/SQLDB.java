@@ -27,7 +27,6 @@ import java.util.Objects;
 public class SQLDB implements DB {
 
     // todo: do all sql operations in a single background thread and call cb
-    // todo: call db.close() when background service stops and create new instance if closed == true
 
     private static final String EQ_SEL = " = ?";
 
@@ -36,7 +35,7 @@ public class SQLDB implements DB {
 
     public SQLDB(Context context) {
         sqldbHelper = new SQLDBHelper(context);
-        // todo: call this in a background thread as upgrade might take a long while.. also it might fail on full disk
+        // todo: call this in a background thread as upgrade might take a long while (though it makes instance management a nightmare).. also it might fail on full disk
         db = sqldbHelper.getWritableDatabase();
     }
 
@@ -111,6 +110,16 @@ public class SQLDB implements DB {
                 cb.error();
             }
         });
+    }
+
+    @Override
+    public void close() {
+        db.close();
+    }
+
+    @Override
+    public boolean isOpen() {
+        return db.isOpen();
     }
 
     @Override

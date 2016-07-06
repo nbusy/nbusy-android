@@ -50,6 +50,16 @@ public class InMemDB implements DB {
     }
 
     @Override
+    public void close() {
+
+    }
+
+    @Override
+    public boolean isOpen() {
+        return true;
+    }
+
+    @Override
     public void createProfile(UserProfile userProfile, final CreateProfileCallback cb) {
         if (userProfile == null) {
             throw new IllegalArgumentException("userProfile cannot be null");

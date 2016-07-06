@@ -111,6 +111,9 @@ public class InstanceManager extends Application {
         if (db == null) {
             db = new SQLDB(getAppContext());
         }
+        if (!db.isOpen()) {
+            db = new SQLDB(getAppContext());
+        }
 
         return db;
     }

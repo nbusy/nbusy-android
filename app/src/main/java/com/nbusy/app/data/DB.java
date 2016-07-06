@@ -14,6 +14,10 @@ public interface DB {
 
     void seedDB(SeedDBCallback cb);
 
+    void close();
+
+    boolean isOpen();
+
     void createProfile(UserProfile userProfile, CreateProfileCallback cb);
 
     void getProfile(GetProfileCallback cb);
