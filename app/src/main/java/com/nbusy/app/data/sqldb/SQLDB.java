@@ -225,8 +225,12 @@ public class SQLDB implements DB {
     @Override
     public void getProfile(final GetProfileCallback cb) {
         final UserProfile profile = getProfile();
-        final List<Chat> chats = getChats();
+        if (profile == null) {
+            cb.error();
+            return;
+        }
 
+        final List<Chat> chats = getChats();
         profile.upsertChats(chats);
         cb.success(profile);
     }
