@@ -18,16 +18,16 @@ import titan.client.responses.GoogleAuthResponse;
 /**
  * Handles first time login/registration using Google auth.
  */
-public class LoginManager implements ConnCallbacks {
+public class GoogleAuthManager implements ConnCallbacks {
 
     public static final int LOGIN_OK = 9000;
     private static final String TAG = ConnManager.class.getSimpleName();
     private final Client client;
     private final DB db;
     private String googleIDToken;
-    private LoginFinishedCallback cb;
+    private AuthFinishedCallback cb;
 
-    public LoginManager(Client client, DB db) {
+    public GoogleAuthManager(Client client, DB db) {
         if (client == null) {
             throw new IllegalArgumentException("client cannot be null or empty");
         }
@@ -39,7 +39,7 @@ public class LoginManager implements ConnCallbacks {
         this.db = db;
     }
 
-    public void login(String googleIDToken, LoginFinishedCallback cb) {
+    public void login(String googleIDToken, AuthFinishedCallback cb) {
         if (googleIDToken == null || googleIDToken.isEmpty()) {
             throw new IllegalArgumentException("googleIDToken cannot be null or empty");
         }
@@ -52,7 +52,7 @@ public class LoginManager implements ConnCallbacks {
         client.connect(this);
     }
 
-    public interface LoginFinishedCallback {
+    public interface AuthFinishedCallback {
         void success();
         void fail();
     }

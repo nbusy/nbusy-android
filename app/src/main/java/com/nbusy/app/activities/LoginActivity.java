@@ -19,7 +19,7 @@ import com.google.android.gms.common.api.Status;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
 import com.nbusy.app.Config;
-import com.nbusy.app.worker.LoginManager;
+import com.nbusy.app.worker.GoogleAuthManager;
 
 /**
  * Receive ID token for the current Google user.
@@ -90,10 +90,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             String idToken = acct.getIdToken();
 
             Log.d(TAG, "idToken: " + idToken);
-            InstanceManager.getLoginManager().login(idToken, new LoginManager.LoginFinishedCallback() {
+            InstanceManager.getGoogleAuthManager().login(idToken, new GoogleAuthManager.AuthFinishedCallback() {
                 @Override
                 public void success() {
-                    setResult(LoginManager.LOGIN_OK);
+                    setResult(GoogleAuthManager.LOGIN_OK);
                     finish();
                 }
 

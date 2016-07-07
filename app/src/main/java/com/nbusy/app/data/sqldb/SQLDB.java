@@ -204,19 +204,7 @@ public class SQLDB implements DB {
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insertWithOnConflict(SQLTables.ProfileTable.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         if (newRowId != -1) {
-            // add chatbot chat
-            final Chat echoChat = new Chat("echo", "Echo", "Yo!", new Date());
-            upsertChats(new UpsertChatsCallback() {
-                @Override
-                public void success() {
-                    cb.success();
-                }
-
-                @Override
-                public void error() {
-                    cb.error();
-                }
-            }, echoChat);
+            cb.success();
         } else {
             cb.error();
         }

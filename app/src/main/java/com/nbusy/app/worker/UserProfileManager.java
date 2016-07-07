@@ -51,7 +51,7 @@ public class UserProfileManager {
             public void error() {
                 Log.i(TAG, "user profile does not exist in DB, starting login activity");
                 Intent intent = new Intent(activity, LoginActivity.class);
-                activity.startActivityForResult(intent, LoginManager.LOGIN_OK);
+                activity.startActivityForResult(intent, GoogleAuthManager.LOGIN_OK);
             }
         });
     }
