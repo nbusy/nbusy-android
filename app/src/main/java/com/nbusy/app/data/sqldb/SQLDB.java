@@ -39,6 +39,71 @@ public class SQLDB implements DB {
         db = sqldbHelper.getWritableDatabase();
     }
 
+    // retrieve profile fields, return null if there is no user profile
+    private UserProfile getProfile() {
+        String[] projection = {
+                SQLTables.ProfileTable._ID,
+                SQLTables.ProfileTable.JWT_TOKEN,
+                SQLTables.ProfileTable.NAME,
+                SQLTables.ProfileTable.EMAIL
+        };
+
+        UserProfile profile = null;
+        try (Cursor c = db.query(
+                SQLTables.ProfileTable.TABLE_NAME, // The table to query
+                projection, // The columns to return
+                null, // The columns for the WHERE clause
+                null, // The values for the WHERE clause
+                null, // don't group the rows
+                null, // don't filter by row groups
+                null // The sort order
+        )) {
+            if (c.moveToFirst()) {
+                profile = new UserProfile(
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable._ID)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.JWT_TOKEN)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.EMAIL)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.NAME)),
+                        null,
+                        new ArrayList<Chat>());
+            }
+        }
+
+        return profile;
+    }
+
+    // retrieve chats with their fields, return empty list if there are not chats
+    private List<Chat> getChats() {
+        String[] chatsProjection = {
+                SQLTables.ChatTable._ID,
+                SQLTables.ChatTable.PEER_NAME,
+                SQLTables.ChatTable.LAST_MESSAGE,
+                SQLTables.ChatTable.LAST_MESSAGE_SENT
+        };
+
+        ArrayList<Chat> chats = new ArrayList<>();
+        try (Cursor c = db.query(
+                SQLTables.ChatTable.TABLE_NAME,
+                chatsProjection,
+                null,
+                null,
+                null,
+                null,
+                null
+        )) {
+            while (c.moveToNext()) {
+                chats.add(new Chat(
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatTable._ID)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatTable.PEER_NAME)),
+                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatTable.LAST_MESSAGE)),
+                        new Date(c.getLong(c.getColumnIndexOrThrow(SQLTables.ChatTable.LAST_MESSAGE_SENT)))
+                ));
+            }
+        }
+
+        return chats;
+    }
+
     private List<Message> getChatMessages(String selection, String[] selectionArgs) {
         String[] projection = {
                 SQLTables.MessageTable._ID,
@@ -146,71 +211,30 @@ public class SQLDB implements DB {
     }
 
     @Override
-    public void getProfile(GetProfileCallback cb) {
-        // retrieve profile fields, return null if there is no user profile
-        String[] profileProjection = {
-                SQLTables.ProfileTable._ID,
-                SQLTables.ProfileTable.JWT_TOKEN,
-                SQLTables.ProfileTable.NAME,
-                SQLTables.ProfileTable.EMAIL
-        };
+    public void getProfile(final GetProfileCallback cb) {
+        final UserProfile profile = getProfile();
+        final List<Chat> chats = getChats();
 
-        UserProfile profile = null;
-        try (Cursor c = db.query(
-                SQLTables.ProfileTable.TABLE_NAME, // The table to query
-                profileProjection, // The columns to return
-                null, // The columns for the WHERE clause
-                null, // The values for the WHERE clause
-                null, // don't group the rows
-                null, // don't filter by row groups
-                null // The sort order
-        )) {
-            if (c.moveToFirst()) {
-                profile = new UserProfile(
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable._ID)),
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.JWT_TOKEN)),
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.EMAIL)),
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ProfileTable.NAME)),
-                        null,
-                        new ArrayList<Chat>());
-            }
-        }
+        // if there are no chats, add chatbot chat
+        if (chats.isEmpty()) {
+            final Chat echoChat = new Chat("echo", "Echo", "Yo!", new Date());
+            upsertChats(new UpsertChatsCallback() {
+                @Override
+                public void success() {
+                    chats.add(echoChat);
+                    profile.upsertChats(chats);
+                    cb.success(profile);
+                }
 
-        if (profile == null) {
-            cb.error();
-            return;
-        }
-
-        // retrieve chats with their fields, return empty list if there are not chats
-        String[] chatsProjection = {
-                SQLTables.ChatTable._ID,
-                SQLTables.ChatTable.PEER_NAME,
-                SQLTables.ChatTable.LAST_MESSAGE,
-                SQLTables.ChatTable.LAST_MESSAGE_SENT
-        };
-
-        ArrayList<Chat> chats = new ArrayList<>();
-        try (Cursor c = db.query(
-                SQLTables.ChatTable.TABLE_NAME,
-                chatsProjection,
-                null,
-                null,
-                null,
-                null,
-                null
-        )) {
-            while (c.moveToNext()) {
-                chats.add(new Chat(
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatTable._ID)),
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatTable.PEER_NAME)),
-                        c.getString(c.getColumnIndexOrThrow(SQLTables.ChatTable.LAST_MESSAGE)),
-                        new Date(c.getLong(c.getColumnIndexOrThrow(SQLTables.ChatTable.LAST_MESSAGE_SENT)))
-                ));
-            }
+                @Override
+                public void error() {
+                    cb.error();
+                }
+            }, echoChat);
         }
 
         profile.upsertChats(chats);
-        cb.profileRetrieved(profile);
+        cb.success(profile);
     }
 
     @Override

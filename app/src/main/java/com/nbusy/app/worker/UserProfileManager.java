@@ -40,7 +40,7 @@ public class UserProfileManager {
 
         db.getProfile(new GetProfileCallback() {
             @Override
-            public void profileRetrieved(UserProfile prof) {
+            public void success(UserProfile prof) {
                 Log.i(TAG, "user profile retrieved from DB, starting connection");
                 InstanceManager.setUserProfile(prof);
                 InstanceManager.getConnManager().ensureConn();

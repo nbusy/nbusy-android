@@ -89,7 +89,7 @@ public class SQLDBTest {
         final CountDownLatch cbCounter = new CountDownLatch(1);
         db.getProfile(new GetProfileCallback() {
             @Override
-            public void profileRetrieved(UserProfile userProfile) {
+            public void success(UserProfile userProfile) {
                 fail("expected empty profile");
             }
 
@@ -103,7 +103,7 @@ public class SQLDBTest {
         final CountDownLatch cbCounter2 = new CountDownLatch(1);
         db.getProfile(new GetProfileCallback() {
             @Override
-            public void profileRetrieved(UserProfile userProfile) {
+            public void success(UserProfile userProfile) {
                 fail("expected empty profile");
             }
 
@@ -144,7 +144,7 @@ public class SQLDBTest {
         final CountDownLatch cbCounter2 = new CountDownLatch(1);
         db.getProfile(new GetProfileCallback() {
             @Override
-            public void profileRetrieved(UserProfile up) {
+            public void success(UserProfile up) {
                 assertEquals(profile.id, up.id);
                 assertEquals(profile.jwtToken, up.jwtToken);
                 assertEquals(profile.email, up.email);
@@ -197,7 +197,7 @@ public class SQLDBTest {
         final CountDownLatch cbCounter2 = new CountDownLatch(1);
         db.getProfile(new GetProfileCallback() {
             @Override
-            public void profileRetrieved(UserProfile up) {
+            public void success(UserProfile up) {
                 assertEquals(3, up.getChats().size());
 
                 assertTrue(up.getChat(chat1.id).isPresent());
