@@ -188,7 +188,7 @@ public class SQLDB implements DB {
     }
 
     @Override
-    public void createProfile(UserProfile userProfile, CreateProfileCallback cb) {
+    public void createProfile(UserProfile userProfile, final CreateProfileCallback cb) {
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(SQLTables.ProfileTable._ID, userProfile.id);
@@ -204,7 +204,19 @@ public class SQLDB implements DB {
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insertWithOnConflict(SQLTables.ProfileTable.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         if (newRowId != -1) {
-            cb.success();
+            // add chatbot chat
+            final Chat echoChat = new Chat("echo", "Echo", "Yo!", new Date());
+            upsertChats(new UpsertChatsCallback() {
+                @Override
+                public void success() {
+                    cb.success();
+                }
+
+                @Override
+                public void error() {
+                    cb.error();
+                }
+            }, echoChat);
         } else {
             cb.error();
         }
@@ -214,24 +226,6 @@ public class SQLDB implements DB {
     public void getProfile(final GetProfileCallback cb) {
         final UserProfile profile = getProfile();
         final List<Chat> chats = getChats();
-
-        // if there are no chats, add chatbot chat
-        if (chats.isEmpty()) {
-            final Chat echoChat = new Chat("echo", "Echo", "Yo!", new Date());
-            upsertChats(new UpsertChatsCallback() {
-                @Override
-                public void success() {
-                    chats.add(echoChat);
-                    profile.upsertChats(chats);
-                    cb.success(profile);
-                }
-
-                @Override
-                public void error() {
-                    cb.error();
-                }
-            }, echoChat);
-        }
 
         profile.upsertChats(chats);
         cb.success(profile);
