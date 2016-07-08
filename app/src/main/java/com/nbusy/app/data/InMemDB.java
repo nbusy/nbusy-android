@@ -110,7 +110,6 @@ public class InMemDB implements DB {
 
     @Override
     public void upsertChats(UpsertChatsCallback cb, Chat... chats) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -6,9 +6,11 @@ import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
+import com.nbusy.app.data.callbacks.UpsertChatsCallback;
 import com.nbusy.sdk.Client;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.GoogleAuthCallback;
@@ -77,7 +79,21 @@ public class GoogleAuthManager implements ConnCallbacks {
                     @Override
                     public void success() {
                         client.close();
-                        cb.success();
+
+                        // add chatbot chat
+                        final Chat echoChat = new Chat("echo", "Echo", "Yo!", new Date());
+                        db.upsertChats(new UpsertChatsCallback() {
+                            @Override
+                            public void success() {
+                                cb.success();
+                            }
+
+                            @Override
+                            public void error() {
+                                Log.e(TAG, "Failed to insert chatbot chat");
+                                cb.fail();
+                            }
+                        }, echoChat);
                     }
 
                     @Override
