@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,6 +50,10 @@ public final class UserProfile {
         this.picture = picture;
 
         upsertChats(chats);
+    }
+
+    public UserProfile(String id, String jwtToken, String email, String name, byte[] picture) {
+        this(id, jwtToken, email, name, picture, new ArrayList<Chat>());
     }
 
     public synchronized Optional<byte[]> getPicture() {

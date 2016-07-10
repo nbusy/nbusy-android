@@ -74,26 +74,15 @@ public class GoogleAuthManager implements ConnCallbacks {
             public void success(GoogleAuthResponse res) {
                 Log.i(TAG, "Authenticated with NBusy server using Google auth.");
 
-                final UserProfile prof = new UserProfile(res.id, res.token, res.email, res.name, res.picture, new ArrayList<Chat>());
+                ArrayList<Chat> chats = new ArrayList<>();
+                chats.add(new Chat("echo", "Echo", "Yo!", new Date()));
+                UserProfile prof = new UserProfile(res.id, res.token, res.email, res.name, res.picture, chats);
+
                 db.createProfile(prof, new CreateProfileCallback() {
                     @Override
                     public void success() {
                         client.close();
-
-                        // add chatbot chat
-                        final Chat echoChat = new Chat("echo", "Echo", "Yo!", new Date());
-                        db.upsertChats(new UpsertChatsCallback() {
-                            @Override
-                            public void success() {
-                                cb.success();
-                            }
-
-                            @Override
-                            public void error() {
-                                Log.e(TAG, "Failed to insert chatbot chat");
-                                cb.fail();
-                            }
-                        }, echoChat);
+                        cb.success();
                     }
 
                     @Override

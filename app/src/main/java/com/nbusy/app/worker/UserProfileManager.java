@@ -33,7 +33,12 @@ public class UserProfileManager {
         this.db = db;
     }
 
-    public void initUserProfile(final Activity activity, boolean force) {
+    public void createUserProfile(String id, String jwtToken, String email, String name) {
+
+    }
+
+    // retrieves user profile and advertises availability of the user profile with an event
+    public void getUserProfile(final Activity activity, boolean force) {
         if (!force && InstanceManager.userProfileRetrieved()) {
             return;
         }

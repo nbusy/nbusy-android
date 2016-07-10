@@ -73,7 +73,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         sendGcmMessage("test 2");
         sendGcmMessage("test 3");
 
-        userProfileManager.initUserProfile(this, false);
+        userProfileManager.getUserProfile(this, false);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ChatListActivity extends Activity implements ChatListFragment.Callb
         // check if we got here with the back button or with proper login result
         if (requestCode == resultCode) {
             // force profile reinitialize after login
-            userProfileManager.initUserProfile(this, true);
+            userProfileManager.getUserProfile(this, true);
         }
     }
 
