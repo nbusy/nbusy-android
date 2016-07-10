@@ -113,6 +113,11 @@ public class InMemDB implements DB {
     }
 
     @Override
+    public void upsertChats(UpsertChatsCallback cb, List<Chat> chats) {
+        upsertChats(cb, chats.toArray(new Chat[chats.size()]));
+    }
+
+    @Override
     public synchronized void getChatMessages(final String chatId, final GetChatMessagesCallback cb) {
         if (chatId == null || chatId.isEmpty()) {
             throw new IllegalArgumentException("chatId cannot be null or empty");
@@ -176,6 +181,11 @@ public class InMemDB implements DB {
                 cb.success();
             }
         });
+    }
+
+    @Override
+    public void upsertMessages(UpsertMessagesCallback cb, List<Message> msgs) {
+        upsertMessages(cb, msgs.toArray(new Message[msgs.size()]));
     }
 
     private void simulateDelay(final Function fn) {

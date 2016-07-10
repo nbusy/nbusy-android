@@ -9,6 +9,8 @@ import com.nbusy.app.data.callbacks.SeedDBCallback;
 import com.nbusy.app.data.callbacks.UpsertChatsCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
+import java.util.List;
+
 public interface DB {
     void dropDB(DropDBCallback cb);
 
@@ -26,9 +28,13 @@ public interface DB {
 
     void upsertChats(UpsertChatsCallback cb, Chat... chats);
 
+    void upsertChats(UpsertChatsCallback cb, List<Chat> chats);
+
     void getChatMessages(String chatId, GetChatMessagesCallback cb);
 
     void getQueuedMessages(GetChatMessagesCallback cb);
 
     void upsertMessages(UpsertMessagesCallback cb, Message... msgs);
+
+    void upsertMessages(UpsertMessagesCallback cb, List<Message> msgs);
 }

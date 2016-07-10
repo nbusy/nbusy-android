@@ -76,8 +76,8 @@ public final class UserProfile {
         return Optional.of(chats.get(chatId));
     }
 
-    public synchronized Collection<Chat> getChats() {
-        return this.chats.values();
+    public synchronized List<Chat> getChats() {
+        return new ArrayList<>(this.chats.values());
     }
 
     public synchronized void upsertChats(List<Chat> chats) {

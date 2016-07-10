@@ -204,6 +204,20 @@ public class SQLDB implements DB {
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insertWithOnConflict(SQLTables.ProfileTable.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         if (newRowId != -1) {
+            if (!userProfile.getChats().isEmpty()) {
+                upsertChats(new UpsertChatsCallback() {
+                    @Override
+                    public void success() {
+                        cb.success();
+                    }
+
+                    @Override
+                    public void error() {
+                        cb.error();
+                    }
+                }, userProfile.getChats());
+                return;
+            }
             cb.success();
         } else {
             cb.error();
@@ -248,6 +262,11 @@ public class SQLDB implements DB {
     }
 
     @Override
+    public void upsertChats(UpsertChatsCallback cb, List<Chat> chats) {
+        upsertChats(cb, chats.toArray(new Chat[chats.size()]));
+    }
+
+    @Override
     public void getChatMessages(String chatId, GetChatMessagesCallback cb) {
         cb.chatMessagesRetrieved(getChatMessages(SQLTables.MessageTable.CHAT_ID + EQ_SEL, new String[]{chatId}));
     }
@@ -276,6 +295,11 @@ public class SQLDB implements DB {
         }
 
         cb.success();
+    }
+
+    @Override
+    public void upsertMessages(UpsertMessagesCallback cb, List<Message> msgs) {
+        upsertMessages(cb, msgs.toArray(new Message[msgs.size()]));
     }
 
     private void deleteMessages() {
