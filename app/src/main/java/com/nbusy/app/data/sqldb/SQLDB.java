@@ -243,7 +243,9 @@ public class SQLDB implements DB {
     }
 
     @Override
-    public void upsertChats(UpsertChatsCallback cb, Chat... chats) {
+    public void upsertChats(final UpsertChatsCallback cb, Chat... chats) {
+        final List<Message> msgs = new ArrayList<>();
+
         for (Chat chat : chats) {
             ContentValues values = new ContentValues();
             values.put(SQLTables.ChatTable._ID, chat.id);
@@ -256,6 +258,23 @@ public class SQLDB implements DB {
                 cb.error();
                 return;
             }
+
+            msgs.addAll(chat.messages);
+        }
+
+        if (!msgs.isEmpty()) {
+            upsertMessages(new UpsertMessagesCallback() {
+                @Override
+                public void success() {
+                    cb.success();
+                }
+
+                @Override
+                public void error() {
+                    cb.error();
+                }
+            });
+            return;
         }
 
         cb.success();
