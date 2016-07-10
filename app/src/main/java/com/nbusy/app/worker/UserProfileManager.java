@@ -8,6 +8,7 @@ import com.nbusy.app.InstanceManager;
 import com.nbusy.app.activities.LoginActivity;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
+import com.nbusy.app.data.Message;
 import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
@@ -39,8 +40,15 @@ public class UserProfileManager {
     }
 
     public void createUserProfile(UserProfile profile, final CreateUserProfileCallback cb) {
+        // prepare default echo bot chat
+
+
+        Chat echoChat = new Chat("echo", "Echo", "Yo!", new Date());
+
+        Message greetingMsg = Message.newIncomingMessage(echoChat.id, echoChat.peerName, "Greeting stranger!", new Date());
+
         ArrayList<Chat> chats = new ArrayList<>();
-        chats.add(new Chat("echo", "Echo", "Yo!", new Date()));
+        chats.add(echoChat);
 
         profile.upsertChats(chats);
 
