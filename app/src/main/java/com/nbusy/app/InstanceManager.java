@@ -77,7 +77,7 @@ public class InstanceManager extends Application {
 
     public static synchronized GoogleAuthManager getGoogleAuthManager() {
         if (googleAuthManager == null) {
-            googleAuthManager = new GoogleAuthManager(getClient(), getDB());
+            googleAuthManager = new GoogleAuthManager(getClient(), getUserProfileManager());
         }
 
         return googleAuthManager;

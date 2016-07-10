@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 }
 
                 @Override
-                public void fail() {
+                public void error() {
                     Log.e(TAG, "Google auth failed with status: " + status);
                     signInButton.setEnabled(true);
                     statusTextView.setText(getString(R.string.login_error));

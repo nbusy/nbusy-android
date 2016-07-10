@@ -25,20 +25,21 @@ public class GoogleAuthManager implements ConnCallbacks {
     public static final int LOGIN_OK = 9000;
     private static final String TAG = ConnManager.class.getSimpleName();
     private final Client client;
-    private final DB db;
+    private final UserProfileManager profileManager;
+
     private String googleIDToken;
     private AuthFinishedCallback cb;
 
-    public GoogleAuthManager(Client client, DB db) {
+    public GoogleAuthManager(Client client, UserProfileManager profileManager) {
         if (client == null) {
             throw new IllegalArgumentException("client cannot be null or empty");
         }
-        if (db == null) {
-            throw new IllegalArgumentException("db cannot be null or empty");
+        if (profileManager == null) {
+            throw new IllegalArgumentException("profileManager cannot be null or empty");
         }
 
         this.client = client;
-        this.db = db;
+        this.profileManager = profileManager;
     }
 
     public void login(String googleIDToken, AuthFinishedCallback cb) {
@@ -56,7 +57,7 @@ public class GoogleAuthManager implements ConnCallbacks {
 
     public interface AuthFinishedCallback {
         void success();
-        void fail();
+        void error();
     }
 
     /***************************
@@ -73,14 +74,11 @@ public class GoogleAuthManager implements ConnCallbacks {
             @Override
             public void success(GoogleAuthResponse res) {
                 Log.i(TAG, "Authenticated with NBusy server using Google auth.");
-
-                ArrayList<Chat> chats = new ArrayList<>();
-                chats.add(new Chat("echo", "Echo", "Yo!", new Date()));
-                UserProfile prof = new UserProfile(res.id, res.token, res.email, res.name, res.picture, chats);
-
-                db.createProfile(prof, new CreateProfileCallback() {
+                UserProfile profile = new UserProfile(res.id, res.token, res.email, res.name, res.picture);
+                profileManager.createUserProfile(profile, new UserProfileManager.CreateUserProfileCallback() {
                     @Override
                     public void success() {
+                        Log.e(TAG, "Created user profile");
                         client.close();
                         cb.success();
                     }
@@ -88,7 +86,7 @@ public class GoogleAuthManager implements ConnCallbacks {
                     @Override
                     public void error() {
                         Log.e(TAG, "Failed to create user profile");
-                        cb.fail();
+                        cb.error();
                     }
                 });
             }

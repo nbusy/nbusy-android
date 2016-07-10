@@ -6,11 +6,16 @@ import android.util.Log;
 
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.activities.LoginActivity;
+import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.UserProfile;
+import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.app.data.callbacks.GetProfileCallback;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Manages initialization of the user profile
@@ -33,8 +38,30 @@ public class UserProfileManager {
         this.db = db;
     }
 
-    public void createUserProfile(String id, String jwtToken, String email, String name) {
+    public void createUserProfile(UserProfile profile, final CreateUserProfileCallback cb) {
+        ArrayList<Chat> chats = new ArrayList<>();
+        chats.add(new Chat("echo", "Echo", "Yo!", new Date()));
 
+        profile.upsertChats(chats);
+
+        db.createProfile(profile, new CreateProfileCallback() {
+            @Override
+            public void success() {
+                Log.e(TAG, "Created user profile");
+                cb.success();
+            }
+
+            @Override
+            public void error() {
+                Log.e(TAG, "Failed to create user profile");
+                cb.error();
+            }
+        });
+    }
+
+    public interface CreateUserProfileCallback {
+        void success();
+        void error();
     }
 
     // retrieves user profile and advertises availability of the user profile with an event
