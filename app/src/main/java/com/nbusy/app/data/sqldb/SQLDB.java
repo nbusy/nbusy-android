@@ -273,7 +273,7 @@ public class SQLDB implements DB {
                 public void error() {
                     cb.error();
                 }
-            });
+            }, msgs);
             return;
         }
 

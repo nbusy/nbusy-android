@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.google.common.collect.ImmutableSet;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.activities.LoginActivity;
 import com.nbusy.app.data.Chat;
@@ -41,12 +42,12 @@ public class UserProfileManager {
 
     public void createUserProfile(UserProfile profile, final CreateUserProfileCallback cb) {
         // prepare default echo bot chat
+        String chatId = "echo";
+        String chatPeer = "Echo";
 
+        Message greetingMsg = Message.newIncomingMessage(chatId, chatPeer, "Greetings stranger!", new Date());
 
-        Chat echoChat = new Chat("echo", "Echo", "Yo!", new Date());
-
-        Message greetingMsg = Message.newIncomingMessage(echoChat.id, echoChat.peerName, "Greeting stranger!", new Date());
-
+        Chat echoChat = new Chat(chatId, "Echo", "Yo!", new Date(), ImmutableSet.of(greetingMsg));
         ArrayList<Chat> chats = new ArrayList<>();
         chats.add(echoChat);
 
