@@ -67,6 +67,7 @@ public class ChatListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        eventBus.register(this);
         if (InstanceManager.userProfileRetrieved()) {
             setData(InstanceManager.getUserProfile().getChats());
         }
