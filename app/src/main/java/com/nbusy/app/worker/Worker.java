@@ -60,7 +60,7 @@ public class Worker {
             throw new IllegalArgumentException("messages cannot be null or empty");
         }
 
-        final Message[] nbusyMsgs = DataMap.getNBusyMessages(msgs);
+        final Message[] nbusyMsgs = DataMap.titanToNBusyMessages(msgs);
         final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
         db.upsertMessages(new UpsertMessagesCallback() {
             @Override
@@ -134,7 +134,7 @@ public class Worker {
                             }
                         }, msgs);
                     }
-                }, DataMap.getTitanMessages(msgs));
+                }, DataMap.nbusyToTitanMessages(msgs));
             }
 
             @Override
@@ -159,6 +159,7 @@ public class Worker {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
                 if (msgs.size() != 0) {
+                    msgs = DataMap.dbToNBusyMessages(userProfile, msgs);
                     eventBus.post(new ChatsUpdatedEvent(userProfile.upsertMessages(msgs)));
                 }
             }

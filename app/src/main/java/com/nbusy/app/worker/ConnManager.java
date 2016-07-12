@@ -129,7 +129,7 @@ public class ConnManager implements ConnCallbacks {
                                     }
                                 }, msgsArray);
                             }
-                        }, DataMap.getTitanMessages(msgsArray));
+                        }, DataMap.nbusyToTitanMessages(msgsArray));
                     }
                 });
             }
@@ -156,7 +156,7 @@ public class ConnManager implements ConnCallbacks {
             throw new IllegalArgumentException("messages cannot be null or empty");
         }
 
-        final Message[] nbusyMsgs = DataMap.getNBusyMessages(msgs);
+        final Message[] nbusyMsgs = DataMap.titanToNBusyMessages(msgs);
         final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
         db.upsertMessages(new UpsertMessagesCallback() {
             @Override

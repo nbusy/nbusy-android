@@ -1,10 +1,13 @@
 package com.nbusy.app.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import titan.client.messages.MsgMessage;
 
 public class DataMap {
 
-    public static MsgMessage[] getTitanMessages(com.nbusy.app.data.Message... msgs) {
+    public static MsgMessage[] nbusyToTitanMessages(com.nbusy.app.data.Message... msgs) {
         MsgMessage[] titanMsgs = new MsgMessage[msgs.length];
 
         for (int i = 0; i < msgs.length; i++) {
@@ -14,7 +17,7 @@ public class DataMap {
         return titanMsgs;
     }
 
-    public static Message[] getNBusyMessages(MsgMessage... msgs) {
+    public static Message[] titanToNBusyMessages(MsgMessage... msgs) {
         Message[] nbusyMsgs = new Message[msgs.length];
 
         for (int i = 0; i < msgs.length; i++) {
@@ -24,4 +27,14 @@ public class DataMap {
         return nbusyMsgs;
     }
 
+    public static List<Message> dbToNBusyMessages(UserProfile profile, List<Message> msgs) {
+        List<Message> convertedMsgs = new ArrayList<>();
+        for (Message msg : msgs) {
+            if (msg.owner) {
+//                msg.from = profile.name;
+            }
+        }
+
+        return msgs;
+    }
 }
