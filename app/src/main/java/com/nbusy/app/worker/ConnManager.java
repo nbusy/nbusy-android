@@ -79,7 +79,7 @@ public class ConnManager implements ConnCallbacks {
         }
 
         // start the connection manager service if not running
-        if (!ConnManagerService.RUNNING.get()) {
+        if (!ConnManagerService.RUNNING.getAndSet(true)) {
             Intent serviceIntent = new Intent(appContext, ConnManagerService.class);
             serviceIntent.putExtra(ConnManagerService.STARTED_BY, this.getClass().getSimpleName());
             appContext.startService(serviceIntent);
