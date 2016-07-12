@@ -141,7 +141,7 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         eventBus.register(this);
         Optional<Chat> chat = userProfile.getChat(chatId);
         if (chat.isPresent() && !chat.get().messages.isEmpty()) {
-            messageAdapter = new MessageListArrayAdapter(getActivity(), new ArrayList<>(chat.get().messages));
+            setData(chat.get());
         }
     }
 
