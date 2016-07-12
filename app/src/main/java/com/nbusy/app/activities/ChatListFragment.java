@@ -58,20 +58,12 @@ public class ChatListFragment extends ListFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onResume() {
+        super.onResume();
         eventBus.register(this);
         if (InstanceManager.userProfileRetrieved()) {
             setData(InstanceManager.getUserProfile().getChats());
         }
-    }
-
-    @Override
-    public void onResume() {
-        // todo: we need to re-set data here (setData) in case it was updated since last pause, since onCreate won't be called again
-        // todo: same situation all other fragments so we can extend a common abstract class for this that overwrites these 3 methods
-        super.onResume();
-        eventBus.register(this);
     }
 
     @Override
