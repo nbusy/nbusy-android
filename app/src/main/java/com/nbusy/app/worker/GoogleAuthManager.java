@@ -57,6 +57,7 @@ public class GoogleAuthManager implements ConnCallbacks {
 
     public interface AuthFinishedCallback {
         void success();
+
         void error();
     }
 
@@ -70,7 +71,7 @@ public class GoogleAuthManager implements ConnCallbacks {
 
     @Override
     public void connected(String reason) {
-        boolean called = client.googleAuth(googleIDToken, new GoogleAuthCallback() {
+        boolean requestSent = client.googleAuth(googleIDToken, new GoogleAuthCallback() {
             @Override
             public void success(GoogleAuthResponse res) {
                 Log.i(TAG, "Authenticated with NBusy server using Google auth.");
@@ -95,13 +96,13 @@ public class GoogleAuthManager implements ConnCallbacks {
             }
         });
 
-        if (!called) {
+        if (!requestSent) {
             client.close();
         }
     }
 
     @Override
     public void disconnected(String reason) {
-        // todo: restart login dialog with a disconnect message ?
+        cb.error();
     }
 }
