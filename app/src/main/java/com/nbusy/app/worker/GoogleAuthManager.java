@@ -1,16 +1,11 @@
 package com.nbusy.app.worker;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
-import com.nbusy.app.data.Chat;
-import com.nbusy.app.data.DB;
 import com.nbusy.app.data.UserProfile;
-import com.nbusy.app.data.callbacks.CreateProfileCallback;
-import com.nbusy.app.data.callbacks.UpsertChatsCallback;
 import com.nbusy.sdk.Client;
-
-import java.util.ArrayList;
-import java.util.Date;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.GoogleAuthCallback;
@@ -24,11 +19,24 @@ public class GoogleAuthManager implements ConnCallbacks {
 
     public static final int LOGIN_OK = 9000;
     private static final String TAG = GoogleAuthManager.class.getSimpleName();
+    private final Handler handler = new Handler(Looper.getMainLooper()); // to run callback on UI thread
     private final Client client;
     private final UserProfileManager profileManager;
 
     private String googleIDToken;
     private AuthFinishedCallback cb;
+    private Runnable cbSuccess = new Runnable() {
+        @Override
+        public void run() {
+            cb.success();
+        }
+    };
+    private Runnable cbError = new Runnable() {
+        @Override
+        public void run() {
+            cb.error();
+        }
+    };
 
     public GoogleAuthManager(Client client, UserProfileManager profileManager) {
         if (client == null) {
@@ -80,12 +88,12 @@ public class GoogleAuthManager implements ConnCallbacks {
                     @Override
                     public void success() {
                         client.close();
-                        cb.success();
+                        handler.post(cbSuccess);
                     }
 
                     @Override
                     public void error() {
-                        cb.error();
+                        handler.post(cbError);
                     }
                 });
             }
@@ -103,6 +111,6 @@ public class GoogleAuthManager implements ConnCallbacks {
 
     @Override
     public void disconnected(String reason) {
-        cb.error();
+        handler.post(cbError);
     }
 }
