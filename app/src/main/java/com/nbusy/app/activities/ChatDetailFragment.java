@@ -101,7 +101,6 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        eventBus.register(this);
 
         Bundle arguments = getArguments();
         if (arguments.containsKey(ARG_ITEM_ID)) {
@@ -140,6 +139,10 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+        Optional<Chat> chat = userProfile.getChat(chatId);
+        if (chat.isPresent() && !chat.get().messages.isEmpty()) {
+            messageAdapter = new MessageListArrayAdapter(getActivity(), new ArrayList<>(chat.get().messages));
+        }
     }
 
     @Override

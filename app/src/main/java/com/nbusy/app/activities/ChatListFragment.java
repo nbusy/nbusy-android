@@ -15,6 +15,7 @@ import com.nbusy.app.worker.eventbus.UserProfileRetrievedEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A list fragment representing a list of Chats. This fragment
@@ -29,6 +30,7 @@ public class ChatListFragment extends ListFragment {
 
     private final EventBus eventBus = InstanceManager.getEventBus();
     private ChatListArrayAdapter chatAdapter;
+    private AtomicBoolean viewCreated = new AtomicBoolean(false);
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -75,6 +77,7 @@ public class ChatListFragment extends ListFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewCreated.set(true);
 
         // restore the previously serialized 'activated item' position
         if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
@@ -158,6 +161,10 @@ public class ChatListFragment extends ListFragment {
     }
 
     private synchronized void setData(Collection<Chat> chats) {
+        if (!viewCreated.get()) {
+            return;
+        }
+
         chatAdapter = new ChatListArrayAdapter(getActivity(), new ArrayList<>(chats));
         setListAdapter(chatAdapter);
     }
