@@ -23,7 +23,7 @@ import titan.client.responses.GoogleAuthResponse;
 public class GoogleAuthManager implements ConnCallbacks {
 
     public static final int LOGIN_OK = 9000;
-    private static final String TAG = ConnManager.class.getSimpleName();
+    private static final String TAG = GoogleAuthManager.class.getSimpleName();
     private final Client client;
     private final UserProfileManager profileManager;
 
@@ -78,14 +78,12 @@ public class GoogleAuthManager implements ConnCallbacks {
                 profileManager.createUserProfile(profile, new UserProfileManager.CreateUserProfileCallback() {
                     @Override
                     public void success() {
-                        Log.e(TAG, "Created user profile");
                         client.close();
                         cb.success();
                     }
 
                     @Override
                     public void error() {
-                        Log.e(TAG, "Failed to create user profile");
                         cb.error();
                     }
                 });

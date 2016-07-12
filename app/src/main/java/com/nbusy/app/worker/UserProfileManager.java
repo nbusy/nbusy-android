@@ -56,7 +56,7 @@ public class UserProfileManager {
         db.createProfile(profile, new CreateProfileCallback() {
             @Override
             public void success() {
-                Log.e(TAG, "Created user profile");
+                Log.i(TAG, "Created user profile");
                 cb.success();
             }
 
