@@ -118,14 +118,6 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        viewCreated.set(true);
-        setSelection(messageAdapter.getCount() - 1);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat_detail, container, false);
 
@@ -135,6 +127,13 @@ public class ChatDetailFragment extends ListFragment implements View.OnClickList
         messageBox = (EditText) rootView.findViewById(R.id.edit_message);
 
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewCreated.set(true);
+        setSelection(messageAdapter.getCount() - 1);
     }
 
     @Override

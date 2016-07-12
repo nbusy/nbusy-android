@@ -74,10 +74,10 @@ public class UserProfileManager {
         // prepare default echo bot chat
         String chatId = "echo";
         String chatPeer = "Echo";
+        String lastMessage = "Greetings stranger!";
 
-        Message greetingMsg = Message.newIncomingMessage(chatId, chatPeer, "Greetings stranger!", new Date());
-
-        Chat echoChat = new Chat(chatId, "Echo", "Yo!", new Date(), ImmutableSet.of(greetingMsg));
+        Message greetingMsg = Message.newIncomingMessage(chatId, chatPeer, lastMessage, new Date());
+        Chat echoChat = new Chat(chatId, chatPeer, lastMessage, new Date(), ImmutableSet.of(greetingMsg));
         ArrayList<Chat> chats = new ArrayList<>();
         chats.add(echoChat);
 
