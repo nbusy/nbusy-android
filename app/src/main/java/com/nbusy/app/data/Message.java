@@ -16,7 +16,7 @@ public final class Message {
     public final Date sent; // message sent date/time
     public final Status status; // delivery status
 
-    Message(String id, String chatId, String from, String to, boolean owner, String body, Date sent, Status status) {
+    public Message(String id, String chatId, String from, String to, boolean owner, String body, Date sent, Status status) {
         if (id == null || id.isEmpty()) {
             throw new IllegalArgumentException("id cannot be null or empty");
         }
@@ -47,7 +47,7 @@ public final class Message {
         return new Message(UUID.randomUUID().toString(), chatId, null, to, true, body, new Date(), Status.NEW);
     }
 
-    public static Message newIncomingMessage(String chatId, String from, Date sent, String body) {
+    public static Message newIncomingMessage(String chatId, String from, String body, Date sent) {
         return new Message(UUID.randomUUID().toString(), chatId, from, null, false, body, sent, Status.RECEIVED);
     }
 

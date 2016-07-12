@@ -1,8 +1,7 @@
 package com.nbusy.app.data.callbacks;
 
-public interface UpsertMessagesCallback {
+public interface UpsertChatsCallback {
     void success();
 
     void error();
 }
-

@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,10 +21,10 @@ public final class UserProfile {
     private final HashMap<String, Chat> chats = new HashMap<>(); // chat ID -> chat
 
     public final String id;
-    public final String jwttoken;
+    public final String jwtToken;
     public final String name;
     public final String email;
-    public byte[] picture;
+    private byte[] picture;
 
     public UserProfile(String id, String jwtToken, String email, String name, byte[] picture, List<Chat> chats) {
         if (id == null || id.isEmpty()) {
@@ -38,22 +39,29 @@ public final class UserProfile {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("name cannot be null or empty");
         }
-        if (picture == null || picture.length == 0) {
-            throw new IllegalArgumentException("picture cannot be null or empty");
-        }
         if (chats == null) {
             throw new IllegalArgumentException("chats cannot be null");
         }
 
         this.id = id;
-        this.jwttoken = jwtToken;
+        this.jwtToken = jwtToken;
         this.email = email;
         this.name = name;
         this.picture = picture;
 
-        for (Chat chat : chats) {
-            this.chats.put(chat.id, chat);
+        upsertChats(chats);
+    }
+
+    public UserProfile(String id, String jwtToken, String email, String name, byte[] picture) {
+        this(id, jwtToken, email, name, picture, new ArrayList<Chat>());
+    }
+
+    public synchronized Optional<byte[]> getPicture() {
+        if (picture == null) {
+            return Optional.absent();
         }
+
+        return Optional.of(picture);
     }
 
     public synchronized Optional<Chat> getChat(String chatId) {
@@ -68,8 +76,14 @@ public final class UserProfile {
         return Optional.of(chats.get(chatId));
     }
 
-    public synchronized Collection<Chat> getChats() {
-        return this.chats.values();
+    public synchronized List<Chat> getChats() {
+        return new ArrayList<>(this.chats.values());
+    }
+
+    public synchronized void upsertChats(List<Chat> chats) {
+        for (Chat chat : chats) {
+            this.chats.put(chat.id, chat);
+        }
     }
 
     public synchronized Optional<Chat.ChatAndNewMessages> addNewOutgoingMessages(String chatId, String... msgs) {

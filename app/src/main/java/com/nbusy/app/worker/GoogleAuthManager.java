@@ -1,14 +1,11 @@
 package com.nbusy.app.worker;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
-import com.nbusy.app.data.Chat;
-import com.nbusy.app.data.DB;
 import com.nbusy.app.data.UserProfile;
-import com.nbusy.app.data.callbacks.CreateProfileCallback;
 import com.nbusy.sdk.Client;
-
-import java.util.ArrayList;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.GoogleAuthCallback;
@@ -18,28 +15,42 @@ import titan.client.responses.GoogleAuthResponse;
 /**
  * Handles first time login/registration using Google auth.
  */
-public class LoginManager implements ConnCallbacks {
+public class GoogleAuthManager implements ConnCallbacks {
 
     public static final int LOGIN_OK = 9000;
-    private static final String TAG = ConnManager.class.getSimpleName();
+    private static final String TAG = GoogleAuthManager.class.getSimpleName();
+    private final Handler handler = new Handler(Looper.getMainLooper()); // to run callback on UI thread
     private final Client client;
-    private final DB db;
-    private String googleIDToken;
-    private LoginFinishedCallback cb;
+    private final UserProfileManager profileManager;
 
-    public LoginManager(Client client, DB db) {
+    private String googleIDToken;
+    private AuthFinishedCallback cb;
+    private Runnable cbSuccess = new Runnable() {
+        @Override
+        public void run() {
+            cb.success();
+        }
+    };
+    private Runnable cbError = new Runnable() {
+        @Override
+        public void run() {
+            cb.error();
+        }
+    };
+
+    public GoogleAuthManager(Client client, UserProfileManager profileManager) {
         if (client == null) {
             throw new IllegalArgumentException("client cannot be null or empty");
         }
-        if (db == null) {
-            throw new IllegalArgumentException("db cannot be null or empty");
+        if (profileManager == null) {
+            throw new IllegalArgumentException("profileManager cannot be null or empty");
         }
 
         this.client = client;
-        this.db = db;
+        this.profileManager = profileManager;
     }
 
-    public void login(String googleIDToken, LoginFinishedCallback cb) {
+    public void login(String googleIDToken, AuthFinishedCallback cb) {
         if (googleIDToken == null || googleIDToken.isEmpty()) {
             throw new IllegalArgumentException("googleIDToken cannot be null or empty");
         }
@@ -52,9 +63,10 @@ public class LoginManager implements ConnCallbacks {
         client.connect(this);
     }
 
-    public interface LoginFinishedCallback {
+    public interface AuthFinishedCallback {
         void success();
-        void fail();
+
+        void error();
     }
 
     /***************************
@@ -67,23 +79,21 @@ public class LoginManager implements ConnCallbacks {
 
     @Override
     public void connected(String reason) {
-        boolean called = client.googleAuth(googleIDToken, new GoogleAuthCallback() {
+        boolean requestSent = client.googleAuth(googleIDToken, new GoogleAuthCallback() {
             @Override
             public void success(GoogleAuthResponse res) {
                 Log.i(TAG, "Authenticated with NBusy server using Google auth.");
-
-                final UserProfile prof = new UserProfile(res.id, res.token, res.email, res.name, res.picture, new ArrayList<Chat>());
-                db.createProfile(prof, new CreateProfileCallback() {
+                UserProfile profile = new UserProfile(res.id, res.token, res.email, res.name, res.picture);
+                profileManager.createUserProfile(profile, new UserProfileManager.CreateUserProfileCallback() {
                     @Override
                     public void success() {
                         client.close();
-                        cb.success();
+                        handler.post(cbSuccess);
                     }
 
                     @Override
                     public void error() {
-                        Log.e(TAG, "Failed to create user profile");
-                        cb.fail();
+                        handler.post(cbError);
                     }
                 });
             }
@@ -94,13 +104,13 @@ public class LoginManager implements ConnCallbacks {
             }
         });
 
-        if (!called) {
+        if (!requestSent) {
             client.close();
         }
     }
 
     @Override
     public void disconnected(String reason) {
-        // todo: restart login dialog with a disconnect message ?
+        handler.post(cbError);
     }
 }

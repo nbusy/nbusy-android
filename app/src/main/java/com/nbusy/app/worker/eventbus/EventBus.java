@@ -28,11 +28,19 @@ public class EventBus extends com.google.common.eventbus.AsyncEventBus {
             InstanceManager.getConnManager().ensureConn();
         }
 
+        if (subscribers.contains(o)) {
+            return;
+        }
+
         subscribers.add(o);
         super.register(o);
     }
 
     public void unregister(Object o) {
+        if (!subscribers.contains(o)) {
+            throw new IllegalStateException("object was not registered");
+        }
+
         subscribers.remove(o);
         super.unregister(o);
     }

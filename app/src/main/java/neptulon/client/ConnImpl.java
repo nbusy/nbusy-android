@@ -205,8 +205,8 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
 
         // enqueue this listener implementation to initiate the WebSocket connection
-        connCallback = cb;
         state.set(State.CONNECTING);
+        connCallback = cb;
         wsConnectRequest = WebSocketCall.create(client, new Request.Builder().url(ws_url).build());
         wsConnectRequest.enqueue(this);
     }

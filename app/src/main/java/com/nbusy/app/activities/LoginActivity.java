@@ -19,7 +19,7 @@ import com.google.android.gms.common.api.Status;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
 import com.nbusy.app.Config;
-import com.nbusy.app.worker.LoginManager;
+import com.nbusy.app.worker.GoogleAuthManager;
 
 /**
  * Receive ID token for the current Google user.
@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private SignInButton signInButton;
     private Button productionModeButton;
-    private TextView errorTextView;
+    private TextView statusTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,11 +40,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         setContentView(R.layout.activity_login);
         signInButton = (SignInButton) findViewById(R.id.sign_in_button);
         signInButton.setEnabled(true);
+        statusTextView = (TextView) findViewById(R.id.status);
+        statusTextView.setText("");
         productionModeButton = (Button) findViewById(R.id.production_mode_button);
         if (InstanceManager.getConfig().env != Config.Env.PRODUCTION) {
             productionModeButton.setVisibility(View.VISIBLE);
         }
-        errorTextView = (TextView) findViewById(R.id.error);
 
         // Button click listeners
         signInButton.setOnClickListener(this);
@@ -89,24 +90,24 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             String idToken = acct.getIdToken();
 
             Log.d(TAG, "idToken: " + idToken);
-            InstanceManager.getLoginManager().login(idToken, new LoginManager.LoginFinishedCallback() {
+            InstanceManager.getGoogleAuthManager().login(idToken, new GoogleAuthManager.AuthFinishedCallback() {
                 @Override
                 public void success() {
-                    setResult(LoginManager.LOGIN_OK);
+                    setResult(GoogleAuthManager.LOGIN_OK);
                     finish();
                 }
 
                 @Override
-                public void fail() {
+                public void error() {
                     Log.e(TAG, "Google auth failed with status: " + status);
-                    errorTextView.setVisibility(View.VISIBLE);
                     signInButton.setEnabled(true);
+                    statusTextView.setText(getString(R.string.login_error));
                 }
             });
         } else {
             Log.e(TAG, "Google auth failed with status: " + status);
-            errorTextView.setVisibility(View.VISIBLE);
             signInButton.setEnabled(true);
+            statusTextView.setText(getString(R.string.login_error));
         }
     }
 
@@ -121,7 +122,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         switch (v.getId()) {
             case R.id.sign_in_button:
                 signInButton.setEnabled(false);
-                errorTextView.setVisibility(View.GONE);
+                statusTextView.setText(getString(R.string.logging_in));
                 getIdToken();
                 break;
             case R.id.production_mode_button:

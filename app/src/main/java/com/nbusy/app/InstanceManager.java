@@ -4,10 +4,10 @@ import android.app.Application;
 import android.content.Context;
 
 import com.nbusy.app.data.DB;
-import com.nbusy.app.data.InMemDB;
 import com.nbusy.app.data.UserProfile;
+import com.nbusy.app.data.sqldb.SQLDB;
 import com.nbusy.app.worker.ConnManager;
-import com.nbusy.app.worker.LoginManager;
+import com.nbusy.app.worker.GoogleAuthManager;
 import com.nbusy.app.worker.UserProfileManager;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.eventbus.EventBus;
@@ -26,7 +26,7 @@ public class InstanceManager extends Application {
     private static Config config;
     private static Worker worker;
     private static ConnManager connManager;
-    private static LoginManager loginManager;
+    private static GoogleAuthManager googleAuthManager;
     private static Client client;
     private static EventBus eventBus;
     private static DB db;
@@ -75,12 +75,12 @@ public class InstanceManager extends Application {
         return connManager;
     }
 
-    public static synchronized LoginManager getLoginManager() {
-        if (loginManager == null) {
-            loginManager = new LoginManager(getClient(), getDB());
+    public static synchronized GoogleAuthManager getGoogleAuthManager() {
+        if (googleAuthManager == null) {
+            googleAuthManager = new GoogleAuthManager(getClient(), getUserProfileManager());
         }
 
-        return loginManager;
+        return googleAuthManager;
     }
 
     public static synchronized Client getClient() {
@@ -108,13 +108,10 @@ public class InstanceManager extends Application {
 
     public static synchronized DB getDB() {
         if (db == null) {
-            // todo: switch to this when implemented
-//            if (getConfig().env == Config.Env.PRODUCTION) {
-//                 db = new SQLDB();
-//            } else {
-//                db = new InMemDB(getConfig());
-//            }
-            db = new InMemDB(getConfig());
+            db = new SQLDB(getAppContext());
+        }
+        if (!db.isOpen()) {
+            db = new SQLDB(getAppContext());
         }
 
         return db;

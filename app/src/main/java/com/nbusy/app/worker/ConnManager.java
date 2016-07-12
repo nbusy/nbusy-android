@@ -79,7 +79,7 @@ public class ConnManager implements ConnCallbacks {
         }
 
         // start the connection manager service if not running
-        if (!ConnManagerService.RUNNING.get()) {
+        if (!ConnManagerService.RUNNING.getAndSet(true)) {
             Intent serviceIntent = new Intent(appContext, ConnManagerService.class);
             serviceIntent.putExtra(ConnManagerService.STARTED_BY, this.getClass().getSimpleName());
             appContext.startService(serviceIntent);
@@ -94,7 +94,7 @@ public class ConnManager implements ConnCallbacks {
     public void connected(String reason) {
         Log.i(TAG, "Connected to NBusy server with reason: " + reason);
 
-        boolean called = client.jwtAuth(userProfile.jwttoken, new JWTAuthCallback() {
+        boolean called = client.jwtAuth(userProfile.jwtToken, new JWTAuthCallback() {
             @Override
             public void success() {
                 Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
@@ -102,6 +102,10 @@ public class ConnManager implements ConnCallbacks {
                 db.getQueuedMessages(new GetChatMessagesCallback() {
                     @Override
                     public void chatMessagesRetrieved(final List<Message> msgs) {
+                        if (msgs.isEmpty()) {
+                            return;
+                        }
+
                         final Message[] msgsArray = msgs.toArray(new Message[msgs.size()]);
                         client.sendMessages(new SendMsgsCallback() {
                             @Override
@@ -112,12 +116,16 @@ public class ConnManager implements ConnCallbacks {
                                 // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
                                 db.upsertMessages(new UpsertMessagesCallback() {
                                     @Override
-                                    public void messagesUpserted() {
+                                    public void success() {
                                         Log.i(TAG, "Sent queued messages to server: " + msgs.size());
                                         // finally, notify all listening views about the changes
                                         if (!chats.isEmpty()) {
                                             eventBus.post(new ChatsUpdatedEvent(chats));
                                         }
+                                    }
+
+                                    @Override
+                                    public void error() {
                                     }
                                 }, msgsArray);
                             }
@@ -152,10 +160,14 @@ public class ConnManager implements ConnCallbacks {
         final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
         db.upsertMessages(new UpsertMessagesCallback() {
             @Override
-            public void messagesUpserted() {
+            public void success() {
                 for (Chat chat : chats) {
                     eventBus.post(new ChatsUpdatedEvent(chat));
                 }
+            }
+
+            @Override
+            public void error() {
             }
         }, nbusyMsgs);
     }
