@@ -40,6 +40,36 @@ public class UserProfileManager {
         this.db = db;
     }
 
+    // retrieves user profile and advertises availability of the user profile with an event
+    public void getUserProfile(final Activity activity, boolean force) {
+        if (!force && InstanceManager.userProfileRetrieved()) {
+            return;
+        }
+
+        db.getProfile(new GetProfileCallback() {
+            @Override
+            public void success(UserProfile prof) {
+                Log.i(TAG, "user profile retrieved from DB, starting connection");
+                InstanceManager.setUserProfile(prof);
+                InstanceManager.getConnManager().ensureConn();
+                eventBus.post(new UserProfileRetrievedEvent(prof));
+            }
+
+            @Override
+            public void error() {
+                Log.i(TAG, "user profile does not exist in DB, starting login activity");
+                Intent intent = new Intent(activity, LoginActivity.class);
+                activity.startActivityForResult(intent, GoogleAuthManager.LOGIN_OK);
+            }
+        });
+    }
+
+    public interface CreateUserProfileCallback {
+        void success();
+
+        void error();
+    }
+
     public void createUserProfile(UserProfile profile, final CreateUserProfileCallback cb) {
         // prepare default echo bot chat
         String chatId = "echo";
@@ -67,34 +97,4 @@ public class UserProfileManager {
             }
         });
     }
-
-    public interface CreateUserProfileCallback {
-        void success();
-        void error();
-    }
-
-    // retrieves user profile and advertises availability of the user profile with an event
-    public void getUserProfile(final Activity activity, boolean force) {
-        if (!force && InstanceManager.userProfileRetrieved()) {
-            return;
-        }
-
-        db.getProfile(new GetProfileCallback() {
-            @Override
-            public void success(UserProfile prof) {
-                Log.i(TAG, "user profile retrieved from DB, starting connection");
-                InstanceManager.setUserProfile(prof);
-                InstanceManager.getConnManager().ensureConn();
-                eventBus.post(new UserProfileRetrievedEvent(prof));
-            }
-
-            @Override
-            public void error() {
-                Log.i(TAG, "user profile does not exist in DB, starting login activity");
-                Intent intent = new Intent(activity, LoginActivity.class);
-                activity.startActivityForResult(intent, GoogleAuthManager.LOGIN_OK);
-            }
-        });
-    }
-
 }
