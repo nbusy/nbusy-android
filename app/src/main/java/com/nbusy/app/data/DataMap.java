@@ -37,13 +37,17 @@ public class DataMap {
     }
 
     public static List<Message> dbToNBusyMessages(UserProfile profile, List<Message> msgs) {
-        List<Message> convertedMsgs = new ArrayList<>();
+        List<Message> nbMsgs = new ArrayList<>();
+        Chat chat = profile.getChat(msgs.get(0).chatId).get();
+
         for (Message msg : msgs) {
             if (msg.owner) {
-//                msg.from = profile.name;
+                nbMsgs.add(new Message(msg.id, msg.chatId, profile.name, chat.peerName, true, msg.body, msg.sent, msg.status));
+            } else {
+                nbMsgs.add(new Message(msg.id, msg.chatId, chat.peerName, profile.name, false, msg.body, msg.sent, msg.status));
             }
         }
 
-        return msgs;
+        return nbMsgs;
     }
 }
