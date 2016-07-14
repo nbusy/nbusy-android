@@ -92,7 +92,7 @@ public class SQLDB implements DB {
                 null,
                 null,
                 null,
-                null
+                SQLTables.ChatTable.LAST_MESSAGE_SENT
         )) {
             while (c.moveToNext()) {
                 chats.add(new Chat(
@@ -125,7 +125,7 @@ public class SQLDB implements DB {
                 selectionArgs,
                 null,
                 null,
-                null
+                SQLTables.MessageTable.SENT
         )) {
             while (c.moveToNext()) {
                 String from = c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.FROM));
