@@ -20,8 +20,11 @@ import com.nbusy.app.data.callbacks.UpsertChatsCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class SQLDB implements DB {
@@ -297,6 +300,8 @@ public class SQLDB implements DB {
 
     @Override
     public void upsertMessages(UpsertMessagesCallback cb, Message... msgs) {
+        Map<String, Message> chatToLastMessage = new HashMap<>();
+
         for (Message msg : msgs) {
             ContentValues values = new ContentValues();
             values.put(SQLTables.MessageTable._ID, msg.id);
@@ -308,6 +313,35 @@ public class SQLDB implements DB {
 
             long newRowId = db.insertWithOnConflict(SQLTables.MessageTable.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
             if (newRowId == -1) {
+                cb.error();
+                return;
+            }
+
+            // add the last message on each specific chat to our map so we can later update 'last message' field on those chats
+            if (chatToLastMessage.containsKey(msg.chatId)) {
+                // only add the last sent message for each chat
+                Message existingMsg = chatToLastMessage.get(msg.chatId);
+                if (msg.sent.after(existingMsg.sent)) {
+                    chatToLastMessage.put(msg.chatId, msg);
+                }
+            } else {
+                chatToLastMessage.put(msg.chatId, msg);
+            }
+        }
+
+        // now update the last message field on affected chats
+        Collection<Message> cMsgs = chatToLastMessage.values();
+        for (Message msg : cMsgs) {
+            ContentValues values = new ContentValues();
+            values.put(SQLTables.ChatTable.LAST_MESSAGE, msg.body);
+            values.put(SQLTables.ChatTable.LAST_MESSAGE_SENT, msg.sent.getTime());
+
+            int affected = db.updateWithOnConflict(
+                    SQLTables.ChatTable.TABLE_NAME,
+                    values, SQLTables.ChatTable._ID + EQ_SEL,
+                    new String[]{msg.chatId},
+                    SQLiteDatabase.CONFLICT_REPLACE);
+            if (affected == 0) {
                 cb.error();
                 return;
             }
