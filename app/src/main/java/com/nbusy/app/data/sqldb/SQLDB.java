@@ -125,7 +125,7 @@ public class SQLDB implements DB {
                 selectionArgs,
                 null,
                 null,
-                SQLTables.MessageTable.SENT
+                null
         )) {
             while (c.moveToNext()) {
                 String from = c.getString(c.getColumnIndexOrThrow(SQLTables.MessageTable.FROM));
