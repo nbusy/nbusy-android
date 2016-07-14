@@ -38,8 +38,8 @@ public final class SQLTables {
                     MessageTable.FROM + TEXT_TYPE + COMMA_SEP +
                     MessageTable.BODY + TEXT_TYPE + COMMA_SEP +
                     MessageTable.SENT + TEXT_TYPE + COMMA_SEP +
-                    MessageTable.STATUS + TEXT_TYPE + COMMA_SEP +
-                    "FOREIGN KEY(" + MessageTable.CHAT_ID + ") REFERENCES " + ChatTable.TABLE_NAME + "(" + ChatTable._ID + ")" +
+                    MessageTable.STATUS + TEXT_TYPE + /*COMMA_SEP +
+                    "FOREIGN KEY(" + MessageTable.CHAT_ID + ") REFERENCES " + ChatTable.TABLE_NAME + "(" + ChatTable._ID + ")" +*/ // todo: can't use this yet: http://stackoverflow.com/questions/13311727/android-sqlite-insert-or-update#comment47866111_13342175
                     ")";
 
     public static final String DROP_PROFILE_TABLE = "DROP TABLE IF EXISTS " + ProfileTable.TABLE_NAME;

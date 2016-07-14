@@ -110,7 +110,7 @@ public class Worker {
                         @Override
                         public void error() {
                         }
-                    }, m); // todo: save the message with delivered status and not this one!
+                    }, new Message(m.id, m.chatId, m.from, m.to, m.owner, m.body, m.sent, Message.Status.DELIVERED_TO_USER));
                 }
             });
             return;
