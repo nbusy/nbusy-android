@@ -99,9 +99,18 @@ public class Worker {
             final Message m = msgs[0];
             client.echo(m.body, new EchoCallback() {
                 @Override
-                public void echoResponse(String msg) {
-                    eventBus.post(new ChatsUpdatedEvent(userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
-                    receiveMessages(new MsgMessage(m.chatId, "echo", null, m.sent, msg));
+                public void echoResponse(final String msg) {
+                    db.upsertMessages(new UpsertMessagesCallback() {
+                        @Override
+                        public void success() {
+                            eventBus.post(new ChatsUpdatedEvent(userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
+                            receiveMessages(new MsgMessage(m.chatId, "echo", null, m.sent, msg));
+                        }
+
+                        @Override
+                        public void error() {
+                        }
+                    }, m); // todo: save the message with delivered status and not this one!
                 }
             });
             return;
