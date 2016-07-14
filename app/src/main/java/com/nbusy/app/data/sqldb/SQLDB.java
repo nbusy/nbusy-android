@@ -43,7 +43,7 @@ public class SQLDB implements DB {
     }
 
     // retrieve profile fields, return null if there is no user profile
-    private UserProfile getProfile() {
+    synchronized private UserProfile getProfile() {
         String[] projection = {
                 SQLTables.ProfileTable._ID,
                 SQLTables.ProfileTable.JWT_TOKEN,
@@ -76,7 +76,7 @@ public class SQLDB implements DB {
     }
 
     // retrieve chats with their fields, return empty list if there are not chats
-    private List<Chat> getChats() {
+    synchronized private List<Chat> getChats() {
         String[] chatsProjection = {
                 SQLTables.ChatTable._ID,
                 SQLTables.ChatTable.PEER_NAME,
@@ -107,7 +107,7 @@ public class SQLDB implements DB {
         return chats;
     }
 
-    private List<Message> getChatMessages(String selection, String[] selectionArgs) {
+    synchronized private List<Message> getChatMessages(String selection, String[] selectionArgs) {
         String[] projection = {
                 SQLTables.MessageTable._ID,
                 SQLTables.MessageTable.CHAT_ID,
@@ -150,13 +150,13 @@ public class SQLDB implements DB {
      *********************/
 
     @Override
-    public void dropDB(final DropDBCallback cb) {
+    synchronized public void dropDB(final DropDBCallback cb) {
         sqldbHelper.dropDB(db);
         cb.success();
     }
 
     @Override
-    public void seedDB(final SeedDBCallback cb) {
+    synchronized public void seedDB(final SeedDBCallback cb) {
         createProfile(SeedData.profile, new CreateProfileCallback() {
             @Override
             public void success() {
@@ -181,17 +181,17 @@ public class SQLDB implements DB {
     }
 
     @Override
-    public void close() {
+    synchronized public void close() {
         db.close();
     }
 
     @Override
-    public boolean isOpen() {
+    synchronized public boolean isOpen() {
         return db.isOpen();
     }
 
     @Override
-    public void createProfile(UserProfile userProfile, final CreateProfileCallback cb) {
+    synchronized  public void createProfile(UserProfile userProfile, final CreateProfileCallback cb) {
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(SQLTables.ProfileTable._ID, userProfile.id);
@@ -228,7 +228,7 @@ public class SQLDB implements DB {
     }
 
     @Override
-    public void getProfile(final GetProfileCallback cb) {
+    synchronized public void getProfile(final GetProfileCallback cb) {
         final UserProfile profile = getProfile();
         if (profile == null) {
             cb.error();
@@ -241,12 +241,12 @@ public class SQLDB implements DB {
     }
 
     @Override
-    public void getPicture(GetPictureCallback cb) {
+    synchronized public void getPicture(GetPictureCallback cb) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void upsertChats(final UpsertChatsCallback cb, Chat... chats) {
+    synchronized public void upsertChats(final UpsertChatsCallback cb, Chat... chats) {
         final List<Message> msgs = new ArrayList<>();
 
         for (Chat chat : chats) {
@@ -284,22 +284,22 @@ public class SQLDB implements DB {
     }
 
     @Override
-    public void upsertChats(UpsertChatsCallback cb, List<Chat> chats) {
+    synchronized public void upsertChats(UpsertChatsCallback cb, List<Chat> chats) {
         upsertChats(cb, chats.toArray(new Chat[chats.size()]));
     }
 
     @Override
-    public void getChatMessages(String chatId, GetChatMessagesCallback cb) {
+    synchronized public void getChatMessages(String chatId, GetChatMessagesCallback cb) {
         cb.chatMessagesRetrieved(getChatMessages(SQLTables.MessageTable.CHAT_ID + EQ_SEL, new String[]{chatId}));
     }
 
     @Override
-    public void getQueuedMessages(GetChatMessagesCallback cb) {
+    synchronized public void getQueuedMessages(GetChatMessagesCallback cb) {
         cb.chatMessagesRetrieved(getChatMessages(SQLTables.MessageTable.STATUS + EQ_SEL, new String[]{Message.Status.NEW.toString()}));
     }
 
     @Override
-    public void upsertMessages(UpsertMessagesCallback cb, Message... msgs) {
+    synchronized public void upsertMessages(UpsertMessagesCallback cb, Message... msgs) {
         Map<String, Message> chatToLastMessage = new HashMap<>();
 
         for (Message msg : msgs) {
@@ -351,11 +351,11 @@ public class SQLDB implements DB {
     }
 
     @Override
-    public void upsertMessages(UpsertMessagesCallback cb, List<Message> msgs) {
+    synchronized public void upsertMessages(UpsertMessagesCallback cb, List<Message> msgs) {
         upsertMessages(cb, msgs.toArray(new Message[msgs.size()]));
     }
 
-    private void deleteMessages() {
+    synchronized private void deleteMessages() {
         throw new UnsupportedOperationException();
 
 //        // Define 'where' part of query.
