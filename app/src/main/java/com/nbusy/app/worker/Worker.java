@@ -94,6 +94,10 @@ public class Worker {
             throw new IllegalArgumentException("messages cannot be null or empty");
         }
 
+        // update in memory user profile with messages in case any of them are new, and notify all listener about this state change
+        Set<Chat> chats = userProfile.upsertMessages(msgs);
+        eventBus.post(new ChatsUpdatedEvent(chats));
+
         // handle echo messages separately
         if (Objects.equals(msgs[0].chatId, "echo")) {
             final Message m = msgs[0];
@@ -113,12 +117,9 @@ public class Worker {
                     }, new Message(m.id, m.chatId, m.from, m.to, m.owner, m.body, m.sent, Message.Status.DELIVERED_TO_USER));
                 }
             });
+
             return;
         }
-
-        // update in memory user profile with messages in case any of them are new, and notify all listener about this state change
-        Set<Chat> chats = userProfile.upsertMessages(msgs);
-        eventBus.post(new ChatsUpdatedEvent(chats));
 
         // persist messages in the database with Status = NEW
         db.upsertMessages(new UpsertMessagesCallback() {
