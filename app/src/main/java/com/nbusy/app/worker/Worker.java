@@ -60,7 +60,7 @@ public class Worker {
             throw new IllegalArgumentException("messages cannot be null or empty");
         }
 
-        final Message[] nbusyMsgs = DataMap.getNBusyMessages(msgs);
+        final Message[] nbusyMsgs = DataMap.titanToNBusyMessages(msgs);
         final Set<Chat> chats = userProfile.upsertMessages(nbusyMsgs);
         db.upsertMessages(new UpsertMessagesCallback() {
             @Override
@@ -99,9 +99,18 @@ public class Worker {
             final Message m = msgs[0];
             client.echo(m.body, new EchoCallback() {
                 @Override
-                public void echoResponse(String msg) {
-                    eventBus.post(new ChatsUpdatedEvent(userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
-                    receiveMessages(new MsgMessage(m.chatId, "echo", null, m.sent, msg));
+                public void echoResponse(final String msg) {
+                    db.upsertMessages(new UpsertMessagesCallback() {
+                        @Override
+                        public void success() {
+                            eventBus.post(new ChatsUpdatedEvent(userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
+                            receiveMessages(new MsgMessage(m.chatId, "echo", null, m.sent, msg));
+                        }
+
+                        @Override
+                        public void error() {
+                        }
+                    }, new Message(m.id, m.chatId, m.from, m.to, m.owner, m.body, m.sent, Message.Status.DELIVERED_TO_USER));
                 }
             });
             return;
@@ -134,7 +143,7 @@ public class Worker {
                             }
                         }, msgs);
                     }
-                }, DataMap.getTitanMessages(msgs));
+                }, DataMap.nbusyToTitanMessages(msgs));
             }
 
             @Override
@@ -159,6 +168,7 @@ public class Worker {
             @Override
             public void chatMessagesRetrieved(List<Message> msgs) {
                 if (msgs.size() != 0) {
+                    msgs = DataMap.dbToNBusyMessages(userProfile, msgs);
                     eventBus.post(new ChatsUpdatedEvent(userProfile.upsertMessages(msgs)));
                 }
             }
