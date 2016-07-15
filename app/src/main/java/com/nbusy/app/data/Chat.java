@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -88,7 +88,7 @@ public final class Chat {
 
         // only add or update a message if it belongs to this chat
         // we're using a set not to allow duplicates
-        Set<Message> uniqueMsgs = new HashSet<>();
+        Set<Message> uniqueMsgs = new LinkedHashSet<>();
         for (Message msg : msgs) {
             if (!Objects.equals(msg.chatId, this.id)) {
                 continue;
@@ -97,7 +97,7 @@ public final class Chat {
         }
 
         // replace the modified messages while preserving message list order
-        Set<Message> updatedMsgs = new HashSet<>();
+        Set<Message> updatedMsgs = new LinkedHashSet<>();
         ImmutableSet.Builder<Message> msgBuilder = ImmutableSet.builder();
         for (Message thisMsg : this.messages) {
             boolean updated = false;

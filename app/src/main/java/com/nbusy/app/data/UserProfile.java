@@ -5,9 +5,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -98,7 +97,7 @@ public final class UserProfile {
     }
 
     public Set<Chat> setMessageStatuses(Message.Status newStatus, Message... msgs) {
-        Set<Message> updatedMsgs = new HashSet<>();
+        Set<Message> updatedMsgs = new LinkedHashSet<>();
         for (Message msg : msgs) {
             updatedMsgs.add(msg.setStatus(newStatus));
         }
@@ -115,7 +114,8 @@ public final class UserProfile {
     }
 
     public synchronized Set<Chat> upsertMessages(Message... msgs) {
-        Set<Chat> upsertedChats = new HashSet<>();
+        // todo: one of the maps/lists we use here breaks message ordering
+        Set<Chat> upsertedChats = new LinkedHashSet<>();
         ListMultimap<String, Message> chatIDToMessages = ArrayListMultimap.create();
         for (Message msg : msgs) {
             chatIDToMessages.put(msg.chatId, msg);
