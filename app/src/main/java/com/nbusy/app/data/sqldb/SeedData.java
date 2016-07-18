@@ -19,12 +19,17 @@ public final class SeedData {
             new byte[]{0, 2, 3},
             new ArrayList<Chat>());
 
+    public static final String chat1ID = "id-chat-s1234";
+
+    public static final Message msg1 = Message.newOutgoingMessage(chat1ID, "abc", "def");
+    public static final Message msg2 = Message.newIncomingMessage(chat1ID, "abc", "def", new Date());
+
     public static final Chat chat1 = new Chat(
-            "id-chat-s1234",
+            chat1ID,
             "Phil Norris",
             "my last message to Phil",
             new Date(),
-            ImmutableSet.<Message>of());
+            ImmutableSet.of(msg1, msg2));
 
     public static final List<Chat> chats = ImmutableList.of(chat1);
 
