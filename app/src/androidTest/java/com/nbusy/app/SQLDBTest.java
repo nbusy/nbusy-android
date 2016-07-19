@@ -289,5 +289,36 @@ public class SQLDBTest {
     @Test
     public void conflictResolution() throws Exception {
         DB db = getSeededDB();
+        final Message msg2 = SeedData.msg2;
+        final Message msg2mod = new Message(msg2.id, msg2.chatId, msg2.from, msg2.to, msg2.owner, "modified body!", msg2.sent, msg2.status);
+
+        // save an existing message again
+        final CountDownLatch cbCounter = new CountDownLatch(1);
+        db.upsertMessages(new UpsertMessagesCallback() {
+            @Override
+            public void success() {
+                cbCounter.countDown();
+            }
+
+            @Override
+            public void error() {
+                fail("failed to persist message(s)");
+            }
+        }, msg2mod);
+        awaitThrows(cbCounter, "failed to persist message(s)");
+
+        // get newly saved messages
+        final CountDownLatch cbCounter2 = new CountDownLatch(1);
+        db.getChatMessages(SeedData.chat1.id, new GetChatMessagesCallback() {
+            @Override
+            public void chatMessagesRetrieved(final List<Message> msgs) {
+                assertEquals(2, msgs.size());
+                Message dbMsg2 = msgs.get(1);
+                assertEquals(msg2.id, dbMsg2.id);
+                assertEquals("modified body!", dbMsg2.body);
+                cbCounter2.countDown();
+            }
+        });
+        awaitThrows(cbCounter2, "failed to retrieve messages");
     }
 }
