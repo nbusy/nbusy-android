@@ -251,9 +251,9 @@ public class SQLDBTest {
         db.getChatMessages(SeedData.chat1.id, new GetChatMessagesCallback() {
             @Override
             public void chatMessagesRetrieved(final List<Message> msgs) {
-                assertEquals(3, msgs.size());
+                assertEquals(5, msgs.size());
 
-                Message dbMsg1 = msgs.get(0);
+                Message dbMsg1 = msgs.get(2);
                 assertEquals(msg1.id, dbMsg1.id);
                 assertEquals(msg1.chatId, dbMsg1.chatId);
                 assertEquals(msg1.from, dbMsg1.from);
@@ -261,7 +261,7 @@ public class SQLDBTest {
                 assertEquals(msg1.sent, dbMsg1.sent);
                 assertEquals(msg1.status, dbMsg1.status);
 
-                Message dbMsg2 = msgs.get(1);
+                Message dbMsg2 = msgs.get(3);
                 assertEquals(msg2.id, dbMsg2.id);
                 assertEquals(msg2.chatId, dbMsg2.chatId);
                 assertEquals(msg2.from, dbMsg2.from);
@@ -279,10 +279,46 @@ public class SQLDBTest {
         db.getQueuedMessages(new GetChatMessagesCallback() {
             @Override
             public void chatMessagesRetrieved(final List<Message> msgs) {
-                assertEquals(1, msgs.size());
+                assertEquals(2, msgs.size());
                 cbCounter3.countDown();
             }
         });
         awaitThrows(cbCounter3, "failed to retrieve messages");
+    }
+
+    @Test
+    public void conflictResolution() throws Exception {
+        DB db = getSeededDB();
+        final Message msg2 = SeedData.msg2;
+        final Message msg2mod = new Message(msg2.id, msg2.chatId, msg2.from, msg2.to, msg2.owner, "modified body!", msg2.sent, msg2.status);
+
+        // save an existing message again
+        final CountDownLatch cbCounter = new CountDownLatch(1);
+        db.upsertMessages(new UpsertMessagesCallback() {
+            @Override
+            public void success() {
+                cbCounter.countDown();
+            }
+
+            @Override
+            public void error() {
+                fail("failed to persist message(s)");
+            }
+        }, msg2mod);
+        awaitThrows(cbCounter, "failed to persist message(s)");
+
+        // get newly saved messages
+        final CountDownLatch cbCounter2 = new CountDownLatch(1);
+        db.getChatMessages(SeedData.chat1.id, new GetChatMessagesCallback() {
+            @Override
+            public void chatMessagesRetrieved(final List<Message> msgs) {
+                assertEquals(2, msgs.size());
+                Message dbMsg2 = msgs.get(1);
+                assertEquals(msg2.id, dbMsg2.id);
+                assertEquals("modified body!", dbMsg2.body);
+                cbCounter2.countDown();
+            }
+        });
+        awaitThrows(cbCounter2, "failed to retrieve messages");
     }
 }
