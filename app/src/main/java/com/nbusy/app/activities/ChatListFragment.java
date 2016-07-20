@@ -63,6 +63,8 @@ public class ChatListFragment extends ListFragment {
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+
+        // user profile might be empty if this is the first time user is launching the app so we need this check
         if (InstanceManager.userProfileRetrieved()) {
             setData(InstanceManager.getUserProfile().getChats());
         }

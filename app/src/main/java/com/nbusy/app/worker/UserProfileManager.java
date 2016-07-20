@@ -41,11 +41,7 @@ public class UserProfileManager {
     }
 
     // retrieves user profile and advertises availability of the user profile with an event
-    public void getUserProfile(final Activity activity, boolean force) {
-        if (!force && InstanceManager.userProfileRetrieved()) {
-            return;
-        }
-
+    public void getUserProfile(final Activity activity) {
         db.getProfile(new GetProfileCallback() {
             @Override
             public void success(UserProfile prof) {

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
@@ -18,7 +17,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.nbusy.app.InstanceManager;
 import com.nbusy.app.R;
-import com.nbusy.app.Config;
 import com.nbusy.app.worker.GoogleAuthManager;
 
 /**
@@ -28,6 +26,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private static final String TAG = LoginActivity.class.getSimpleName();
     private static final int RC_GET_TOKEN = 9002;
+    private final GoogleAuthManager googleAuthManager = InstanceManager.getGoogleAuthManager();
     private GoogleApiClient googleApiClient;
 
     private SignInButton signInButton;
@@ -84,7 +83,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             String idToken = acct.getIdToken();
 
             Log.d(TAG, "idToken: " + idToken);
-            InstanceManager.getGoogleAuthManager().login(idToken, new GoogleAuthManager.AuthFinishedCallback() {
+            googleAuthManager.login(idToken, new GoogleAuthManager.AuthFinishedCallback() {
                 @Override
                 public void success() {
                     setResult(GoogleAuthManager.LOGIN_OK);
