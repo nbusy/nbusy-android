@@ -306,7 +306,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     public void onFailure(IOException e, Response response) {
         state.set(State.DISCONNECTED);
         String reason = e.getMessage();
-        logger.info("Connection (or connection attempt) dropped to server: " + ws_url + ", reason: " + reason + ", exception: " + e);
+        logger.info("Connection (or connection attempt) dropped to server: " + ws_url + ", reason: " + e);
         reconnect(reason);
     }
 
