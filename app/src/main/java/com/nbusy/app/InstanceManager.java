@@ -51,14 +51,6 @@ public class InstanceManager extends Application {
         return config;
     }
 
-    public static synchronized void setConfig(Config cfg) {
-        if (cfg == null) {
-            throw new IllegalArgumentException("config cannot be null");
-        }
-
-        config = cfg;
-    }
-
     public static synchronized Worker getWorker() {
         if (worker == null) {
             worker = new Worker(getClient(), getEventBus(), getDB(), getUserProfile());
@@ -86,7 +78,7 @@ public class InstanceManager extends Application {
     public static synchronized Client getClient() {
         if (client == null) {
             if (getConfig().serverUrl != null) {
-                // todo: always use async client otherwise we'll get android.os.NetworkOnMainThreadException, which only happens on TLS mode !
+                // todo: we always have to use async client otherwise we'll get android.os.NetworkOnMainThreadException, which only happens on TLS mode for reasons unknown to me!
                 client = new ClientImpl(getConfig().serverUrl, true);
             } else {
                 client = new ClientImpl(true);

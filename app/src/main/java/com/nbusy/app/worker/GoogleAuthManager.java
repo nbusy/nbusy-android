@@ -7,6 +7,8 @@ import android.util.Log;
 import com.nbusy.app.data.UserProfile;
 import com.nbusy.sdk.Client;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.GoogleAuthCallback;
 import titan.client.messages.MsgMessage;
@@ -22,6 +24,7 @@ public class GoogleAuthManager implements ConnCallbacks {
     private final Handler handler = new Handler(Looper.getMainLooper()); // to run callback on UI thread
     private final Client client;
     private final UserProfileManager profileManager;
+    private final AtomicBoolean success = new AtomicBoolean(false);
 
     private String googleIDToken;
     private AuthFinishedCallback cb;
@@ -87,6 +90,7 @@ public class GoogleAuthManager implements ConnCallbacks {
                 profileManager.createUserProfile(profile, new UserProfileManager.CreateUserProfileCallback() {
                     @Override
                     public void success() {
+                        success.set(true);
                         client.close();
                         handler.post(cbSuccess);
                     }
@@ -111,6 +115,9 @@ public class GoogleAuthManager implements ConnCallbacks {
 
     @Override
     public void disconnected(String reason) {
-        handler.post(cbError);
+        // post error if we disconnected during authentication (and not due to successful close of authentication channel)
+        if (!success.get()) {
+            handler.post(cbError);
+        }
     }
 }

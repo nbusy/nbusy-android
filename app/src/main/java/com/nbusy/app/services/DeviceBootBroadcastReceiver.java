@@ -10,6 +10,7 @@ public class DeviceBootBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+            // we need this check not to initiate service with null profile, before user logs in for the first time
             if (InstanceManager.userProfileRetrieved()) {
                 Intent serviceIntent = new Intent(context, ConnManagerService.class);
                 serviceIntent.putExtra(ConnManagerService.STARTED_BY, this.getClass().getSimpleName());

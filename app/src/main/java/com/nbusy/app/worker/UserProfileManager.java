@@ -41,17 +41,13 @@ public class UserProfileManager {
     }
 
     // retrieves user profile and advertises availability of the user profile with an event
-    public void getUserProfile(final Activity activity, boolean force) {
-        if (!force && InstanceManager.userProfileRetrieved()) {
-            return;
-        }
-
+    public void getUserProfile(final Activity activity) {
         db.getProfile(new GetProfileCallback() {
             @Override
             public void success(UserProfile prof) {
                 Log.i(TAG, "user profile retrieved from DB, starting connection");
                 InstanceManager.setUserProfile(prof);
-                InstanceManager.getConnManager().ensureConn();
+                InstanceManager.getConnManager().ensureConn(); // we need this here since eventBus.register() skips .ensureConn() if user profile is empty
                 eventBus.post(new UserProfileRetrievedEvent(prof));
             }
 

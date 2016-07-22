@@ -22,15 +22,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="25dp" />
 
-    <Button
-        android:id="@+id/production_mode_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="25dp"
-        android:text="Production Mode"
-        android:visibility="gone" />
-
     <TextView
         android:id="@+id/status"
         android:layout_width="wrap_content"
