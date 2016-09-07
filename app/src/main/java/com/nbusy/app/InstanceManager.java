@@ -27,7 +27,6 @@ public class InstanceManager extends Application {
     private static Worker worker;
     private static ConnManager connManager;
     private static GoogleAuthManager googleAuthManager;
-    private static Client client;
     private static EventBus eventBus;
     private static DB db;
     private static UserProfile userProfile;
@@ -76,16 +75,13 @@ public class InstanceManager extends Application {
     }
 
     public static synchronized Client getClient() {
-        if (client == null) {
-            if (getConfig().serverUrl != null) {
-                // todo: we always have to use async client otherwise we'll get android.os.NetworkOnMainThreadException, which only happens on TLS mode for reasons unknown to me!
-                client = new ClientImpl(getConfig().serverUrl, true);
-            } else {
-                client = new ClientImpl(true);
-            }
+        // client instance are not reusable so always create a new instance
+        if (getConfig().serverUrl != null) {
+            // todo: we always have to use async client otherwise we'll get android.os.NetworkOnMainThreadException, which only happens on TLS mode for reasons unknown to me!
+            return new ClientImpl(getConfig().serverUrl, true);
+        } else {
+            return new ClientImpl(true);
         }
-
-        return client;
     }
 
     public static synchronized EventBus getEventBus() {
