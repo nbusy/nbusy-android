@@ -21,8 +21,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
@@ -53,6 +53,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final Router router = new Router();
     private final boolean async;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final AtomicBoolean writerIsActive = new AtomicBoolean(false);
     private WebSocketCall wsConnectRequest;
     private WebSocket ws;
     private ConnCallback connCallback;
@@ -150,10 +151,13 @@ public class ConnImpl implements Conn, WebSocketListener {
                 @Override
                 public void run() {
                     try {
+                        writerIsActive.set(true);
                         ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
                     } catch (IOException e) {
                         e.printStackTrace();
                         close();
+                    } finally {
+                        writerIsActive.set(false);
                     }
                 }
             });
@@ -222,7 +226,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public boolean haveOngoingRequests() {
-        return async && ((ThreadPoolExecutor)executorService).getActiveCount() != 0;
+        return async && writerIsActive.get();
     }
 
     private boolean isConnected(State s) {
