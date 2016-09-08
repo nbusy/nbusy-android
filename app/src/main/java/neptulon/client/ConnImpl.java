@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
@@ -62,9 +63,8 @@ public class ConnImpl implements Conn, WebSocketListener {
     private ConnCallback connCallback;
 
     private boolean firstConnection = true;
-    private final int retryLimit = 10;
-    private int retryDelay = 5; // seconds (x2 backoff for each retry)
-    private int retryCount = 0;
+    private final int retryLimit = 20;
+    private final AtomicInteger retryCount = new AtomicInteger(0);
 
     private static class ByteArrayToBase64TypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
         public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -119,23 +119,24 @@ public class ConnImpl implements Conn, WebSocketListener {
         if (s == State.CONNECTED || s == State.CONNECTING) {
             return;
         }
-        if (s == State.CLOSED || retryCount >= retryLimit) {
-            if (retryCount >= retryLimit) {
+        if (s == State.CLOSED || retryCount.get() >= retryLimit) {
+            if (retryCount.get() >= retryLimit) {
                 reason += ", retry limits reacted";
             }
             connCallback.disconnected(reason);
-            retryCount = 0;
+            retryCount.set(0);
             return;
         }
 
         // try to reconnect
+        timer.cancel();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 connect(connCallback);
-                retryCount++;
+                retryCount.incrementAndGet();
             }
-        }, retryCount * 10 * 1000);
+        }, retryCount.get() * 10 * 1000);
     }
 
     void send(Object obj) {
@@ -306,6 +307,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
+        retryCount.set(0);
         ws = webSocket;
         state.set(State.CONNECTED);
         logger.info("Connected to server: " + ws_url);
