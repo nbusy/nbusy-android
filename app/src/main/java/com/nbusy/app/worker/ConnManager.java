@@ -65,9 +65,7 @@ public class ConnManager implements ConnCallbacks {
      * Whether we need an active connection to server.
      */
     public boolean needConnection() {
-        // todo: or there are ongoing operations or queued operations or standby timer is still running
-        return eventBus.haveSubscribers();
-        // todo: start an 3 min disconnect standBy timer on eventbus.unregister in case a view wants to register again or we're in a brief limbo state
+        return eventBus.haveSubscribers(); // todo: or there are ongoing or queued operations
     }
 
     /**

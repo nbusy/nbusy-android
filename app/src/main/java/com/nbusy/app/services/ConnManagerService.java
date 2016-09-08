@@ -31,6 +31,7 @@ public class ConnManagerService extends Service {
     class StopStandby extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
+            // keep this service running, as long as we need an open connection to the server
             while (connManager.needConnection()) {
                 try {
                     Thread.sleep(config.standbyTime);
