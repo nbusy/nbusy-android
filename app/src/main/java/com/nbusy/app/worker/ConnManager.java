@@ -65,7 +65,7 @@ public class ConnManager implements ConnCallbacks {
      * Whether we need an active connection to server.
      */
     public boolean needConnection() {
-        return eventBus.haveSubscribers(); // todo: or there are ongoing or queued operations
+        return eventBus.haveSubscribers() || client.haveOngoingRequests();
     }
 
     /**

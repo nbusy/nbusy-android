@@ -47,7 +47,7 @@ public interface Conn {
     boolean isConnected();
 
     /**
-     * Whether the connection have ongoing requests.
+     * Whether the connection has ongoing requests.
      */
     boolean haveOngoingRequests();
 

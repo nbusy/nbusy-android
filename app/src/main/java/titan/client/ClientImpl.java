@@ -80,6 +80,11 @@ public class ClientImpl implements Client {
     }
 
     @Override
+    public boolean haveOngoingRequests() {
+        return conn.haveOngoingRequests();
+    }
+
+    @Override
     public boolean googleAuth(String token, final GoogleAuthCallback cb) {
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("token cannot be null or empty");
