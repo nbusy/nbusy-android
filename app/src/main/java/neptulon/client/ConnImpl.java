@@ -19,6 +19,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
@@ -49,6 +52,7 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final AtomicReference<State> state = new AtomicReference<>(State.CLOSED);
     private final Router router = new Router();
     private final boolean async;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private WebSocketCall wsConnectRequest;
     private WebSocket ws;
     private ConnCallback connCallback;
@@ -214,6 +218,11 @@ public class ConnImpl implements Conn, WebSocketListener {
     @Override
     public boolean isConnected() {
         return isConnected(state.get());
+    }
+
+    @Override
+    public boolean haveOngoingRequests() {
+        return async && ((ThreadPoolExecutor)executorService).getActiveCount() != 0;
     }
 
     private boolean isConnected(State s) {

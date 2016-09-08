@@ -47,6 +47,11 @@ public interface Conn {
     boolean isConnected();
 
     /**
+     * Whether the connection have ongoing requests.
+     */
+    boolean haveOngoingRequests();
+
+    /**
      * Returns the remote network address.
      */
     String remoteAddr();
