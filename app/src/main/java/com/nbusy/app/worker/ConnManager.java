@@ -92,7 +92,7 @@ public class ConnManager implements ConnCallbacks {
     public void connected(String reason) {
         Log.i(TAG, "Connected to NBusy server with reason: " + reason);
 
-        boolean called = client.jwtAuth(userProfile.jwtToken, new JWTAuthCallback() {
+        boolean requestSent = client.jwtAuth(userProfile.jwtToken, new JWTAuthCallback() {
             @Override
             public void success() {
                 Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
@@ -138,7 +138,7 @@ public class ConnManager implements ConnCallbacks {
             }
         });
 
-        if (!called) {
+        if (!requestSent) {
             client.close();
         }
     }
