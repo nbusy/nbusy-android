@@ -100,6 +100,7 @@ public class Worker {
 
         // handle echo messages separately
         if (Objects.equals(msgs[0].chatId, "echo")) {
+            // db: don't persist echo messages in db
             final Message m = msgs[0];
             client.echo(m.body, new EchoCallback() {
                 @Override
