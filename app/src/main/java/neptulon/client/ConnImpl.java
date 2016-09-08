@@ -146,7 +146,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         logger.info("Outgoing message: " + m);
 
         if (async) {
-            new Thread(new Runnable() {
+            executorService.execute(new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -156,7 +156,7 @@ public class ConnImpl implements Conn, WebSocketListener {
                         close();
                     }
                 }
-            }).start();
+            });
             return;
         }
 
@@ -271,6 +271,7 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
 
         if (async) {
+            executorService.shutdownNow();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
