@@ -52,8 +52,8 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final AtomicReference<State> state = new AtomicReference<>(State.CLOSED);
     private final Router router = new Router();
     private final boolean async;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final AtomicBoolean writerIsActive = new AtomicBoolean(false);
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private WebSocketCall wsConnectRequest;
     private WebSocket ws;
     private ConnCallback connCallback;
@@ -275,7 +275,8 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
 
         if (async) {
-            executorService.shutdownNow();
+            executorService.shutdownNow(); // todo: test if we get an interrupted exception if we close an active request here
+            executorService = Executors.newSingleThreadExecutor(); // in case we reconnect
             new Thread(new Runnable() {
                 @Override
                 public void run() {
