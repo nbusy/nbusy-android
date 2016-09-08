@@ -15,6 +15,8 @@ import com.google.gson.JsonSerializer;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -53,13 +55,14 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final Router router = new Router();
     private final boolean async;
     private final AtomicBoolean writerIsActive = new AtomicBoolean(false);
+    private final Timer timer = new Timer();
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private WebSocketCall wsConnectRequest;
     private WebSocket ws;
     private ConnCallback connCallback;
 
     private boolean firstConnection = true;
-    private final int retryLimit = 7;
+    private final int retryLimit = 10;
     private int retryDelay = 5; // seconds (x2 backoff for each retry)
     private int retryCount = 0;
 
@@ -126,16 +129,13 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
 
         // try to reconnect
-        retryCount++;
-        connect(connCallback);
-
-        // todo: do this in a background thread with exponential backoff, though for this, we need a 3rd state called 'reconnecting'
-//                    timer.schedule(new TimerTask() {
-//                        @Override
-//                        public void run() {
-//                            // Your database code here
-//                        }
-//                    }, 2*60*1000);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                connect(connCallback);
+                retryCount++;
+            }
+        }, retryCount * 10 * 1000);
     }
 
     void send(Object obj) {
