@@ -56,12 +56,12 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final Router router = new Router();
     private final boolean async;
     private final AtomicBoolean writerIsActive = new AtomicBoolean(false);
-    private final Timer timer = new Timer();
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private WebSocketCall wsConnectRequest;
     private WebSocket ws;
     private ConnCallback connCallback;
 
+    private Timer timer = new Timer();
     private boolean firstConnection = true;
     private final int retryLimit = 20;
     private final AtomicInteger retryCount = new AtomicInteger(0);
@@ -130,6 +130,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 
         // try to reconnect
         timer.cancel();
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
