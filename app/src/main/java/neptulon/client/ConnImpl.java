@@ -108,6 +108,9 @@ public class ConnImpl implements Conn, WebSocketListener {
         this("ws://10.0.2.2:3000", false);
     }
 
+    /**
+     * Called upon onFailure event to try and reconnect.
+     */
     private void reconnect(String reason) {
         State s = state.get();
         if (s == State.CONNECTED || s == State.CONNECTING) {
@@ -354,6 +357,6 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
 
         logger.info("Connection closed to server: " + ws_url + ", with reason: " + reason);
-        reconnect(reason);
+        reconnect(reason); // todo: create another private method to handle cleanup, rather than depending on reconnect with State.CLOSED
     }
 }
