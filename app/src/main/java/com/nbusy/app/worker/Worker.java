@@ -8,6 +8,7 @@ import com.nbusy.app.data.Message;
 import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
+import com.nbusy.app.data.composite.ChatAndNewMessages;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.sdk.Client;
@@ -75,7 +76,7 @@ public class Worker {
     }
 
     public void sendMessages(String chatId, String... msgs) {
-        Optional<Chat.ChatAndNewMessages> cmOpt = userProfile.addNewOutgoingMessages(chatId, msgs);
+        Optional<ChatAndNewMessages> cmOpt = userProfile.addNewOutgoingMessages(chatId, msgs);
         if (!cmOpt.isPresent()) {
             return;
         }

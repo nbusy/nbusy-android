@@ -3,6 +3,7 @@ package com.nbusy.app.data;
 import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.nbusy.app.data.composite.ChatAndNewMessages;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,13 +86,13 @@ public final class UserProfile {
         }
     }
 
-    public synchronized Optional<Chat.ChatAndNewMessages> addNewOutgoingMessages(String chatId, String... msgs) {
+    public synchronized Optional<ChatAndNewMessages> addNewOutgoingMessages(String chatId, String... msgs) {
         Optional<Chat> chat = getChat(chatId);
         if (!chat.isPresent()) {
             return Optional.absent();
         }
 
-        Chat.ChatAndNewMessages chatAndMsgs = chat.get().addNewOutgoingMessages(msgs);
+        ChatAndNewMessages chatAndMsgs = chat.get().addNewOutgoingMessages(msgs);
         updateChat(chatAndMsgs.chat);
         return Optional.of(chatAndMsgs);
     }
