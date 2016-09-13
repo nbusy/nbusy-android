@@ -14,6 +14,7 @@ import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -123,7 +124,7 @@ public class Worker {
                             @Override
                             public void error() {
                             }
-                        }, msgs);
+                        }, new ArrayList<>(chatsAndMsgs.messages));
                     }
                 }, DataMap.nbusyToTitanMessages(msgs));
             }
