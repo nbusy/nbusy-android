@@ -20,7 +20,11 @@ public class DataMap {
         MsgMessage[] titanMsgs = new MsgMessage[msgs.length];
 
         for (int i = 0; i < msgs.length; i++) {
-            titanMsgs[i] = new MsgMessage(null, msgs[i].to, msgs[i].sent, msgs[i].body);
+            String to = msgs[i].to;
+            if (to == null || to.isEmpty()) {
+                to = msgs[i].chatId;
+            }
+            titanMsgs[i] = new MsgMessage(msgs[i].from, to, msgs[i].sent, msgs[i].body);
         }
 
         return titanMsgs;
@@ -30,6 +34,7 @@ public class DataMap {
         Message[] nbusyMsgs = new Message[msgs.length];
 
         for (int i = 0; i < msgs.length; i++) {
+            // hack: titan does not have chatId support yet so we use from field two times
             nbusyMsgs[i] = Message.newIncomingMessage(msgs[i].from.toLowerCase(), msgs[i].from, msgs[i].message, msgs[i].time);
         }
 
