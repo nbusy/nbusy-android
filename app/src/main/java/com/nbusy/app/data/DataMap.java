@@ -30,7 +30,7 @@ public class DataMap {
         Message[] nbusyMsgs = new Message[msgs.length];
 
         for (int i = 0; i < msgs.length; i++) {
-            nbusyMsgs[i] = Message.newIncomingMessage(msgs[i].from, msgs[i].from, msgs[i].message, msgs[i].time);
+            nbusyMsgs[i] = Message.newIncomingMessage(msgs[i].from.toLowerCase(), msgs[i].from, msgs[i].message, msgs[i].time);
         }
 
         return nbusyMsgs;
