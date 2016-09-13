@@ -4,11 +4,17 @@ import com.google.common.collect.ImmutableSet;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.Message;
 
-public class ChatAndNewMessages {
+import java.util.List;
+
+public class ChatAndMessages {
     public final Chat chat;
     public final ImmutableSet<Message> messages;
 
-    public ChatAndNewMessages(Chat chat, ImmutableSet<Message> messages) {
+    public ChatAndMessages(Chat chat, List<Message> messages) {
+        this(chat, ImmutableSet.copyOf(messages));
+    }
+
+    public ChatAndMessages(Chat chat, ImmutableSet<Message> messages) {
         if (chat == null) {
             throw new IllegalArgumentException("chat cannot be null");
         }

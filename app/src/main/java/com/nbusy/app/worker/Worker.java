@@ -8,7 +8,8 @@ import com.nbusy.app.data.Message;
 import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
-import com.nbusy.app.data.composite.ChatAndNewMessages;
+import com.nbusy.app.data.composite.ChatAndMessages;
+import com.nbusy.app.data.composite.ChatsAndMessages;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.sdk.Client;
@@ -76,7 +77,7 @@ public class Worker {
     }
 
     public void sendMessages(String chatId, String... msgs) {
-        Optional<ChatAndNewMessages> cmOpt = userProfile.addNewOutgoingMessages(chatId, msgs);
+        Optional<ChatAndMessages> cmOpt = userProfile.addNewOutgoingMessages(chatId, msgs);
         if (!cmOpt.isPresent()) {
             return;
         }
@@ -109,14 +110,14 @@ public class Worker {
                     @Override
                     public void sentToServer() {
                         // update in memory representation of messages
-                        final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
+                        final ChatsAndMessages chatsAndMsgs = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
 
                         // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
                         db.upsertMessages(new UpsertMessagesCallback() {
                             @Override
                             public void success() {
                                 // finally, notify all listening views about the changes
-                                eventBus.post(new ChatsUpdatedEvent(chats));
+                                eventBus.post(new ChatsUpdatedEvent(chatsAndMsgs.chats));
                             }
 
                             @Override
