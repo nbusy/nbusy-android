@@ -13,10 +13,8 @@ import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
-import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
 
@@ -97,30 +95,6 @@ public class Worker {
         // update in memory user profile with messages in case any of them are new, and notify all listener about this state change
         Set<Chat> chats = userProfile.upsertMessages(msgs);
         eventBus.post(new ChatsUpdatedEvent(chats));
-
-        // handle echo messages separately
-        if (Objects.equals(msgs[0].chatId, "echo")) {
-            // db: don't persist echo messages in db
-            final Message m = msgs[0];
-            client.echo(m.body, new EchoCallback() {
-                @Override
-                public void echoResponse(final String msg) {
-                    db.upsertMessages(new UpsertMessagesCallback() {
-                        @Override
-                        public void success() {
-                            eventBus.post(new ChatsUpdatedEvent(userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
-                            receiveMessages(new MsgMessage(m.chatId, "echo", null, m.sent, msg));
-                        }
-
-                        @Override
-                        public void error() {
-                        }
-                    }, new Message(m.id, m.chatId, m.from, m.to, m.owner, m.body, m.sent, Message.Status.DELIVERED_TO_USER));
-                }
-            });
-
-            return;
-        }
 
         // persist messages in the database with Status = NEW
         db.upsertMessages(new UpsertMessagesCallback() {
