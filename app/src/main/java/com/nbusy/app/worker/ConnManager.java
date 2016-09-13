@@ -104,6 +104,7 @@ public class ConnManager implements ConnCallbacks {
                             return;
                         }
 
+                        // todo: instead use Worker.SendMessages
                         final Message[] msgsArray = msgs.toArray(new Message[msgs.size()]);
                         client.sendMessages(new SendMsgsCallback() {
                             @Override
