@@ -87,6 +87,10 @@ public class Worker {
         sendMessages(msgs.toArray(new Message[msgs.size()]));
     }
 
+    public void sendMessages(List<Message> msgs) {
+        sendMessages(msgs.toArray(new Message[msgs.size()]));
+    }
+
     public void sendMessages(final Message... msgs) {
         if (msgs == null || msgs.length == 0) {
             throw new IllegalArgumentException("messages cannot be null or empty");

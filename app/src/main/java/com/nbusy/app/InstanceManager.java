@@ -61,7 +61,7 @@ public class InstanceManager extends Application {
 
     public static synchronized ConnManager getConnManager() {
         if (connManager == null) {
-            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getUserProfile(), getAppContext());
+            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getUserProfile(), getAppContext(), getWorker());
         }
 
         return connManager;

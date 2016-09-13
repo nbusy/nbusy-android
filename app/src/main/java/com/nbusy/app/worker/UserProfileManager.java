@@ -69,7 +69,7 @@ public class UserProfileManager {
     public void createUserProfile(UserProfile profile, final CreateUserProfileCallback cb) {
         // prepare default echo bot chat
         String chatId = "echo";
-        String chatPeer = "Echo";
+        String chatPeer = "echo";
         String lastMessage = "Greetings stranger!";
 
         Message greetingMsg = Message.newIncomingMessage(chatId, chatPeer, lastMessage, new Date());

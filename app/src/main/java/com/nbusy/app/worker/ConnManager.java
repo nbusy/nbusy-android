@@ -36,8 +36,9 @@ public class ConnManager implements ConnCallbacks {
     private final DB db;
     private final UserProfile userProfile;
     private final Context appContext;
+    private final Worker worker;
 
-    public ConnManager(Client client, EventBus eventBus, DB db, UserProfile userProfile, Context appContext) {
+    public ConnManager(Client client, EventBus eventBus, DB db, UserProfile userProfile, Context appContext, Worker worker) {
         if (client == null) {
             throw new IllegalArgumentException("client cannot be null");
         }
@@ -53,12 +54,16 @@ public class ConnManager implements ConnCallbacks {
         if (appContext == null) {
             throw new IllegalArgumentException("appContext cannot be null");
         }
+        if (worker == null) {
+            throw new IllegalArgumentException("worker cannot be null");
+        }
 
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
         this.userProfile = userProfile;
         this.appContext = appContext;
+        this.worker = worker;
     }
 
     /**
@@ -104,31 +109,7 @@ public class ConnManager implements ConnCallbacks {
                             return;
                         }
 
-                        // todo: instead use Worker.SendMessages
-                        final Message[] msgsArray = msgs.toArray(new Message[msgs.size()]);
-                        client.sendMessages(new SendMsgsCallback() {
-                            @Override
-                            public void sentToServer() {
-                                // update in memory representation of messages
-                                final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
-
-                                // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
-                                db.upsertMessages(new UpsertMessagesCallback() {
-                                    @Override
-                                    public void success() {
-                                        Log.i(TAG, "Sent queued messages to server: " + msgs.size());
-                                        // finally, notify all listening views about the changes
-                                        if (!chats.isEmpty()) {
-                                            eventBus.post(new ChatsUpdatedEvent(chats));
-                                        }
-                                    }
-
-                                    @Override
-                                    public void error() {
-                                    }
-                                }, msgsArray);
-                            }
-                        }, DataMap.nbusyToTitanMessages(msgsArray));
+                        worker.sendMessages(msgs);
                     }
                 });
             }

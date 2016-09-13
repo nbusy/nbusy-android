@@ -92,7 +92,7 @@ public class InMemDB implements DB {
                 }
 
                 ArrayList<Chat> chats = new ArrayList<>();
-                chats.add(new Chat("echo", "Echo", "Yo!", new Date()));
+                chats.add(new Chat("echo", "echo", "Yo!", new Date()));
                 if (config.env != Config.Env.PRODUCTION) {
                     chats.add(new Chat(UUID.randomUUID().toString(), "Teoman Soygul", "My last message", new Date()));
                     chats.add(new Chat(UUID.randomUUID().toString(), "Chuck Norris", "This is my last-first message!", new Date()));
