@@ -6,16 +6,12 @@ import java.util.Date;
  * Single message in a chat.
  */
 public class MsgMessage {
-    public final String chatId;
     public final String from;
     public final String to;
     public final Date time;
     public final String message;
 
-    public MsgMessage(String chatId, String from, String to, Date time, String message) {
-        if (chatId == null || chatId.isEmpty()) {
-            throw new IllegalArgumentException("chatId cannot be null or empty");
-        }
+    public MsgMessage(String from, String to, Date time, String message) {
         if (time == null) {
             throw new IllegalArgumentException("time cannot be null");
         }
@@ -23,7 +19,6 @@ public class MsgMessage {
             throw new IllegalArgumentException("message cannot be null or empty");
         }
 
-        this.chatId = chatId;
         this.from = from;
         this.to = to;
         this.time = time;

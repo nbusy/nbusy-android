@@ -56,7 +56,7 @@ public class TitanTest {
                 System.out.println("Received 'send' response: message delivered to server.");
                 msgCounter.countDown();
             }
-        }, new MsgMessage("1", null, "2", new Date(), "Hello from Titan client!"));
+        }, new MsgMessage(null, "2", new Date(), "Hello from Titan client!"));
         awaitThrows(msgCounter);
 
         client.close();

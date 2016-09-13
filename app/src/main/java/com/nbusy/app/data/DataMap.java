@@ -20,7 +20,7 @@ public class DataMap {
         MsgMessage[] titanMsgs = new MsgMessage[msgs.length];
 
         for (int i = 0; i < msgs.length; i++) {
-            titanMsgs[i] = new MsgMessage(msgs[i].chatId, null, msgs[i].to, msgs[i].sent, msgs[i].body);
+            titanMsgs[i] = new MsgMessage(null, msgs[i].to, msgs[i].sent, msgs[i].body);
         }
 
         return titanMsgs;
@@ -30,7 +30,7 @@ public class DataMap {
         Message[] nbusyMsgs = new Message[msgs.length];
 
         for (int i = 0; i < msgs.length; i++) {
-            nbusyMsgs[i] = Message.newIncomingMessage(msgs[i].chatId, msgs[i].from, msgs[i].message, msgs[i].time);
+            nbusyMsgs[i] = Message.newIncomingMessage(msgs[i].from, msgs[i].from, msgs[i].message, msgs[i].time);
         }
 
         return nbusyMsgs;
