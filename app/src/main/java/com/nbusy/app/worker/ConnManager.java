@@ -21,7 +21,6 @@ import java.util.Set;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.JWTAuthCallback;
-import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
 
 /**
