@@ -61,7 +61,7 @@ public class InstanceManager extends Application {
 
     public static synchronized ConnManager getConnManager() {
         if (connManager == null) {
-            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getUserProfile(), getAppContext());
+            connManager = new ConnManager(getClient(), getEventBus(), getDB(), getUserProfile(), getAppContext(), getWorker());
         }
 
         return connManager;
@@ -69,7 +69,8 @@ public class InstanceManager extends Application {
 
     public static synchronized GoogleAuthManager getGoogleAuthManager() {
         if (googleAuthManager == null) {
-            googleAuthManager = new GoogleAuthManager(getClient(), getUserProfileManager());
+            // we want a separate client instance for authentication
+            googleAuthManager = new GoogleAuthManager(getNewClientInstance(), getUserProfileManager());
         }
 
         return googleAuthManager;
@@ -77,15 +78,19 @@ public class InstanceManager extends Application {
 
     public static synchronized Client getClient() {
         if (client == null) {
-            if (getConfig().serverUrl != null) {
-                // todo: we always have to use async client otherwise we'll get android.os.NetworkOnMainThreadException, which only happens on TLS mode for reasons unknown to me!
-                client = new ClientImpl(getConfig().serverUrl, true);
-            } else {
-                client = new ClientImpl(true);
-            }
+            client = getNewClientInstance();
         }
 
         return client;
+    }
+
+    private static synchronized Client getNewClientInstance() {
+        if (getConfig().serverUrl != null) {
+            // todo: we always have to use async client otherwise we'll get android.os.NetworkOnMainThreadException, which only happens on TLS mode for reasons unknown to me!
+            return new ClientImpl(getConfig().serverUrl, true);
+        } else {
+            return new ClientImpl(true);
+        }
     }
 
     public static synchronized EventBus getEventBus() {

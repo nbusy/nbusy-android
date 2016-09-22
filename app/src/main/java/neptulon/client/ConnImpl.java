@@ -15,11 +15,17 @@ import com.google.gson.JsonSerializer;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
@@ -49,14 +55,16 @@ public class ConnImpl implements Conn, WebSocketListener {
     private final AtomicReference<State> state = new AtomicReference<>(State.CLOSED);
     private final Router router = new Router();
     private final boolean async;
+    private final AtomicBoolean writerIsActive = new AtomicBoolean(false);
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private WebSocketCall wsConnectRequest;
     private WebSocket ws;
     private ConnCallback connCallback;
 
+    private Timer timer = new Timer();
     private boolean firstConnection = true;
-    private final int retryLimit = 7;
-    private int retryDelay = 5; // seconds (x2 backoff for each retry)
-    private int retryCount = 0;
+    private final int retryLimit = 20;
+    private final AtomicInteger retryCount = new AtomicInteger(0);
 
     private static class ByteArrayToBase64TypeAdapter implements JsonSerializer<byte[]>, JsonDeserializer<byte[]> {
         public byte[] deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -103,31 +111,33 @@ public class ConnImpl implements Conn, WebSocketListener {
         this("ws://10.0.2.2:3000", false);
     }
 
+    /**
+     * Called upon onFailure event to try and reconnect.
+     */
     private void reconnect(String reason) {
         State s = state.get();
         if (s == State.CONNECTED || s == State.CONNECTING) {
             return;
         }
-        if (s == State.CLOSED || retryCount >= retryLimit) {
-            if (retryCount >= retryLimit) {
+        if (s == State.CLOSED || retryCount.get() >= retryLimit) {
+            if (retryCount.get() >= retryLimit) {
                 reason += ", retry limits reacted";
             }
             connCallback.disconnected(reason);
-            retryCount = 0;
+            retryCount.set(0);
             return;
         }
 
         // try to reconnect
-        retryCount++;
-        connect(connCallback);
-
-        // todo: do this in a background thread with exponential backoff, though for this, we need a 3rd state called 'reconnecting'
-//                    timer.schedule(new TimerTask() {
-//                        @Override
-//                        public void run() {
-//                            // Your database code here
-//                        }
-//                    }, 2*60*1000);
+        timer.cancel();
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                connect(connCallback);
+                retryCount.incrementAndGet();
+            }
+        }, retryCount.get() * 10 * 1000);
     }
 
     void send(Object obj) {
@@ -142,17 +152,20 @@ public class ConnImpl implements Conn, WebSocketListener {
         logger.info("Outgoing message: " + m);
 
         if (async) {
-            new Thread(new Runnable() {
+            executorService.execute(new Runnable() {
                 @Override
                 public void run() {
                     try {
+                        writerIsActive.set(true);
                         ws.sendMessage(RequestBody.create(WebSocket.TEXT, m));
                     } catch (IOException e) {
                         e.printStackTrace();
                         close();
+                    } finally {
+                        writerIsActive.set(false);
                     }
                 }
-            }).start();
+            });
             return;
         }
 
@@ -216,6 +229,11 @@ public class ConnImpl implements Conn, WebSocketListener {
         return isConnected(state.get());
     }
 
+    @Override
+    public boolean haveOngoingRequests() {
+        return async && writerIsActive.get();
+    }
+
     private boolean isConnected(State s) {
         return s == State.CONNECTED;
     }
@@ -262,6 +280,8 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
 
         if (async) {
+            executorService.shutdownNow(); // todo: test if we get an interrupted exception if we close an active request here
+            executorService = Executors.newSingleThreadExecutor(); // in case we reconnect
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -288,6 +308,7 @@ public class ConnImpl implements Conn, WebSocketListener {
 
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
+        retryCount.set(0);
         ws = webSocket;
         state.set(State.CONNECTED);
         logger.info("Connected to server: " + ws_url);
@@ -339,6 +360,6 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
 
         logger.info("Connection closed to server: " + ws_url + ", with reason: " + reason);
-        reconnect(reason);
+        reconnect(reason); // todo: create another private method to handle cleanup, rather than depending on reconnect with State.CLOSED
     }
 }

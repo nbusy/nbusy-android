@@ -15,6 +15,11 @@ public interface Client {
 
     boolean isConnected();
 
+    /**
+     * Whether the client has ongoing requests.
+     */
+    boolean haveOngoingRequests();
+
     boolean googleAuth(String token, GoogleAuthCallback cb);
 
     boolean jwtAuth(String token, JWTAuthCallback cb);

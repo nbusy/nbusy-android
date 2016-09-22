@@ -21,7 +21,6 @@ import java.util.Set;
 
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.JWTAuthCallback;
-import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
 
 /**
@@ -36,8 +35,9 @@ public class ConnManager implements ConnCallbacks {
     private final DB db;
     private final UserProfile userProfile;
     private final Context appContext;
+    private final Worker worker;
 
-    public ConnManager(Client client, EventBus eventBus, DB db, UserProfile userProfile, Context appContext) {
+    public ConnManager(Client client, EventBus eventBus, DB db, UserProfile userProfile, Context appContext, Worker worker) {
         if (client == null) {
             throw new IllegalArgumentException("client cannot be null");
         }
@@ -53,21 +53,23 @@ public class ConnManager implements ConnCallbacks {
         if (appContext == null) {
             throw new IllegalArgumentException("appContext cannot be null");
         }
+        if (worker == null) {
+            throw new IllegalArgumentException("worker cannot be null");
+        }
 
         this.client = client;
         this.eventBus = eventBus;
         this.db = db;
         this.userProfile = userProfile;
         this.appContext = appContext;
+        this.worker = worker;
     }
 
     /**
      * Whether we need an active connection to server.
      */
     public boolean needConnection() {
-        // todo: or there are ongoing operations or queued operations or standby timer is still running
-        return eventBus.haveSubscribers();
-        // todo: start an 3 min disconnect standBy timer on eventbus.unregister in case a view wants to register again or we're in a brief limbo state
+        return eventBus.haveSubscribers() || client.haveOngoingRequests();
     }
 
     /**
@@ -94,7 +96,7 @@ public class ConnManager implements ConnCallbacks {
     public void connected(String reason) {
         Log.i(TAG, "Connected to NBusy server with reason: " + reason);
 
-        boolean called = client.jwtAuth(userProfile.jwtToken, new JWTAuthCallback() {
+        boolean requestSent = client.jwtAuth(userProfile.jwtToken, new JWTAuthCallback() {
             @Override
             public void success() {
                 Log.i(TAG, "Authenticated with NBusy server using JWT auth.");
@@ -106,30 +108,7 @@ public class ConnManager implements ConnCallbacks {
                             return;
                         }
 
-                        final Message[] msgsArray = msgs.toArray(new Message[msgs.size()]);
-                        client.sendMessages(new SendMsgsCallback() {
-                            @Override
-                            public void sentToServer() {
-                                // update in memory representation of messages
-                                final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgsArray);
-
-                                // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
-                                db.upsertMessages(new UpsertMessagesCallback() {
-                                    @Override
-                                    public void success() {
-                                        Log.i(TAG, "Sent queued messages to server: " + msgs.size());
-                                        // finally, notify all listening views about the changes
-                                        if (!chats.isEmpty()) {
-                                            eventBus.post(new ChatsUpdatedEvent(chats));
-                                        }
-                                    }
-
-                                    @Override
-                                    public void error() {
-                                    }
-                                }, msgsArray);
-                            }
-                        }, DataMap.nbusyToTitanMessages(msgsArray));
+                        worker.sendMessages(msgs);
                     }
                 });
             }
@@ -140,7 +119,7 @@ public class ConnManager implements ConnCallbacks {
             }
         });
 
-        if (!called) {
+        if (!requestSent) {
             client.close();
         }
     }

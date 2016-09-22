@@ -1,6 +1,7 @@
 package com.nbusy.app.data;
 
 import com.google.common.collect.ImmutableSet;
+import com.nbusy.app.data.composite.ChatAndMessages;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,7 +48,7 @@ public final class Chat {
         this(id, peerName, lastMessage, lastMessageSent, ImmutableSet.<Message>of());
     }
 
-    ChatAndNewMessages addNewOutgoingMessages(String... msgs) {
+    ChatAndMessages addNewOutgoingMessages(String... msgs) {
         if (msgs == null || msgs.length == 0) {
             throw new IllegalArgumentException("message list be null or empty");
         }
@@ -57,24 +58,7 @@ public final class Chat {
             newMsgs.add(Message.newOutgoingMessage(id, peerName, msg));
         }
 
-        return new ChatAndNewMessages(upsertMessages(newMsgs), ImmutableSet.copyOf(newMsgs));
-    }
-
-    public final class ChatAndNewMessages {
-        public final Chat chat;
-        public final ImmutableSet<Message> messages;
-
-        public ChatAndNewMessages(Chat chat, ImmutableSet<Message> messages) {
-            if (chat == null) {
-                throw new IllegalArgumentException("chat cannot be null");
-            }
-            if (messages == null || messages.size() == 0) {
-                throw new IllegalArgumentException("messages cannot be null or empty");
-            }
-
-            this.chat = chat;
-            this.messages = messages;
-        }
+        return new ChatAndMessages(upsertMessages(newMsgs), newMsgs);
     }
 
     Chat upsertMessages(List<Message> msgs) {

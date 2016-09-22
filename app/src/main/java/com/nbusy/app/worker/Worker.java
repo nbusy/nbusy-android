@@ -8,15 +8,16 @@ import com.nbusy.app.data.Message;
 import com.nbusy.app.data.UserProfile;
 import com.nbusy.app.data.callbacks.GetChatMessagesCallback;
 import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
+import com.nbusy.app.data.composite.ChatAndMessages;
+import com.nbusy.app.data.composite.ChatsAndMessages;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.sdk.Client;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
-import titan.client.callbacks.EchoCallback;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
 
@@ -77,7 +78,7 @@ public class Worker {
     }
 
     public void sendMessages(String chatId, String... msgs) {
-        Optional<Chat.ChatAndNewMessages> cmOpt = userProfile.addNewOutgoingMessages(chatId, msgs);
+        Optional<ChatAndMessages> cmOpt = userProfile.addNewOutgoingMessages(chatId, msgs);
         if (!cmOpt.isPresent()) {
             return;
         }
@@ -86,6 +87,10 @@ public class Worker {
     }
 
     public void sendMessages(Set<Message> msgs) {
+        sendMessages(msgs.toArray(new Message[msgs.size()]));
+    }
+
+    public void sendMessages(List<Message> msgs) {
         sendMessages(msgs.toArray(new Message[msgs.size()]));
     }
 
@@ -98,29 +103,6 @@ public class Worker {
         Set<Chat> chats = userProfile.upsertMessages(msgs);
         eventBus.post(new ChatsUpdatedEvent(chats));
 
-        // handle echo messages separately
-        if (Objects.equals(msgs[0].chatId, "echo")) {
-            final Message m = msgs[0];
-            client.echo(m.body, new EchoCallback() {
-                @Override
-                public void echoResponse(final String msg) {
-                    db.upsertMessages(new UpsertMessagesCallback() {
-                        @Override
-                        public void success() {
-                            eventBus.post(new ChatsUpdatedEvent(userProfile.setMessageStatuses(Message.Status.DELIVERED_TO_USER, m)));
-                            receiveMessages(new MsgMessage(m.chatId, "echo", null, m.sent, msg));
-                        }
-
-                        @Override
-                        public void error() {
-                        }
-                    }, new Message(m.id, m.chatId, m.from, m.to, m.owner, m.body, m.sent, Message.Status.DELIVERED_TO_USER));
-                }
-            });
-
-            return;
-        }
-
         // persist messages in the database with Status = NEW
         db.upsertMessages(new UpsertMessagesCallback() {
             @Override
@@ -129,20 +111,20 @@ public class Worker {
                     @Override
                     public void sentToServer() {
                         // update in memory representation of messages
-                        final Set<Chat> chats = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
+                        final ChatsAndMessages chatsAndMsgs = userProfile.setMessageStatuses(Message.Status.SENT_TO_SERVER, msgs);
 
                         // now the sent messages are ACKed by the server, update them with Status = SENT_TO_SERVER
                         db.upsertMessages(new UpsertMessagesCallback() {
                             @Override
                             public void success() {
                                 // finally, notify all listening views about the changes
-                                eventBus.post(new ChatsUpdatedEvent(chats));
+                                eventBus.post(new ChatsUpdatedEvent(chatsAndMsgs.chats));
                             }
 
                             @Override
                             public void error() {
                             }
-                        }, msgs);
+                        }, new ArrayList<>(chatsAndMsgs.messages));
                     }
                 }, DataMap.nbusyToTitanMessages(msgs));
             }
