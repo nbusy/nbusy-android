@@ -10,8 +10,8 @@ public class DeviceBootBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-            // todo: retrieve user profile, make sure that the user logged in and have a JWT token, then start connection manager service
-//            InstanceManager.getUserProfileManager().getUserProfile(() => InstanceManager.getConnManager().ensureConn(this.getClass().getSimpleName()));
+            // retrieve user profile, which will start connection manager in return, which will start the connection manager service in return
+            InstanceManager.getUserProfileManager().getUserProfile(null);
 
             // todo: use WakefulBroadcastReceiver.startWakefulService() instead to make sure that device does not sleep while service is running?
 //            /**

@@ -40,12 +40,11 @@ public class UserProfileManager {
         this.db = db;
     }
 
-    // retrieves user profile and advertises availability of the user profile with an event
+    /**
+     * Retrieves user profile and advertises availability of the user profile with an event.
+     * @param activity - If provided, current activity will be redirected to login activity and back, if user profile does not exist.
+     */
     public void getUserProfile(final Activity activity) {
-        if (activity == null) {
-            throw new IllegalArgumentException("activity cannot be null");
-        }
-
         db.getProfile(new GetProfileCallback() {
             @Override
             public void success(UserProfile prof) {
@@ -57,6 +56,9 @@ public class UserProfileManager {
 
             @Override
             public void error() {
+                if (activity == null) {
+                    return;
+                }
                 Log.i(TAG, "user profile does not exist in DB, starting login activity");
                 Intent intent = new Intent(activity, LoginActivity.class);
                 activity.startActivityForResult(intent, GoogleAuthManager.LOGIN_OK);
