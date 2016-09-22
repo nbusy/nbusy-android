@@ -10,14 +10,8 @@ public class DeviceBootBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-            // we need this check not to initiate service with null profile, before user logs in for the first time
-            if (InstanceManager.userProfileRetrieved()) {
-                Intent serviceIntent = new Intent(context, ConnManagerService.class);
-                serviceIntent.putExtra(ConnManagerService.STARTED_BY, this.getClass().getSimpleName());
-                context.startService(serviceIntent);
-            } else {
-                // todo: retrieve user profile then start connection manager service
-            }
+            // todo: retrieve user profile, make sure that the user logged in and have a JWT token, then start connection manager service
+//            InstanceManager.getUserProfileManager().getUserProfile(() => InstanceManager.getConnManager().ensureConn(this.getClass().getSimpleName()));
 
             // todo: use WakefulBroadcastReceiver.startWakefulService() instead to make sure that device does not sleep while service is running?
 //            /**

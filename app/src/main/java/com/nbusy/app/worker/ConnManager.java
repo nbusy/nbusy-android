@@ -74,8 +74,9 @@ public class ConnManager implements ConnCallbacks {
 
     /**
      * Starts/restarts connection sequence to NBusy servers if we are not connected.
+     * @param requestedBy - If provided, this will be used in logs as the initiator of the connection manager service.
      */
-    public void ensureConn() {
+    public void ensureConn(String requestedBy) {
         if (!client.isConnected()) {
             client.connect(this);
         }
@@ -83,7 +84,7 @@ public class ConnManager implements ConnCallbacks {
         // start the connection manager service if not running
         if (!ConnManagerService.RUNNING.getAndSet(true)) {
             Intent serviceIntent = new Intent(appContext, ConnManagerService.class);
-            serviceIntent.putExtra(ConnManagerService.STARTED_BY, this.getClass().getSimpleName());
+            serviceIntent.putExtra(ConnManagerService.STARTED_BY, this.getClass().getSimpleName() + ", upon request by: " + requestedBy);
             appContext.startService(serviceIntent);
         }
     }

@@ -42,12 +42,16 @@ public class UserProfileManager {
 
     // retrieves user profile and advertises availability of the user profile with an event
     public void getUserProfile(final Activity activity) {
+        if (activity == null) {
+            throw new IllegalArgumentException("activity cannot be null");
+        }
+
         db.getProfile(new GetProfileCallback() {
             @Override
             public void success(UserProfile prof) {
                 Log.i(TAG, "user profile retrieved from DB, starting connection");
                 InstanceManager.setUserProfile(prof);
-                InstanceManager.getConnManager().ensureConn(); // we need this here since eventBus.register() skips .ensureConn() if user profile is empty
+                InstanceManager.getConnManager().ensureConn(this.getClass().getSimpleName()); // we need this here since eventBus.register() skips .ensureConn() if user profile is empty
                 eventBus.post(new UserProfileRetrievedEvent(prof));
             }
 
