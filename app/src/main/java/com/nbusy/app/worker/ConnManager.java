@@ -81,7 +81,9 @@ public class ConnManager implements ConnCallbacks {
         @Override
         protected Void doInBackground(Void... params) {
             // keep this service running, as long as we need an open connection to the server
-            while (needConnection()) {
+            boolean firstTime = true;
+            while (needConnection() || firstTime) {
+                firstTime = false;
                 while (needConnection()) {
                     try {
                         Thread.sleep(config.standbyTime / 2);
@@ -111,7 +113,7 @@ public class ConnManager implements ConnCallbacks {
      * Whether we need an active connection to server.
      */
     public boolean needConnection() {
-        return eventBus.haveSubscribers() || client.haveOngoingRequests();
+        return eventBus.haveSubscribers() || client.haveOngoingRequests(); // todo: || client.state() == connecting ...
     }
 
     /**
