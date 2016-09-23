@@ -22,33 +22,6 @@ public class ConnManagerService extends Service {
     private static final String TAG = ConnManagerService.class.getSimpleName();
     public static final String STARTED_BY = "StartedBy";
     public static final AtomicBoolean RUNNING = new AtomicBoolean();
-    private final StopStandby stopStandby = new StopStandby();
-    private int startId;
-    private final Config config = InstanceManager.getConfig();
-    private final Client client = InstanceManager.getClient();
-    private final ConnManager connManager = InstanceManager.getConnManager();
-
-    class StopStandby extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            // keep this service running, as long as we need an open connection to the server
-            while (connManager.needConnection()) {
-                try {
-                    Thread.sleep(config.standbyTime);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            if (!stopSelfResult(startId)) {
-                Log.e(TAG, "failed to stop service with startId: " + startId + " which did not match the one from the last start request");
-            }
-        }
-    }
 
     /*********************
      * Service Overrides *
@@ -61,18 +34,12 @@ public class ConnManagerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        this.startId = startId;
-
         if (intent != null) {
             String startedBy = intent.getStringExtra(STARTED_BY);
             Log.i(TAG, "Started by: " + startedBy);
         } else {
             // service is restarted by Android system after a termination so intent will be null in this case
             Log.i(TAG, "Restarted by Android system after termination.");
-        }
-
-        if (stopStandby.getStatus() != AsyncTask.Status.RUNNING) {
-            stopStandby.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
         ConnManagerService.RUNNING.set(true);
@@ -84,7 +51,6 @@ public class ConnManagerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        client.close();
         RUNNING.set(false);
         Log.i(TAG, "destroyed");
     }
