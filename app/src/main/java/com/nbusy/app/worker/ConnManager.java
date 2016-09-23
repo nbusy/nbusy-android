@@ -93,8 +93,6 @@ public class ConnManager implements ConnCallbacks {
 
         @Override
         protected void onPostExecute(Void result) {
-            // todo: someone might call ensureConn before service is stopped and service might stop when it should be running
-            //       block calls to ensureConn (or user a timer) until service is verified closed on STOPPING state
             appContext.stopService(new Intent(appContext, ConnManagerService.class));
             client.close();
         }
@@ -109,10 +107,9 @@ public class ConnManager implements ConnCallbacks {
 
     /**
      * Starts/restarts connection sequence to NBusy servers if we are not connected.
-     *
      * @param requestedBy - If provided, this will be used in logs as the initiator of the connection manager service.
      */
-    public void ensureConn(String requestedBy) {
+    public synchronized void ensureConn(String requestedBy) {
         if (!client.isConnected()) {
             client.connect(this);
         }

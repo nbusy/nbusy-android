@@ -44,6 +44,7 @@ import okio.Buffer;
 
 /**
  * Neptulon connection implementation: https://github.com/neptulon/neptulon
+ * All methods in this class is thread safe.
  */
 public class ConnImpl implements Conn, WebSocketListener {
     private static final Logger logger = Logger.getLogger("Neptulon: " + ConnImpl.class.getSimpleName());

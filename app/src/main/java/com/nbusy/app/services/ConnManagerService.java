@@ -2,20 +2,16 @@ package com.nbusy.app.services;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.nbusy.app.InstanceManager;
-import com.nbusy.app.Config;
 import com.nbusy.app.worker.ConnManager;
-import com.nbusy.sdk.Client;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Hosts {@link ConnManager} class to ensure continuous operation even when no activity is visible.
+ * Keeps the app alive until stopped by the {@link ConnManager}.
  */
 public class ConnManagerService extends Service {
 
