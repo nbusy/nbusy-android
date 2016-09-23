@@ -82,8 +82,17 @@ public class ConnManager implements ConnCallbacks {
         protected Void doInBackground(Void... params) {
             // keep this service running, as long as we need an open connection to the server
             while (needConnection()) {
+                while (needConnection()) {
+                    try {
+                        Thread.sleep(config.standbyTime / 2);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // check-wait-check cycle
                 try {
-                    Thread.sleep(config.standbyTime);
+                    Thread.sleep(config.standbyTime / 2);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
