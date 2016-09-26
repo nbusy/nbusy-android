@@ -42,7 +42,7 @@ public class UserProfileManager {
 
     /**
      * Retrieves user profile and advertises availability of the user profile with an event.
-     * @param activity - If provided, current activity will be redirected to login activity and back, if user profile does not exist.
+     * @param activity - (optional) If provided, current activity will be redirected to login activity and back, if user profile does not exist.
      */
     public void getUserProfile(final Activity activity) {
         db.getProfile(new GetProfileCallback() {
