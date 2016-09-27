@@ -77,7 +77,8 @@ public class ConnImpl implements Conn, WebSocketListener {
         }
     }
 
-    public enum State {
+    // connection state
+    private enum State {
         CONNECTING,
         CONNECTED,
         DISCONNECTED,
