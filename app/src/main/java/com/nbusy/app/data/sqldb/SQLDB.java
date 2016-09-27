@@ -29,7 +29,7 @@ import java.util.Objects;
 
 public class SQLDB implements DB {
 
-    // todo: do all sql operations in a single background thread and call cb
+    // todo: do all sql operations in a single background thread and call cb (as we do in titan with Executors.newSingleThreadExecutor())
 
     private static final String EQ_SEL = " = ?";
 

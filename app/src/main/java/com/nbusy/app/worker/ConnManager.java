@@ -2,8 +2,10 @@ package com.nbusy.app.worker;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.util.Log;
 
+import com.nbusy.app.Config;
 import com.nbusy.app.data.Chat;
 import com.nbusy.app.data.DB;
 import com.nbusy.app.data.DataMap;
@@ -30,14 +32,16 @@ import titan.client.messages.MsgMessage;
 public class ConnManager implements ConnCallbacks {
 
     private static final String TAG = ConnManager.class.getSimpleName();
+    private final KeepAliveTimer keepAliveTimer = new KeepAliveTimer();
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
     private final UserProfile userProfile;
     private final Context appContext;
     private final Worker worker;
+    private final Config config;
 
-    public ConnManager(Client client, EventBus eventBus, DB db, UserProfile userProfile, Context appContext, Worker worker) {
+    public ConnManager(Client client, EventBus eventBus, DB db, UserProfile userProfile, Context appContext, Worker worker, Config config) {
         if (client == null) {
             throw new IllegalArgumentException("client cannot be null");
         }
@@ -56,6 +60,9 @@ public class ConnManager implements ConnCallbacks {
         if (worker == null) {
             throw new IllegalArgumentException("worker cannot be null");
         }
+        if (config == null) {
+            throw new IllegalArgumentException("config cannot be null");
+        }
 
         this.client = client;
         this.eventBus = eventBus;
@@ -63,6 +70,43 @@ public class ConnManager implements ConnCallbacks {
         this.userProfile = userProfile;
         this.appContext = appContext;
         this.worker = worker;
+        this.config = config;
+    }
+
+    /**
+     * Keeps the connection manager service alive as long as we need a live connection to the server.
+     * When we don't need a connection, stops the service.
+     */
+    class KeepAliveTimer extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            // keep this service running, as long as we need an open connection to the server
+            boolean firstTime = true;
+            while (needConnection() || firstTime) {
+                firstTime = false;
+                while (needConnection()) {
+                    try {
+                        Thread.sleep(config.standbyTime / 2);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // check-wait-check cycle
+                try {
+                    Thread.sleep(config.standbyTime / 2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            appContext.stopService(new Intent(appContext, ConnManagerService.class));
+            client.close();
+        }
     }
 
     /**
@@ -74,16 +118,26 @@ public class ConnManager implements ConnCallbacks {
 
     /**
      * Starts/restarts connection sequence to NBusy servers if we are not connected.
+     *
+     * Called by: EventBus.register() (except when user profile is empty)
+     * Called by: UserProfileManager.getUserProfile() (since eventBus.register() skips .ensureConn() if user profile is empty)
+     *
+     * @param requestedBy - If provided, this will be used in logs as the initiator of the connection manager service.
      */
-    public void ensureConn() {
+    public synchronized void ensureConn(String requestedBy) {
         if (!client.isConnected()) {
             client.connect(this);
+        }
+
+        // start the connection timer if not running
+        if (keepAliveTimer.getStatus() != AsyncTask.Status.RUNNING) {
+            keepAliveTimer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
         // start the connection manager service if not running
         if (!ConnManagerService.RUNNING.getAndSet(true)) {
             Intent serviceIntent = new Intent(appContext, ConnManagerService.class);
-            serviceIntent.putExtra(ConnManagerService.STARTED_BY, this.getClass().getSimpleName());
+            serviceIntent.putExtra(ConnManagerService.STARTED_BY, this.getClass().getSimpleName() + ", upon request by: " + requestedBy);
             appContext.startService(serviceIntent);
         }
     }

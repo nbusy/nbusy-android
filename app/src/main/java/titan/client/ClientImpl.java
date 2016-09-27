@@ -21,6 +21,7 @@ import titan.client.responses.GoogleAuthResponse;
 
 /**
  * Titan client implementation: https://github.com/titan-x/titan
+ * All methods in this class is thread safe.
  */
 public class ClientImpl implements Client {
     private static final Logger logger = Logger.getLogger("Titan: " + ClientImpl.class.getSimpleName());

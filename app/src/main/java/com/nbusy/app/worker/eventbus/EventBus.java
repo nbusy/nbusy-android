@@ -25,7 +25,7 @@ public class EventBus extends com.google.common.eventbus.AsyncEventBus {
 
         // a view is attaching to event bus so we need to ensure connectivity
         if (InstanceManager.userProfileRetrieved()) {
-            InstanceManager.getConnManager().ensureConn();
+            InstanceManager.getConnManager().ensureConn(this.getClass().getSimpleName());
         }
 
         if (subscribers.contains(o)) {
