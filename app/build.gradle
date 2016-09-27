@@ -11,8 +11,8 @@ android {
         applicationId "com.nbusy.app"
         minSdkVersion 22
         targetSdkVersion 23
-        versionCode 16
-        versionName '0.16'
+        versionCode 0
+        versionName '0'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -35,6 +35,11 @@ android {
     }
     productFlavors {
     }
+}
+
+if (System.env.NBUSY_VERSION_CODE && System.env.NBUSY_VERSION_NAME) {
+    android.defaultConfig.versionCode = System.env.NBUSY_VERSION_CODE
+    android.defaultConfig.versionName = System.env.NBUSY_VERSION_NAME
 }
 
 if (System.env.NBUSY_KEYSTORE) {
