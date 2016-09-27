@@ -118,6 +118,10 @@ public class ConnManager implements ConnCallbacks {
 
     /**
      * Starts/restarts connection sequence to NBusy servers if we are not connected.
+     *
+     * Called by: EventBus.register() (except when user profile is empty)
+     * Called by: UserProfileManager.getUserProfile() (since eventBus.register() skips .ensureConn() if user profile is empty)
+     *
      * @param requestedBy - If provided, this will be used in logs as the initiator of the connection manager service.
      */
     public synchronized void ensureConn(String requestedBy) {
