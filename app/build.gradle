@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 def getDateTime() {
-    return (new Date()).format('yyMMddHHmm').toInteger()
+    return (new Date()).format('yyMMddHH').toInteger()
 }
 
 def getDate() {
