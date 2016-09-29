@@ -37,7 +37,7 @@ before_install:
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
     openssl aes-256-cbc -K $encrypted_6a2ee1f3b7a8_key -iv $encrypted_6a2ee1f3b7a8_iv -in nbusy.keystore.enc -out nbusy.keystore -d;
     fi
-  - if [ -n "$TRAVIS_TAG" ]; then
+  - if [ -n "${TRAVIS_TAG}" ]; then
     fi
 
 script:
