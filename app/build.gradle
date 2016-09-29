@@ -52,7 +52,7 @@ play {
 }
 
 if (System.env.NBUSY_VERSION_CODE && System.env.NBUSY_VERSION_NAME) {
-    android.defaultConfig.versionCode = System.env.NBUSY_VERSION_CODE
+    android.defaultConfig.versionCode = StringUtils.stripStart(System.env.NBUSY_VERSION_CODE, "v0.")
     android.defaultConfig.versionName = System.env.NBUSY_VERSION_NAME
 }
 
