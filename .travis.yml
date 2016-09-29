@@ -45,7 +45,7 @@ script:
     fi
 
 after_success:
-  - if [ -n "${TRAVIS_TAG}" ]; then
+  - if [ -n "${TRAVIS_TAG}" ] && [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
     openssl aes-256-cbc -K $encrypted_6a2ee1f3b7a8_key -iv $encrypted_6a2ee1f3b7a8_iv -in play_keys.json.enc -out play_keys.json -d
     ./gradlew tasks
     fi
