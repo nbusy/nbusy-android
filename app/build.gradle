@@ -47,7 +47,7 @@ android {
 }
 
 play {
-    jsonFile = file('keys.json')
+    jsonFile = file('play_keys.json')
     track = 'alpha'
 }
 
