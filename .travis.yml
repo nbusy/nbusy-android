@@ -47,7 +47,7 @@ script:
 after_success:
   - if [ -n "${TRAVIS_TAG}" ]; then
     ./gradlew tasks
-   fi
+    fi
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
