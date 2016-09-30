@@ -42,7 +42,7 @@ before_install:
 script:
   - NBUSY_VERSION_CODE=${TRAVIS_TAG} NBUSY_VERSION_NAME=${TRAVIS_TAG} ./gradlew build check # connectedCheck to enable emulator testing
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
-    NBUSY_VERSION_CODE=${TRAVIS_TAG} NBUSY_VERSION_NAME=${TRAVIS_TAG} ./gradlew assembleRelease -Pandroid.injected.signing.store.file=nbusy.keystore -Pandroid.injected.signing.store.password=$STORE_PASSWORD -Pandroid.injected.signing.key.alias=nbusy -Pandroid.injected.signing.key.password=$KEY_PASSWORD;
+    NBUSY_VERSION_CODE=${TRAVIS_TAG} NBUSY_VERSION_NAME=${TRAVIS_TAG} ./gradlew assembleRelease -Pandroid.injected.signing.store.file=nbusy.keystore -Pandroid.injected.signing.store.password=$NBUSY_KEYSTORE_PASS -Pandroid.injected.signing.key.alias=nbusy -Pandroid.injected.signing.key.password=$NBUSY_KEYSTORE_PASS;
     fi
 
 after_success:

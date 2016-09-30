@@ -12,6 +12,8 @@ def getDate() {
 android {
     signingConfigs {
         config {
+            storeFile = file('../nbusy.keystore')
+            keyAlias = 'nbusy'
         }
     }
     compileSdkVersion 23
@@ -58,7 +60,11 @@ if (System.env.NBUSY_VERSION_CODE && System.env.NBUSY_VERSION_NAME) {
 
 if (System.env.NBUSY_KEYSTORE) {
     android.signingConfigs.config.storeFile = file(System.env.NBUSY_KEYSTORE)
+}
+if (System.env.NBUSY_KEYSTORE_ALIAS) {
     android.signingConfigs.config.keyAlias = System.env.NBUSY_KEYSTORE_ALIAS
+}
+if (System.env.NBUSY_KEYSTORE) {
     android.signingConfigs.config.keyPassword = System.env.NBUSY_KEYSTORE_PASS
     android.signingConfigs.config.storePassword = System.env.NBUSY_KEYSTORE_PASS
     android.buildTypes.release.signingConfig = android.signingConfigs.config
