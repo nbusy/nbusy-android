@@ -16,8 +16,8 @@ public class Config {
         this.env = env;
         this.serverUrl = serverUrl;
 
-        // 3 mins (prod) / 10 secs (non-prod)
-        standbyTime = env == Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000;
+        // 4 mins (prod) / 15 secs (non-prod)
+        standbyTime = env == Env.PRODUCTION ? 4 * 60 * 1000 : 15 * 1000; // todo: this is duplicated below
 
         logConfig();
     }
@@ -50,8 +50,8 @@ public class Config {
             }
         }
 
-        // 3 mins (prod) / 10 secs (non-prod)
-        standbyTime = env == Env.PRODUCTION ? 3 * 60 * 1000 : 10 * 1000;
+        // 4 mins (prod) / 15 secs (non-prod)
+        standbyTime = env == Env.PRODUCTION ? 4 * 60 * 1000 : 15 * 1000;
 
         logConfig();
     }
