@@ -53,11 +53,16 @@ play {
     track = 'alpha'
 }
 
-if (System.env.NBUSY_VERSION_CODE && System.env.NBUSY_VERSION_NAME) {
-    android.defaultConfig.versionCode = System.env.NBUSY_VERSION_CODE.substring(3).toInteger()
+// set version properties
+if (System.env.NBUSY_VERSION_NAME) {
+    android.defaultConfig.versionCode = System.env.NBUSY_VERSION_NAME.substring(3).toInteger()
     android.defaultConfig.versionName = System.env.NBUSY_VERSION_NAME
 }
+if (System.env.NBUSY_VERSION_CODE) {
+    android.defaultConfig.versionCode = System.env.NBUSY_VERSION_CODE
+}
 
+// set signing key properties
 if (System.env.NBUSY_KEYSTORE) {
     android.signingConfigs.config.storeFile = file(System.env.NBUSY_KEYSTORE)
 }
