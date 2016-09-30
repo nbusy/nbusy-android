@@ -39,9 +39,15 @@ before_install:
     fi
 
 script:
-  - ./gradlew build check # connectedCheck to enable emulator testing
+  - NBUSY_VERSION_CODE=${TRAVIS_TAG} NBUSY_VERSION_NAME=${TRAVIS_TAG} ./gradlew build check # connectedCheck to enable emulator testing
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
-    ./gradlew assembleRelease -Pandroid.injected.signing.store.file=nbusy.keystore -Pandroid.injected.signing.store.password=$STORE_PASSWORD -Pandroid.injected.signing.key.alias=nbusy -Pandroid.injected.signing.key.password=$KEY_PASSWORD;
+    NBUSY_VERSION_CODE=${TRAVIS_TAG} NBUSY_VERSION_NAME=${TRAVIS_TAG} ./gradlew assembleRelease -Pandroid.injected.signing.store.file=nbusy.keystore -Pandroid.injected.signing.store.password=$STORE_PASSWORD -Pandroid.injected.signing.key.alias=nbusy -Pandroid.injected.signing.key.password=$KEY_PASSWORD;
+    fi
+
+after_success:
+  - if [ -n "${TRAVIS_TAG}" ] && [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
+    openssl aes-256-cbc -K $encrypted_6a2ee1f3b7a8_key -iv $encrypted_6a2ee1f3b7a8_iv -in play_keys.json.enc -out play_keys.json -d
+    ./gradlew tasks
     fi
 
 before_cache:

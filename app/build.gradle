@@ -1,4 +1,13 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.github.triplet.play'
+
+def getDateTime() {
+    return (new Date()).format('yyMMddHH').toInteger()
+}
+
+def getDate() {
+    return (new Date()).format('yyyy.MM.dd')
+}
 
 android {
     signingConfigs {
@@ -11,8 +20,8 @@ android {
         applicationId "com.nbusy.app"
         minSdkVersion 22
         targetSdkVersion 23
-        versionCode 16
-        versionName '0.16'
+//        versionCode getDateTime()
+//        versionName getDate()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -35,6 +44,16 @@ android {
     }
     productFlavors {
     }
+}
+
+play {
+    jsonFile = file('play_keys.json')
+    track = 'alpha'
+}
+
+if (System.env.NBUSY_VERSION_CODE && System.env.NBUSY_VERSION_NAME) {
+    android.defaultConfig.versionCode = System.env.NBUSY_VERSION_CODE.substring(3).toInteger()
+    android.defaultConfig.versionName = System.env.NBUSY_VERSION_NAME
 }
 
 if (System.env.NBUSY_KEYSTORE) {
