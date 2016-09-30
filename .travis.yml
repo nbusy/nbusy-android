@@ -47,7 +47,7 @@ script:
 
 after_success:
   - if [ -n "${TRAVIS_TAG}" ] && [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
-    ./gradlew tasks
+    ./gradlew publishApkRelease;
     fi
 
 before_cache:
