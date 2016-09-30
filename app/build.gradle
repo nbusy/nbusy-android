@@ -64,7 +64,7 @@ if (System.env.NBUSY_KEYSTORE) {
 if (System.env.NBUSY_KEYSTORE_ALIAS) {
     android.signingConfigs.config.keyAlias = System.env.NBUSY_KEYSTORE_ALIAS
 }
-if (System.env.NBUSY_KEYSTORE) {
+if (System.env.NBUSY_KEYSTORE_PASS) {
     android.signingConfigs.config.keyPassword = System.env.NBUSY_KEYSTORE_PASS
     android.signingConfigs.config.storePassword = System.env.NBUSY_KEYSTORE_PASS
     android.buildTypes.release.signingConfig = android.signingConfigs.config
