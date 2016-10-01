@@ -32,7 +32,6 @@ import titan.client.messages.MsgMessage;
 public class ConnManager implements ConnCallbacks {
 
     private static final String TAG = ConnManager.class.getSimpleName();
-    private final KeepAliveTimer keepAliveTimer = new KeepAliveTimer();
     private final Client client;
     private final EventBus eventBus;
     private final DB db;
@@ -40,6 +39,7 @@ public class ConnManager implements ConnCallbacks {
     private final Context appContext;
     private final Worker worker;
     private final Config config;
+    private KeepAliveTimer keepAliveTimer = new KeepAliveTimer();
 
     public ConnManager(Client client, EventBus eventBus, DB db, UserProfile userProfile, Context appContext, Worker worker, Config config) {
         if (client == null) {
@@ -131,6 +131,7 @@ public class ConnManager implements ConnCallbacks {
 
         // start the connection timer if not running
         if (keepAliveTimer.getStatus() != AsyncTask.Status.RUNNING) {
+            keepAliveTimer  = new KeepAliveTimer();
             keepAliveTimer.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
