@@ -15,6 +15,13 @@ public abstract class Container<T> {
     }
 
     public synchronized void setState(T state) {
+        if (this.state == state) {
+            throw new IllegalArgumentException("you need to provide a new copy of the immutable state object to set a new state");
+        }
+        if (this.state.equals(state)) {
+            throw new IllegalArgumentException("old and the new state are the same");
+        }
+
         this.state = state;
         for (Subscriber<T> s : subscribers) {
             s.onStateChange(state);
