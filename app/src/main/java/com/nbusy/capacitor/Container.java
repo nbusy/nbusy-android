@@ -39,4 +39,8 @@ public abstract class Container<T> {
     public synchronized void unsubscribe(Subscriber<T> s) {
         subscribers.remove(s);
     }
+
+    public synchronized boolean haveSubscribers() {
+        return !subscribers.isEmpty();
+    }
 }
