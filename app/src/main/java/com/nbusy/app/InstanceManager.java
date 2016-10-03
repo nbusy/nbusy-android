@@ -12,8 +12,9 @@ import com.nbusy.app.worker.UserProfileManager;
 import com.nbusy.app.worker.Worker;
 import com.nbusy.app.worker.eventbus.EventBus;
 import com.nbusy.app.worker.eventbus.UIThreadExecutor;
-import com.nbusy.sdk.Client;
-import com.nbusy.sdk.ClientImpl;
+
+import titan.client.Client;
+import titan.client.ClientImpl;
 
 /**
  * Creator and keeper of all the instances.
@@ -85,12 +86,8 @@ public class InstanceManager extends Application {
     }
 
     private static synchronized Client getNewClientInstance() {
-        if (getConfig().serverUrl != null && !getConfig().serverUrl.isEmpty()) {
-            // todo: we always have to use async client otherwise we'll get android.os.NetworkOnMainThreadException, which only happens on TLS mode for reasons unknown to me!
-            return new ClientImpl(getConfig().serverUrl, true);
-        } else {
-            return new ClientImpl(true);
-        }
+        // todo: we always have to use async client otherwise we'll get android.os.NetworkOnMainThreadException, which only happens on TLS mode for reasons unknown to me!
+        return new ClientImpl(getConfig().serverUrl, true);
     }
 
     public static synchronized EventBus getEventBus() {
