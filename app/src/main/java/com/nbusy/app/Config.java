@@ -58,7 +58,7 @@ public class Config {
                         this.serverUrl = "ws://127.0.0.1:3001"; // local test server
                         break;
                     default:
-                        this.serverUrl = null; // determined by NBusy SDK
+                        this.serverUrl = "wss://nbusy.herokuapp.com";
                         break;
                 }
             }

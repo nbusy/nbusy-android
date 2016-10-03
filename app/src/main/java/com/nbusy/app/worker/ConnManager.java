@@ -16,11 +16,11 @@ import com.nbusy.app.data.callbacks.UpsertMessagesCallback;
 import com.nbusy.app.services.ConnManagerService;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
-import com.nbusy.sdk.Client;
 
 import java.util.List;
 import java.util.Set;
 
+import titan.client.Client;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.JWTAuthCallback;
 import titan.client.messages.MsgMessage;

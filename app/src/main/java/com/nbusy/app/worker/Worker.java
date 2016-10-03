@@ -12,12 +12,12 @@ import com.nbusy.app.data.composite.ChatAndMessages;
 import com.nbusy.app.data.composite.ChatsAndMessages;
 import com.nbusy.app.worker.eventbus.ChatsUpdatedEvent;
 import com.nbusy.app.worker.eventbus.EventBus;
-import com.nbusy.sdk.Client;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import titan.client.Client;
 import titan.client.callbacks.SendMsgsCallback;
 import titan.client.messages.MsgMessage;
 

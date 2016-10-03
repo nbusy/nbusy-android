@@ -5,10 +5,10 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.nbusy.app.data.UserProfile;
-import com.nbusy.sdk.Client;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import titan.client.Client;
 import titan.client.callbacks.ConnCallbacks;
 import titan.client.callbacks.GoogleAuthCallback;
 import titan.client.messages.MsgMessage;
