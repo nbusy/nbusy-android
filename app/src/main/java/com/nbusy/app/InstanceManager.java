@@ -85,7 +85,7 @@ public class InstanceManager extends Application {
     }
 
     private static synchronized Client getNewClientInstance() {
-        if (getConfig().serverUrl != null) {
+        if (getConfig().serverUrl != null && !getConfig().serverUrl.isEmpty()) {
             // todo: we always have to use async client otherwise we'll get android.os.NetworkOnMainThreadException, which only happens on TLS mode for reasons unknown to me!
             return new ClientImpl(getConfig().serverUrl, true);
         } else {
